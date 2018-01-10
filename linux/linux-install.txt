@@ -1,0 +1,52 @@
+# 手动分区
+1. 分区
+/     剩余所有空间，采用lvm卷组格式创建(尽可能大)
+/boot 200MB
+/swap 2G(物理内存的2倍)
+
+2. 分区(40G)
+/boot 200MB
+/     20G
+/home 10G
+/swap 2G
+/var  剩余空间
+
+# 选择网络连接类型，这里选择“使用桥接网络”，各位安装虚拟机过程根据需要自行选择，安装向导中已经针对各种模式进行了比较规范的说明，这里补充说明如下：
+
+1）使用桥接网络：虚拟机ip与本机在同一网段，本机与虚拟机可以通过ip互通，本机联网状态下虚拟机即可联网，同时虚拟机与本网段内其他主机可以互通，这种模式常用于服务器环境架构中。
+
+2）使用网络地址转换（NAT）：虚拟机可以联网，与本机互通，与本机网段内其他主机不通。
+
+3）使用仅主机模式网络：虚拟机不能联网，与本机互通，与本机网段内其他主机不通。
+
+# CentOS 7.0默认安装好之后是没有自动开启网络连接的！进入网络配置文件目录
+cd  /etc/sysconfig/network-scripts/
+#编辑配置文件，添加修改以下内容
+vi ifcfg-eno16777736 
+
+HWADDR=00:0C:29:8D:24:73
+TYPE=Ethernet
+BOOTPROTO=static  #启用静态IP地址
+DEFROUTE=yes
+PEERDNS=yes
+PEERROUTES=yes
+IPV4_FAILURE_FATAL=no
+IPV6INIT=yes
+IPV6_AUTOCONF=yes
+IPV6_DEFROUTE=yes
+IPV6_PEERDNS=yes
+IPV6_PEERROUTES=yes
+IPV6_FAILURE_FATAL=no
+NAME=eno16777736
+UUID=ae0965e7-22b9-45aa-8ec9-3f0a20a85d11
+ONBOOT=yes  #开启自动启用网络连接
+IPADDR0=192.168.21.128  #设置IP地址
+PREFIXO0=24  #设置子网掩码
+GATEWAY0=192.168.21.2  #设置网关
+DNS1=8.8.8.8  #设置主DNS
+DNS2=8.8.4.4  #设置备DNS
+:wq!  #保存退出
+
+service network restart   #重启网络
+ping www.baidu.com  	  #测试网络是否正常
+ip addr  		  #查看IP地址

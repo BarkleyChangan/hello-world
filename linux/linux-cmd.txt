@@ -1,4 +1,4 @@
-# 添加用户
+﻿# 添加用户
 useradd xiaoming
 
 # 修改密码
@@ -58,3 +58,6 @@ df 目录路径
 
 # 查看磁盘使用情况
 df -h
+
+# 查看启动的进程
+ps aux | grep nginx
