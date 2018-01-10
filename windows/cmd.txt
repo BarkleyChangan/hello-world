@@ -1,0 +1,6 @@
+# 查看8080端口被谁占用,回车后记下最后一位数字即PID
+netstat -aon|findstr "8080"
+# 根据PID查看是哪个进程占用了8080端口
+tasklist|findstr "1904"
+# 杀掉进程
+taskfill /f /t /im Tencentdl.exe
