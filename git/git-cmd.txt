@@ -46,10 +46,10 @@ git add .
 git commit
 git commit -m "Story 182: Fix benchmarks for speed"
 
-# 把所有已经跟踪过的文件暂存起来一并提交，从而跳过 git add 步骤
+# 把所有已经跟踪过的文件暂存起来一并提交，从而跳过git add步骤
 git commit -a -m 'added new benchmarks'
 
-# 有时候我们提交完了才发现漏掉了几个文件没有添加，或者提交信息写错了。 此时，可以运行带有 --amend 选项的提交命令尝试重新提交
+# 有时候我们提交完了才发现漏掉了几个文件没有添加，或者提交信息写错了。 此时，可以运行带有 --amend 选项的提交命令尝试重新提交。使用--amend选项的提交会与最后一次提交进行合并生成一个新的提交，之前的提交会被废弃掉。
 git commit --amend
 
 # 添加远程仓库
@@ -80,7 +80,7 @@ git submodule update
 ***************** 添加暂存区&提交 *****************
 
 ***************** 修改&撤销&删除 *****************
-# 移动文件&文件改名
+# 移动文件&文件重命名
 git mv README.md README
 
 # 移除文件
@@ -92,8 +92,15 @@ git rm -f PROJECTS.md
 # 把文件从 Git 仓库中删除（亦即从暂存区域移除），但仍然希望保留在当前工作目录中
 git rm --cached readme.txt
 
+# 对删除的文件进行恢复
+git checkout -- NewCreateFile
+
 # 取消暂存
 git reset HEAD benchmarks.rb
+
+# 将删除的文件进行恢复
+git reset HEAD 文件名 (从暂存区将已暂存删除的文件进行撤销)
+git checkout -- 文件名 (操作将删除的文件进行恢复)
 
 # 撤消对文件的修改
 git checkout -- CONTRIBUTING.md
@@ -199,6 +206,9 @@ git config --list
 # 查看某个环境变量的值
 git config user.name
 
+# 查看所设置的别名
+git config -l
+
 # 获取帮助
 git help config
 
@@ -239,7 +249,7 @@ git reflog
 # 查看已暂存和未暂存的更新(请注意，单单 git diff 不过是显示还没有暂存起来的改动，而不是这次工作和上次提交之间的差异。)
 git diff
 
-# 看已经暂存起来的文件和上次提交时的快照之间的差异
+# 查看已经暂存起来的文件和上次提交时的快照之间的差异
 git diff --cached
 git diff --staged
 
@@ -301,16 +311,20 @@ git bisect reset
 ***************** 查看状态信息 *****************
 
 ***************** 标签 *****************
+# 标签包括“轻量标签”（lightweight）和 “辅助标签”（annotated）
+# 轻量标签之所以轻量是因为它只是一个特定commit的引用。而“附注标签”是存储在git数据库中的一个完整对象。
 # 列出标签
 git tag
 git tag -l 'v1.8.5*'
 
+# 创建轻量级标签
+git tag v1.4-lw
+git tag -a 版本号 -m 'tag 信息'
+git tag -a vx.x.x -m 'message' commit-hash
+
 # 创建含附注的标签
 git tag -a v1.4 -m 'my version 1.4'
 git tag -a v1.2 9fceb02
-
-# 创建轻量级标签
-git tag v1.4-lw
 
 # 查看标签信息以及提交信息
 git show v1.4
@@ -327,6 +341,9 @@ git tag -a v1.2 9fceb02
 # 向服务器推送标签
 git push origin v1.2
 
+# 将本地创建的所有 tag推送到远端origin
+git push origin --tags
+
 # 在特定的标签上创建一个新分支
 git checkout -b version2 v2.0
 
@@ -338,10 +355,18 @@ git push origin [tagname]
 
 # 一次推送所有本地新增的标签上去
 git push origin --tags
+
+# 我们检出分支时，在分支的名字后方添加上相应的版本号，即可在该 tag 号所对应的分支上进行checkout
+git checkout -b MyTagBranch v1.1.1
 ***************** 标签 *****************
 
 ***************** 忽略文件 *****************
 # .gitignore的文件,列出要忽略的文件模式
+	https://github.com/github/gitignore
+	#:井号（#）用来添加注释用的，比如 "#注释"
+	build/* : 星号（*）是通配符，build/*则是要说明要忽略 build 文件夹下的所有内容。
+    *.pbxuser : 表示要忽略后缀名为.pbxuser的文件。
+    !default.pbxuser : 感叹号（!）是取反的意思，*.pbxuser 表示忽略所有后缀名为.pbxuser的文件，如果加上!default.pbxuser则表示，除了default.pbxuse忽略其它后缀名为pbxuse的文件
 	*.[oa] 忽略所有以.o或.a结尾的文件
 	*~     忽略所有以波浪符~结尾的文件文件
 	1. 所有空行或者以注释符号 ＃ 开头的行都会被 Git 忽略。
