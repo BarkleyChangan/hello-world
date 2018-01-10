@@ -1,0 +1,60 @@
+# 添加用户
+useradd xiaoming
+
+# 修改密码
+passwd xiao
+
+# 删除用户
+userdel xiaoming
+userdel -r xiaoming
+
+# 显示当前工作目录
+pwd
+
+# 改变目录
+cd
+
+# 列出文件和目录
+ls
+	ls -a 显示隐藏文件
+	ls -l 显示长列表格式
+	ls -al
+
+# 建立目录
+mkdir
+
+# 删除空目录
+rmdir
+
+# 建立空文件
+touch
+
+# 添加组
+groupadd policeman
+
+# 查看linux中所有阻信息
+vim /etc/group
+cat /etc/group
+
+# 创建用户并同时指定所属组
+useradd -g 组名 用户名
+
+# 查看linux中所有用户信息
+cat /etc/passwd
+
+# 修改权限命令
+chmod 777 文件名
+
+# 改变某个用户所在组
+usermod -g 组名 用户名
+
+# 查看linux系统分区情况
+fdisk -l
+	IDE硬盘驱动器标识符为: hdx~  hd表明分区所在设备的类型这是指IDE硬盘。x为盘号  a为基本盘,b为基本丛属盘,c为辅助主盘,d为辅助丛属盘;~代表分区,前4个分区用数字1-4表示,它们是主分区或扩张分区,从5开始就是逻辑分区。
+	SCSI硬盘驱动器标识符为: sd
+
+# 查看某个目录是在哪个分区
+df 目录路径
+
+# 查看磁盘使用情况
+df -h

@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <title>ECMAScripit 6</title>
+    <style type="text/css">
+        .red{
+            color:red;
+        }
+    </style>
+
+    <!-- Bootstrap
+    <link href="css/bootstrap.min.css" rel="stylesheet"> -->
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+  </head>
+  <body>
+    <h1>你好，ECMAScripit 6！</h1>
+    <ul>
+		<li>ES6 的块级作用域允许声明函数的规则，只在使用大括号的情况下成立，如果没有使用大括号，就会报错。</li>
+		<li>如果真的想将对象冻结，应该使用const foo = Object.freeze({});方法。</li>
+		<li>顶层对象，在浏览器环境指的是window对象，在 Node 指的是global对象。</li>
+    	<li>对象的解构赋值的内部机制，是先找到同名属性,然后再赋值给对应的变量。真正被赋值的是后者而不是前者。</li>
+    	<li>解构赋值时,如果等号右边是数值或布尔值,则会先转为对象。由于undefined和null无法转为对象，所以对它们进行解构赋值，都会报错。可以使用圆括号的情况只有一种：<b>赋值语句</b>的非模式部分，可以使用圆括号。</li>
+    	<li>任何部署了 Iterator 接口的对象，都可以用for...of循环遍历。Map 结构原生支持 Iterator 接口，配合变量的解构赋值，获取键名和键值就非常方便。</li>
+    	<li>// 获取键名
+			for (let [key] of map) {
+			  
+			}
+		
+			// 获取键值
+			for (let [,value] of map) {
+			  
+			}
+		</li>
+    	<li>"𠮷".length=2</li>
+    	<li>ES6 提供字符串实例的normalize()方法，用来将字符的不同表示方法统一为同样的形式，这称为 Unicode 正规化。</li>
+    	<li>模板字符串中嵌入变量，需要将变量名写在${}之中。</li>
+    	<li>isFinite()和isNaN()只对数值有效;Number.isFinite()对于非数值一律返回false, Number.isNaN()只有对于NaN才返回true，非NaN一律返回false。</li>
+    	<li>
+         有四个操作会忽略enumerable为false的属性<br/>
+            --for...in循环：只遍历对象自身的和<font class="red">继承</font>的可枚举的属性。<br/>
+--Object.keys()：返回对象自身的所有可枚举的属性的键名。<br/>
+--JSON.stringify()：只串行化对象自身的可枚举的属性。<br/>
+--Object.assign()： 忽略enumerable为false的属性，只拷贝对象自身的可枚举的属性。
+        </li>
+    	<li>ES6 规定，所有 Class 的原型的方法都是不可枚举的。</li>
+    	<li>1. for...in循环遍历对象自身的和继承的可枚举属性（不含 Symbol 属性）</li>
+        <li>2. Object.keys返回一个数组，包括对象自身的（不含继承的）所有可枚举属性（不含 Symbol 属性）的键名。</li>
+        <li>3. Object.getOwnPropertyNames返回一个数组，包含对象自身的所有属性（不含 Symbol 属性，但是包括不可枚举属性）的键名。</li>
+        <li>4. Object.getOwnPropertySymbols返回一个数组，包含对象自身的所有 Symbol 属性的键名。</li>
+        <li>5. Reflect.ownKeys返回一个数组，包含对象自身的所有键名，不管键名是 Symbol 或字符串，也不管是否可枚举。</li>
+        <li>以上的 5 种方法遍历对象的键名，都遵守同样的属性遍历的次序规则。<br/>
+
+首先遍历所有数值键，按照数值升序排列。<br/>
+其次遍历所有字符串键，按照加入时间升序排列。<br/>
+最后遍历所有 Symbol 键，按照加入时间升序排列。</li>
+        <li>目前，只有对象方法的简写法可以让 JavaScript 引擎确认，定义的是对象的方法并使用super</li>
+        <li>JavaScript 引擎内部，super.foo等同于Object.getPrototypeOf(this).foo（属性）或Object.getPrototypeOf(this).foo.call(this)（方法）。</li>
+        <li>Object.values方法返回一个数组，成员是参数对象自身的（不含继承的）所有可遍历（enumerable）属性的键值。</li>
+        <li>Object.values会过滤属性名为 Symbol 值的属性。Object.values({ [Symbol()]: 123, foo: 'abc' });</li>
+        <li>Symbol 值作为属性名时，该属性还是公开属性，不是私有属性。</li>
+        <li>Set 结构的实例默认可遍历，它的默认遍历器生成函数就是它的values方法。Set.prototype[Symbol.iterator] === Set.prototype.values</li>
+        <li>Set 结构的实例与数组一样，也拥有forEach方法，用于对每个成员执行某种操作，没有返回值。该函数的参数与数组的forEach一致，依次为键值、键名、集合本身。这里需要注意，Set 结构的键名就是键值（两者是同一个值），因此第一个参数与第二个参数的值永远都是一样的。另外，forEach方法还可以有第二个参数，表示绑定处理函数内部的this对象。</li>
+        <li>WeakSet 没有size属性，没有办法遍历它的成员。</li>
+        <li>WeakMap 弱引用的只是<font class="red">键名</font>，而不是键值。键值依然是正常引用。</li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+    </ul>
+	<div id="myDiv"></div>
+    
+    <!-- Include all compiled plugins (below), or include individual files as needed
+    <script src="js/bootstrap.min.js"></script> -->
+    <script type=" text/javascript">
+    	//jQuery(document).ready(function($) {
+    	//	
+    	//});
+    	//"use strict"
+    	//const {SourceMapConsumer, SourceNode} = require("source-map");
+        
+        const wm = new WeakMap();
+        l(wm.size);
+        l(wm.forEach);
+        l(wm.clear);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    	function l(args){
+    		console.log(args);
+    	}
+
+        // ES5 部署Number.isFinite方法
+        (function(){
+            var global = global || window;
+            var global_isFinite = global.isFinite;
+            Object.defineProperty(Number, 'isFinite', {
+                value: function isFinite(value){
+                    return typeof value === "number" &&
+                    global_isFinite(value);
+                },
+                configurable: true,
+                enumerable: false,
+                writable: true
+            });
+
+            var global_isNaN = global.isNaN;
+            Object.defineProperty(Number, 'isNaN', {
+                value: function isNaN(value){
+                    return typeof value === 'number' && global_isNaN(value);
+                },
+                configurable: true,
+                enumerable: false,
+                writable: true
+            });
+
+            var floor = Math.floor,
+                isFinite = global.isFinite;
+            Object.defineProperty(Number, "isInteger", {
+                value: function isInteger(value){
+                    return typeof value === 'number' && isFinite(value) &&  floor(value) === value;
+                },
+                configurable: true,
+                enumerable: false,
+                writable: true
+            });
+
+            Object.defineProperty(Object, "is", {
+            value: function(x, y){
+                if(x === y){
+                    // 针对+0不等-0的情况
+                    return x !== 0 || 1/x === 1/y;
+                }
+
+                return x !== x && y!==y;
+            },
+            configurable: true,
+            enumerable: false,
+            writable: true
+        });
+        }(this));
+
+        function strMapToJson(strMap){
+            return JSON.stringify(strMapToObj(strMap));
+        }
+
+        function mapToArrayJson(map){
+            return JSON.stringify([...map]);
+        }
+
+        function jsonToStrMap(jsonStr){
+            return objToStrMap(JSON.parse(jsonStr));
+        }
+
+        function jsonToMap(jsonStr){
+            return new Map(JSON.parse(jsonStr));
+        }
+
+        function strMapToObj(strMap){
+            let obj = Object.create(null);
+            for(let [k,v] of strMap){
+                obj[k]=v;
+            }
+
+            return obj;
+        }
+
+        function objToStrMap(obj){
+            let strMap = new Map();
+            for(let k of Object.keys(obj)){
+                strMap.set(k, obj[k]);
+            }
+
+            return strMap;
+        }
+
+        // Generator函数版本
+        function* entries(obj){
+            for(let key of Object.keys(obj)){
+                yield [key, obj[key]];
+            }
+        }
+        // 非Generator函数版本
+        function entries(obj){
+            let arr = [];
+            for(let key of Object.keys(obj)){
+                arr.push([key, obj[key]]);
+            }
+
+            return arr;
+        }
+
+        // 判断正负数
+        Math.sign = Math.sign || function(value){
+            value = +value;
+            if(value === 0 || isNaN(value)){
+                return value;
+            }
+
+            return value > 0 ? 1 : -1;
+        }
+
+        // 去掉小数
+        Math.trunc = Math.trunc || function(value){
+            return value < 0 ? Math.ceil(value) : Math.floor(value);
+        };
+
+        // 立方根
+        Math.cbrt = Math.cbrt || function(value){
+            var y = Math.pow(Math.abs(value), 1/3);
+            return value < 0 ? -y : y;
+        };
+
+        // 返回一个数的单精度浮点数形式
+        Math.fround = Math.fround || function(value){
+            return new Float32Array([value])[0];
+        };
+
+        Math.expm1 = Math.expm1 || function(value){
+            return Math.exp(value) - 1;
+        };
+
+        Math.log1p = Math.log1p || function(value){
+            return Math.log(1 + value);
+        };
+
+        Math.log10 = Math.log10 || function(value){
+            return Math.log(value) / Math.LN10;
+        };
+
+        Math.log2 = Math.log2 || function(value){
+            return Math.log(value) / Math.LN2;
+        };
+
+        Object.defineProperty(Object.prototype, '_proto_', {
+            get(){
+                let _thisObj = Object(this);
+                return Object.getPrototypeOf(_thisObj);
+            },
+            set(proto){
+                if(this === undefined || this === null){
+                    throw new TypeError();
+                }
+                if(!isObject(this)){
+                    return undefined;
+                }
+                if(!isObject(proto)){
+                    return undefined;
+                }
+                let status = Reflect.setPrototypeOf(this, proto);
+                if(!status){
+                    throw new TypeError();
+                }
+            }
+        });
+
+        // 数组元素去重
+        function dedupe(array){
+            return Array.from(new Set(array));
+        }
+
+        function isObject(value){
+            return Object(value) === value;
+        }
+
+        function getOwnPropertyDescriptors(obj){
+            const result = {};
+            for(let key of Reflect.ownKeys(obj)){
+                result[key] = Object.getOwnPropertyDescriptor(obj, key);
+            }
+
+            return result;
+        }
+
+        function clone(origin){
+            let originProto = Object.getPrototypeOf(origin);
+            return Object.assign(Object.create(originProto), origin);
+        }
+
+        function trusty(left, right, result){
+            if(Number.isSafeInteger(left) && Number.isSafeInteger(right) && Number.isSafeInteger(result)){
+                return result;
+            }
+
+            throw new RangeError("Operation cannot be trusted!");
+        }
+
+        function isSafeInteger(n){
+            return (typeof n === 'number' && Math.round(n) === n && Number.MIN_SAFE_INTEGER <= n && n<= Number.MAX_SAFE_INTEGER);
+        }
+
+        // 是否在误差范围之内
+        function withinErrorMargin(left, right){
+            return Math.abs(left - right) < Number.EPSILON * Math.pow(2, 2);
+        }
+
+    	function tokenize(TOKEN_REGEX, str){
+    		let result = [];
+    		let match;
+    		while(match=TOKEN_REGEX.exec(str)){
+    			result.push(match[1]);
+    		}
+
+    		return result;
+    	}
+
+    	function codePointLength(text){
+    		var result = text.match(/[\s\S]/gu);
+    		return result ? result.length : 0;
+    	}
+
+    	function safeHtml(templateData){
+    		let s = templateData[0];
+    		console.log(templateData);
+    		for(let i=1;i<arguments.length;i++){
+    			let arg = String(arguments[i]);
+
+    			// Escape special characters in the substitutioin.
+    			s+= arg.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    			// Don't escape specila characters in the template
+    			s+=templateData[i];
+    		}
+
+    		return s;
+    	}
+
+    	// 试一个字符由两个字节还是由四个字节组成
+    	function is32Bit(c){
+    		return c.codePointAt(0) > 0xFFFF;
+    	}
+
+    	// Generator函数
+    	function* fibs(){
+    		let a=0;
+    		let b=1;
+    		while(true){
+    			yield a;
+    			[a, b] = [b, a+b];
+    		}
+    	}
+
+    	// 将对象彻底冻结的函数
+    	var constantize=(obj)=>{
+    		Object.freeze(obj);
+    		Object.keys(obj).forEach((key, i) => {
+    			if(typeof obj[key] === "object"){
+    				constantize(obj[key]);
+    			}
+    		});
+    	};
+
+    	var getGlobal1 = function(){
+    		return (typeof window !== "undefined" ? window : (typeof process === "object" && typeof require === "function" && typeof global === "object") ? global : this);
+    	};
+
+    	var getGlobal2 = function(){
+    		if(typeof self !== "undefined") { return self; }
+    		if(typeof window !== "undefined") { return window; }
+    		if(typeof global !== "undefined") {return global; }
+    		throw new Error("unable to locate global object");
+    	};
+    </script>
+  </body>
+</html>
