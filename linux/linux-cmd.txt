@@ -8,6 +8,12 @@ passwd xiao
 userdel xiaoming
 userdel -r xiaoming
 
+# 桌面和命令行模式互相切换
+ctrl + alt + F(1~6)
+
+# 将当前窗口切换成图形化界面
+startx
+
 # 显示当前工作目录
 pwd
 
@@ -61,3 +67,6 @@ df -h
 
 # 查看启动的进程
 ps aux | grep nginx
+
+# 查看目前使用的是哪种shell
+  env  该命令显示当前操作系统的环境变量
