@@ -70,3 +70,15 @@ ps aux | grep nginx
 
 # 查看目前使用的是哪种shell
   env  该命令显示当前操作系统的环境变量
+ 
+# 以后台的方式启动eclipse
+./eclipse &
+
+# 显示最近使用的5个命令
+history 5
+
+# 执行历史编号为5的命令
+!5
+
+# 执行最后一次以ls开头的命令
+!ls

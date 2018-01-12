@@ -1,26 +1,52 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-Hans">
   <head>
     <meta charset="utf-8">
+    <!-- 渲染偏好: 针对 IE 浏览器 -->
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <!-- 设置 viewport 的宽度为设备宽度，默认缩放比为 1（允许用户缩放），设置 viewport-fit=cover 以兼容 iPhone X 全面屏“刘海”的显示 -->
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+    <!-- DNS 预读取是一项使浏览器主动去执行域名解析的功能，其范围包括当前文档内的所有链接，这能够减少用户点击链接时的延迟 -->
+    <meta http-equiv="x-dns-prefetch-control" content="on">
+    <link rel="dns-prefetch" href="//www.google-analytics.com">
+    <link rel="dns-prefetch" href="//fonts.googleapis.com">
+    <!-- 指示浏览器预先请求当前页面所需要的关键性资源 -->
+    <link rel="preload" href="/css/main.css" as="style">
+    <link rel="preload" href="/js/main.js" as="script">
+    <!-- 指示浏览器预先请求用户即将浏览页面所需要的关键性资源 -->
+    <link rel="prefetch" href="/img/css-sprite.png">
+    <link rel="prefetch" href="/fonts/icons.woff2">
+    <!-- 渲染偏好: 用在360中 -->
+    <meta name="renderer" content="webkit">
+    <!-- 渲染偏好: 用在其它 -->
+    <meta name="force-rendering" content="webkit">   
+    <!-- 渲染偏好: 针对百度搜索 -->
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <!-- 渲染偏好: 指示浏览器对类似电话、邮箱或地址的内容不要自作聪明的瞎识别（移动端） -->
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="author" content="米老朱">
+    <meta name="description" content="米老朱的个人博客">
+    <meta name="keywords" content="米老朱,极客,博客,WEB,开发,产品设计">
+    <meta name="generator" content="Hugo 0.32">
+    <!-- 设置 robots 为 index,follow 指示搜索引擎爬虫该页面需要进入索引，并且页面内的所有链接都要继续跟踪 -->
+    <meta name="robots" content="index,follow">
+    <!-- 设置 referrer 为 origin-when-cross-origin 指示浏览器在进行跨域跳转时，其 referrer 值将统一为域名，而非具体的 URL 地址 -->
+    <meta name="referrer" content="origin-when-cross-origin">
+    
     <title>ECMAScripit 6</title>
+
     <style type="text/css">
         .red{
             color:red;
         }
     </style>
-
-    <!-- Bootstrap
-    <link href="css/bootstrap.min.css" rel="stylesheet"> -->
-
-    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    
+    <!-- 让 IE6-IE8 浏览器能够使用 HTML5 标签和 Media Query 特性，我们需要引入 html5shiv 和 response.js 这两个库 -->
     <!--[if lt IE 9]>
-      <script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-      <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <script src="//cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
+
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
   </head>
