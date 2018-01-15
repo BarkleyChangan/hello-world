@@ -82,3 +82,9 @@ history 5
 
 # 执行最后一次以ls开头的命令
 !ls
+
+# 查看ip情况
+ifconfig
+
+# 清空日志文件
+cat /dev/null > catalina.out

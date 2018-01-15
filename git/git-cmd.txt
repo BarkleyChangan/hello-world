@@ -308,6 +308,9 @@ git bisect start
 git bisect bad
 git bisect good v1.0
 git bisect reset
+
+# 显示每一个文件中每一行代码的作者
+git blame [file_name]
 ***************** 查看状态信息 *****************
 
 ***************** 标签 *****************

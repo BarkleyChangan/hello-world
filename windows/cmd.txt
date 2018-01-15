@@ -4,3 +4,9 @@ netstat -aon|findstr "8080"
 tasklist|findstr "1904"
 # 杀掉进程
 taskfill /f /t /im Tencentdl.exe
+# 追踪路由
+tracert 目标ip/域名
+# 测试两个ip是否畅通
+ping 目标ip
+# 查看ip情况
+ipconfig
