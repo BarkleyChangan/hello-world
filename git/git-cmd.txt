@@ -47,7 +47,7 @@ git commit
 git commit -m "Story 182: Fix benchmarks for speed"
 
 # 把所有已经跟踪过的文件暂存起来一并提交，从而跳过git add步骤
-git commit -a -m 'added new benchmarks'
+git commit -am 'added new benchmarks'
 
 # 有时候我们提交完了才发现漏掉了几个文件没有添加，或者提交信息写错了。 此时，可以运行带有 --amend 选项的提交命令尝试重新提交。使用--amend选项的提交会与最后一次提交进行合并生成一个新的提交，之前的提交会被废弃掉。
 git commit --amend
@@ -57,6 +57,7 @@ git remote add origin https://github.com/paulboone/ticgit
 
 # 推送到远程仓库git push [remote-name] [branch-name]
 git push origin master
+git push -u origin master -u参数可以在推送的同时,将origin仓库的master分支设置为本地仓库当前分支的上游upstream。添加了这个参数,将来运行git pull命令从远程仓库获取内容时,本地仓库的这个分支就可以直接从origin的master分支获取内容,省去了另外添加参数的麻烦
 
 # 创建本地work分支的远程分支
 git push [remote-name] [branch-name]

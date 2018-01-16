@@ -88,3 +88,21 @@ ifconfig
 
 # 清空日志文件
 cat /dev/null > catalina.out
+
+# 查询linux中安装了那些rpm软件
+rpm -qa
+rpm -q mysql
+
+# 安装rpm包
+rpm -i RPM包全路径名称
+rpm -ivh RPM包全路径名称
+    i=install 安装
+    v=verbose 提示
+    h=hash    进度条
+
+# 卸载rpm包
+rpm -e RPM包名称
+rpm -e --nodeps RPM包名称
+
+# 升级rpm包
+rpm -U RPM包全路径名称
