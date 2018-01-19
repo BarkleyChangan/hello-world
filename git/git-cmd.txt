@@ -1,4 +1,15 @@
 ***************** 初始化配置 *****************
+https://github.com/github/gitignore
+
+# 系统级配置(默认位置为C:\Program Files\Git\mingw64\etc\gitconfig)
+git config --edit --system
+
+# 用户级别配置:global为当前用户的全局配置文件(C:\Users\{你的用户名}\.gitconfig)
+git config --edit --global
+
+# 存储库级别配置
+git config --edit
+
 # 初次运行-git前的配置
 git config --global user.name "John Doe"
 git config --global user.email "johndoe@example.com"
@@ -6,6 +17,11 @@ git config --global color.ui auto
 
 # Git可以在你提交时自动地把行结束符CRLF转换成LF，而在签出代码时把LF转换成CRLF。
 git config --global core.autocrlf true
+
+# 如果你使用TFS作为Git服务器，那么还需要另外执行以下3个命令以便Git Credential Manager 可以正常工作
+git config --global credential.helper manager
+git config --global credential.modalprompt true
+git config --global credential.{你的TFS服务器地址}.authority Basic
 
 # 生成SSH
 ssh-keygen -t rsa -C "johndoe@example.com"
@@ -67,6 +83,9 @@ git push origin serverfix:awesomebranch
 
 # 要把该远程分支的内容合并到当前分支
 git merge origin/serverfix
+
+# 放弃本次合并
+git merge --abort
 
 # 提交前的检查,会把可能多余白字符修正出来
 git diff --check
@@ -183,6 +202,7 @@ git branch -d hotfix
 
 # 删除远程分支
 git push origin :serverfix
+git push origin --delete <分支名>
 
 # 切换到新建的 serverfix 本地分支，其内容同远程分支 origin/serverfix 一致
 git checkout -b serverfix origin/serverfix
@@ -269,7 +289,7 @@ git remote show [remote-name]
 # 显示本地仓库和远程仓库的信息
 git branch -a
 
-# 调用图形界面的工具解决冲突
+# 调用图形界面的工具解决冲突(然后根据提示输入opendiff)
 git mergetool
 
 # 查看各个分支最后一个提交对象的信息

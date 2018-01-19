@@ -1,54 +1,54 @@
-# ÊÖ¶¯·ÖÇø
-1. ·ÖÇø
-/boot£º1024mb	±ê×¼·ÖÇø¸ñÊ½
-swap£º 4096mb	±ê×¼·ÖÇø¸ñÊ½
-/£º    Ê£ÓàËùÓÐ¿Õ¼ä	²ÉÓÃlvm¾í×é¸ñÊ½
+# æ‰‹åŠ¨åˆ†åŒº
+1. åˆ†åŒº
+/bootï¼š1024mb	æ ‡å‡†åˆ†åŒºæ ¼å¼
+swapï¼š 4096mb	æ ‡å‡†åˆ†åŒºæ ¼å¼
+/ï¼š    å‰©ä½™æ‰€æœ‰ç©ºé—´	é‡‡ç”¨lvmå·ç»„æ ¼å¼
 
-2. ·ÖÇø(40G)
+2. åˆ†åŒº(40G)
 /boot 1024mb
 /     20G
 /home 10G
 /swap 2048mb
-/var  Ê£Óà¿Õ¼ä
+/var  å‰©ä½™ç©ºé—´
 
-3. ·ÖÇø(40G)
-/biosboot: 2048Kib ±ê×¼·ÖÇø¸ñÊ½
-/boot£º1024mb      ±ê×¼·ÖÇø¸ñÊ½ xfs
-/home: 5G          LVM ·½Ê½		xfs
-/swap£º2048mb      LVM ·½Ê½     swap
-/:     10G         LVM ·½Ê½     xfs
+3. åˆ†åŒº(40G)
+/biosboot: 2048Kib æ ‡å‡†åˆ†åŒºæ ¼å¼
+/bootï¼š1024mb      æ ‡å‡†åˆ†åŒºæ ¼å¼ xfs
+/home: 5G          LVM æ–¹å¼		xfs
+/swapï¼š2048mb      LVM æ–¹å¼     swap
+/:     10G         LVM æ–¹å¼     xfs
 
 
-# ´¦ÀíÆ÷ÅäÖÃ
-¡°´¦ÀíÆ÷ÊýÁ¿¡±±íÊ¾ÐéÄâ»úÊ¹ÓÃµÄCPU¸öÊý£¬Ò»°ãÊÇ1¸ö£»
-¡°Ã¿¸ö´¦ÀíÆ÷µÄºËÐÄÊýÁ¿¡±±íÊ¾ÐéÄâ»úÊ¹ÓÃµÄCPUÊÇ¼¸ºËµÄ£»
-ÉÏÃæÕâÁ½¸ö²ÎÊýÇë¸ù¾ÝÄãµÄÎïÀí»úÊµ¼ÊÇé¿ö½øÐÐÑ¡Ôñ£¬Èç¹ûÉèÖÃ²»ÕýÈ·»áÔì³ÉÐéÄâ»ú¿¨¶Ù¡¢ËÀ»ú£¬ÎÒÃÇ¿ÉÒÔÊ¹ÓÃÄ¬ÈÏ²ÎÊý£»
+# å¤„ç†å™¨é…ç½®
+â€œå¤„ç†å™¨æ•°é‡â€è¡¨ç¤ºè™šæ‹Ÿæœºä½¿ç”¨çš„CPUä¸ªæ•°ï¼Œä¸€èˆ¬æ˜¯1ä¸ªï¼›
+â€œæ¯ä¸ªå¤„ç†å™¨çš„æ ¸å¿ƒæ•°é‡â€è¡¨ç¤ºè™šæ‹Ÿæœºä½¿ç”¨çš„CPUæ˜¯å‡ æ ¸çš„ï¼›
+ä¸Šé¢è¿™ä¸¤ä¸ªå‚æ•°è¯·æ ¹æ®ä½ çš„ç‰©ç†æœºå®žé™…æƒ…å†µè¿›è¡Œé€‰æ‹©ï¼Œå¦‚æžœè®¾ç½®ä¸æ­£ç¡®ä¼šé€ æˆè™šæ‹Ÿæœºå¡é¡¿ã€æ­»æœºï¼Œæˆ‘ä»¬å¯ä»¥ä½¿ç”¨é»˜è®¤å‚æ•°ï¼›
 
-# Ñ¡ÔñÍøÂçÁ¬½ÓÀàÐÍ£¬ÕâÀïÑ¡Ôñ¡°Ê¹ÓÃÇÅ½ÓÍøÂç¡±£¬¸÷Î»°²×°ÐéÄâ»ú¹ý³Ì¸ù¾ÝÐèÒª×ÔÐÐÑ¡Ôñ£¬°²×°Ïòµ¼ÖÐÒÑ¾­Õë¶Ô¸÷ÖÖÄ£Ê½½øÐÐÁË±È½Ï¹æ·¶µÄËµÃ÷£¬ÕâÀï²¹³äËµÃ÷ÈçÏÂ£º
-1£©Ê¹ÓÃÇÅ½ÓÍøÂç£ºÐéÄâ»úipÓë±¾»úÔÚÍ¬Ò»Íø¶Î£¬±¾»úÓëÐéÄâ»ú¿ÉÒÔÍ¨¹ýip»¥Í¨£¬±¾»úÁªÍø×´Ì¬ÏÂÐéÄâ»ú¼´¿ÉÁªÍø£¬Í¬Ê±ÐéÄâ»úÓë±¾Íø¶ÎÄÚÆäËûÖ÷»ú¿ÉÒÔ»¥Í¨£¬ÕâÖÖÄ£Ê½³£ÓÃÓÚ·þÎñÆ÷»·¾³¼Ü¹¹ÖÐ¡£
-2£©Ê¹ÓÃÍøÂçµØÖ·×ª»»£¨NAT£©£ºÐéÄâ»ú¿ÉÒÔÁªÍø£¬Óë±¾»ú»¥Í¨£¬Óë±¾»úÍø¶ÎÄÚÆäËûÖ÷»ú²»Í¨¡£
-3£©Ê¹ÓÃ½öÖ÷»úÄ£Ê½ÍøÂç£ºÐéÄâ»ú²»ÄÜÁªÍø£¬Óë±¾»ú»¥Í¨£¬Óë±¾»úÍø¶ÎÄÚÆäËûÖ÷»ú²»Í¨¡£
+# é€‰æ‹©ç½‘ç»œè¿žæŽ¥ç±»åž‹ï¼Œè¿™é‡Œé€‰æ‹©â€œä½¿ç”¨æ¡¥æŽ¥ç½‘ç»œâ€ï¼Œå„ä½å®‰è£…è™šæ‹Ÿæœºè¿‡ç¨‹æ ¹æ®éœ€è¦è‡ªè¡Œé€‰æ‹©ï¼Œå®‰è£…å‘å¯¼ä¸­å·²ç»é’ˆå¯¹å„ç§æ¨¡å¼è¿›è¡Œäº†æ¯”è¾ƒè§„èŒƒçš„è¯´æ˜Žï¼Œè¿™é‡Œè¡¥å……è¯´æ˜Žå¦‚ä¸‹ï¼š
+1ï¼‰ä½¿ç”¨æ¡¥æŽ¥ç½‘ç»œï¼šè™šæ‹Ÿæœºipä¸Žæœ¬æœºåœ¨åŒä¸€ç½‘æ®µï¼Œæœ¬æœºä¸Žè™šæ‹Ÿæœºå¯ä»¥é€šè¿‡ipäº’é€šï¼Œæœ¬æœºè”ç½‘çŠ¶æ€ä¸‹è™šæ‹Ÿæœºå³å¯è”ç½‘ï¼ŒåŒæ—¶è™šæ‹Ÿæœºä¸Žæœ¬ç½‘æ®µå†…å…¶ä»–ä¸»æœºå¯ä»¥äº’é€šï¼Œè¿™ç§æ¨¡å¼å¸¸ç”¨äºŽæœåŠ¡å™¨çŽ¯å¢ƒæž¶æž„ä¸­ã€‚
+2ï¼‰ä½¿ç”¨ç½‘ç»œåœ°å€è½¬æ¢ï¼ˆNATï¼‰ï¼šè™šæ‹Ÿæœºå¯ä»¥è”ç½‘ï¼Œä¸Žæœ¬æœºäº’é€šï¼Œä¸Žæœ¬æœºç½‘æ®µå†…å…¶ä»–ä¸»æœºä¸é€šã€‚
+3ï¼‰ä½¿ç”¨ä»…ä¸»æœºæ¨¡å¼ç½‘ç»œï¼šè™šæ‹Ÿæœºä¸èƒ½è”ç½‘ï¼Œä¸Žæœ¬æœºäº’é€šï¼Œä¸Žæœ¬æœºç½‘æ®µå†…å…¶ä»–ä¸»æœºä¸é€šã€‚
 
-# Éè±¸ÀàÐÍ
-±ê×¼·Ö¸îÇø£º¾ÍÊÇÎÒÃÇÒ»Ö±Ì¸µÄ·Ö¸î²Û°¡£¡ÀàËÆ/dev/vda1Ö®ÀàµÄ·Ö¸î¾ÍÊÇÁË¡£
-LVM£º       ÕâÊÇÒ»ÖÖ¿ÉÒÔµ¯ÐÔÔö¼Ó/Ï÷¼õµµ°¸ÏµÍ³ÈÝÁ¿µÄ×°ÖÃÉè¶¨£¬ÎÒÃÇ»áÔÚºóÃæµÄÕÂ½Ú³ÖÐø½éÉÜLVMÕâ¸öÓÐÈ¤µÄ¶«Î÷£¡
-LVM½ôÕÅ¹©Ó¦£ºÕâ¸öÃû´Ê·­ÒëµÄ³¬Ææ¹ÖµÄ£¡ÆäÊµÕâ¸öÊÇLVMµÄ½ø½×°æ£¡Óë´«Í³LVMÖ±½Ó·ÖÅä¹Ì¶¨µÄÈÝÁ¿²»Í¬£¬Õâ¸ö¡º LVM½ôÕÅ¹©Ó¦¡»µÄÏîÄ¿£¬¿ÉÒÔÈÃÄãÔÚÊ¹ÓÃ¶àÉÙÈÝÁ¿²Å·ÖÅä´Åµú¶àÉÙÈÝÁ¿¸øÄã£¬ËùÒÔÈç¹ûLVM×°ÖÃÄÚµÄ×ÊÁÏÁ¿½ÏÉÙ£¬ÄÇÃ´ÄãµÄ´ÅµúÆäÊµ»¹¿ÉÒÔ×÷¸ü¶àµÄ×ÊÁÏ´¢´æ£¡¶ø²»»á±»Æ½°×ÎÞ¹ÊµÄÕ¼ÓÃ£¡Õâ²¿·ÝÎÒÃÇÒ²ÔÚºóÐøÌ¸µ½LVMµÄÊ±ºòÔÙÀ´Ç¿µ÷£¡
+# è®¾å¤‡ç±»åž‹
+æ ‡å‡†åˆ†å‰²åŒºï¼šå°±æ˜¯æˆ‘ä»¬ä¸€ç›´è°ˆçš„åˆ†å‰²æ§½å•Šï¼ç±»ä¼¼/dev/vda1ä¹‹ç±»çš„åˆ†å‰²å°±æ˜¯äº†ã€‚
+LVMï¼š       è¿™æ˜¯ä¸€ç§å¯ä»¥å¼¹æ€§å¢žåŠ /å‰Šå‡æ¡£æ¡ˆç³»ç»Ÿå®¹é‡çš„è£…ç½®è®¾å®šï¼Œæˆ‘ä»¬ä¼šåœ¨åŽé¢çš„ç« èŠ‚æŒç»­ä»‹ç»LVMè¿™ä¸ªæœ‰è¶£çš„ä¸œè¥¿ï¼
+LVMç´§å¼ ä¾›åº”ï¼šè¿™ä¸ªåè¯ç¿»è¯‘çš„è¶…å¥‡æ€ªçš„ï¼å…¶å®žè¿™ä¸ªæ˜¯LVMçš„è¿›é˜¶ç‰ˆï¼ä¸Žä¼ ç»ŸLVMç›´æŽ¥åˆ†é…å›ºå®šçš„å®¹é‡ä¸åŒï¼Œè¿™ä¸ªã€Ž LVMç´§å¼ ä¾›åº”ã€çš„é¡¹ç›®ï¼Œå¯ä»¥è®©ä½ åœ¨ä½¿ç”¨å¤šå°‘å®¹é‡æ‰åˆ†é…ç£ç¢Ÿå¤šå°‘å®¹é‡ç»™ä½ ï¼Œæ‰€ä»¥å¦‚æžœLVMè£…ç½®å†…çš„èµ„æ–™é‡è¾ƒå°‘ï¼Œé‚£ä¹ˆä½ çš„ç£ç¢Ÿå…¶å®žè¿˜å¯ä»¥ä½œæ›´å¤šçš„èµ„æ–™å‚¨å­˜ï¼è€Œä¸ä¼šè¢«å¹³ç™½æ— æ•…çš„å ç”¨ï¼è¿™éƒ¨ä»½æˆ‘ä»¬ä¹Ÿåœ¨åŽç»­è°ˆåˆ°LVMçš„æ—¶å€™å†æ¥å¼ºè°ƒï¼
 
-# ÎÄ¼þÏµÍ³ÀàÐÍ
-ext2/ext3/ext4£ºLinuxÔçÆÚÊÊÓÃµÄµµ°¸ÏµÍ³ÀàÐÍ¡£ÓÉÓÚext3/ext4µµ°¸ÏµÍ³¶àÁËÈÕÖ¾µÄ¼ÇÂ¼£¬¶ÔÓÚÏµÍ³µÄ¸´Ô­±È½Ï¿ìËÙ¡£²»¹ýÓÉÓÚ´ÅµúÈÝÁ¿Ô½À´Ô½´ó£¬ext¼Ò×åËÆºõÓÐµãµ²²»×¡ÁË¡«ËùÒÔ³ý·ÇÄãÓÐÌØÊâµÄÉè¶¨ÐèÇó£¬·ñÔò½üÀ´±È½ÏÉÙÊ¹ÓÃext4ÏîÄ¿ÁË£¡
-swap£º¾ÍÊÇ´ÅµúÄ£Äâ³ÉÎª¼ÇÒäÌå£¬ÓÉÓÚswap²¢²»»áÊ¹ÓÃµ½Ä¿Â¼Ê÷µÄ¹ÒÔØ£¬ËùÒÔÓÃswap¾Í²»ÐèÒªÖ¸¶¨¹ÒÔØµãà¸¡£
-BIOS Boot£º¾ÍÊÇGPT·Ö¸î±í¿ÉÄÜ»áÊ¹ÓÃµ½µÄÏîÄ¿£¬ÈôÄãÊ¹ÓÃMBR·Ö¸î£¬ÄÇ¾Í²»ÐèÒªÕâ¸öÏîÄ¿ÁË£¡
-xfs£ºÕâ¸öÊÇÄ¿Ç°CentOSÔ¤ÉèµÄµµ°¸ÏµÍ³£¬×îÔçÊÇÓÉ´óÐÍËÅ·þÆ÷Ëù¿ª·¢³öÀ´µÄ£¡Ëû¶ÔÓÚ´óÈÝÁ¿µÄ´Åµú¹ÜÀí·Ç³£ºÃ£¬¶øÇÒ¸ñÊ½»¯µÄÊ±ºòËÙ¶ÈÏàµ±¿ì£¬ºÜÊÊºÏµ±½ñ¶¯²»¶¯¾ÍÊÇºÃ¼¸¸öTBµÄ´ÅµúµÄ»·¾³à¸£¡Òò´ËÎÒÃÇÖ÷ÒªÓÃÕâÍæÒâ¶ù£¡
-vfat£ºÍ¬Ê±±»LinuxÓëWindowsËùÖ§Ô®µÄµµ°¸ÏµÍ³ÀàÐÍ¡£Èç¹ûÄãµÄÖ÷»úÓ²µúÄÚÍ¬Ê±´æÔÚWindowsÓëLinux×÷ÒµÏµÍ³£¬ÎªÁË×ÊÁÏµÄ½»»»£¬È·Êµ¿ÉÒÔ½¨ÖÃÒ»¸övfatµÄµµ°¸ÏµÍ³à¸£¡
+# æ–‡ä»¶ç³»ç»Ÿç±»åž‹
+ext2/ext3/ext4ï¼šLinuxæ—©æœŸé€‚ç”¨çš„æ¡£æ¡ˆç³»ç»Ÿç±»åž‹ã€‚ç”±äºŽext3/ext4æ¡£æ¡ˆç³»ç»Ÿå¤šäº†æ—¥å¿—çš„è®°å½•ï¼Œå¯¹äºŽç³»ç»Ÿçš„å¤åŽŸæ¯”è¾ƒå¿«é€Ÿã€‚ä¸è¿‡ç”±äºŽç£ç¢Ÿå®¹é‡è¶Šæ¥è¶Šå¤§ï¼Œextå®¶æ—ä¼¼ä¹Žæœ‰ç‚¹æŒ¡ä¸ä½äº†ï½žæ‰€ä»¥é™¤éžä½ æœ‰ç‰¹æ®Šçš„è®¾å®šéœ€æ±‚ï¼Œå¦åˆ™è¿‘æ¥æ¯”è¾ƒå°‘ä½¿ç”¨ext4é¡¹ç›®äº†ï¼
+swapï¼šå°±æ˜¯ç£ç¢Ÿæ¨¡æ‹Ÿæˆä¸ºè®°å¿†ä½“ï¼Œç”±äºŽswapå¹¶ä¸ä¼šä½¿ç”¨åˆ°ç›®å½•æ ‘çš„æŒ‚è½½ï¼Œæ‰€ä»¥ç”¨swapå°±ä¸éœ€è¦æŒ‡å®šæŒ‚è½½ç‚¹å–”ã€‚
+BIOS Bootï¼šå°±æ˜¯GPTåˆ†å‰²è¡¨å¯èƒ½ä¼šä½¿ç”¨åˆ°çš„é¡¹ç›®ï¼Œè‹¥ä½ ä½¿ç”¨MBRåˆ†å‰²ï¼Œé‚£å°±ä¸éœ€è¦è¿™ä¸ªé¡¹ç›®äº†ï¼
+xfsï¼šè¿™ä¸ªæ˜¯ç›®å‰CentOSé¢„è®¾çš„æ¡£æ¡ˆç³»ç»Ÿï¼Œæœ€æ—©æ˜¯ç”±å¤§åž‹ä¼ºæœå™¨æ‰€å¼€å‘å‡ºæ¥çš„ï¼ä»–å¯¹äºŽå¤§å®¹é‡çš„ç£ç¢Ÿç®¡ç†éžå¸¸å¥½ï¼Œè€Œä¸”æ ¼å¼åŒ–çš„æ—¶å€™é€Ÿåº¦ç›¸å½“å¿«ï¼Œå¾ˆé€‚åˆå½“ä»ŠåŠ¨ä¸åŠ¨å°±æ˜¯å¥½å‡ ä¸ªTBçš„ç£ç¢Ÿçš„çŽ¯å¢ƒå–”ï¼å› æ­¤æˆ‘ä»¬ä¸»è¦ç”¨è¿™çŽ©æ„å„¿ï¼
+vfatï¼šåŒæ—¶è¢«Linuxä¸ŽWindowsæ‰€æ”¯æ´çš„æ¡£æ¡ˆç³»ç»Ÿç±»åž‹ã€‚å¦‚æžœä½ çš„ä¸»æœºç¡¬ç¢Ÿå†…åŒæ—¶å­˜åœ¨Windowsä¸ŽLinuxä½œä¸šç³»ç»Ÿï¼Œä¸ºäº†èµ„æ–™çš„äº¤æ¢ï¼Œç¡®å®žå¯ä»¥å»ºç½®ä¸€ä¸ªvfatçš„æ¡£æ¡ˆç³»ç»Ÿå–”ï¼
 
-# CentOS 7.0Ä¬ÈÏ°²×°ºÃÖ®ºóÊÇÃ»ÓÐ×Ô¶¯¿ªÆôÍøÂçÁ¬½ÓµÄ£¡½øÈëÍøÂçÅäÖÃÎÄ¼þÄ¿Â¼
+# CentOS 7.0é»˜è®¤å®‰è£…å¥½ä¹‹åŽæ˜¯æ²¡æœ‰è‡ªåŠ¨å¼€å¯ç½‘ç»œè¿žæŽ¥çš„ï¼è¿›å…¥ç½‘ç»œé…ç½®æ–‡ä»¶ç›®å½•
 cd  /etc/sysconfig/network-scripts/
-#±à¼­ÅäÖÃÎÄ¼þ£¬Ìí¼ÓÐÞ¸ÄÒÔÏÂÄÚÈÝ
+#ç¼–è¾‘é…ç½®æ–‡ä»¶ï¼Œæ·»åŠ ä¿®æ”¹ä»¥ä¸‹å†…å®¹
 vi ifcfg-eno16777736 
 
 HWADDR=00:0C:29:8D:24:73
 TYPE=Ethernet
-BOOTPROTO=static  #ÆôÓÃ¾²Ì¬IPµØÖ·
+BOOTPROTO=static  #å¯ç”¨é™æ€IPåœ°å€
 DEFROUTE=yes
 PEERDNS=yes
 PEERROUTES=yes
@@ -61,14 +61,14 @@ IPV6_PEERROUTES=yes
 IPV6_FAILURE_FATAL=no
 NAME=eno16777736
 UUID=ae0965e7-22b9-45aa-8ec9-3f0a20a85d11
-ONBOOT=yes  #¿ªÆô×Ô¶¯ÆôÓÃÍøÂçÁ¬½Ó
-IPADDR0=192.168.21.128  #ÉèÖÃIPµØÖ·
-PREFIXO0=24  #ÉèÖÃ×ÓÍøÑÚÂë
-GATEWAY0=192.168.21.2  #ÉèÖÃÍø¹Ø
-DNS1=8.8.8.8  #ÉèÖÃÖ÷DNS
-DNS2=8.8.4.4  #ÉèÖÃ±¸DNS
-:wq!  #±£´æÍË³ö
+ONBOOT=yes  #å¼€å¯è‡ªåŠ¨å¯ç”¨ç½‘ç»œè¿žæŽ¥
+IPADDR0=192.168.21.128  #è®¾ç½®IPåœ°å€
+PREFIXO0=24  #è®¾ç½®å­ç½‘æŽ©ç 
+GATEWAY0=192.168.21.2  #è®¾ç½®ç½‘å…³
+DNS1=8.8.8.8  #è®¾ç½®ä¸»DNS
+DNS2=8.8.4.4  #è®¾ç½®å¤‡DNS
+:wq!  #ä¿å­˜é€€å‡º
 
-service network restart   #ÖØÆôÍøÂç
-ping www.baidu.com  	  #²âÊÔÍøÂçÊÇ·ñÕý³£
-ip addr  		  #²é¿´IPµØÖ·
+service network restart   #é‡å¯ç½‘ç»œ
+ping www.baidu.com  	  #æµ‹è¯•ç½‘ç»œæ˜¯å¦æ­£å¸¸
+ip addr  		  #æŸ¥çœ‹IPåœ°å€

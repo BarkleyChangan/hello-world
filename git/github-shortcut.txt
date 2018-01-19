@@ -1,0 +1,19 @@
+# 显示快捷键一览表
+shift + /
+
+# 在仓库页面按下t,然后输入要找的目录或文件的部分名称
+t
+
+# 查看4-0-stable分支与3-2-stable分支之间的差别
+https://github.com/rails/rails/compare/4-0-stable...3-2-stable
+
+# 查看master分支在最近7天之内的差别
+https://github.com/rails/rails/compare/master@{7.day.ago}...master
+
+# 查看master分支2013年1月1日与现在的差别
+https://github.com/rails/rails/compare/master@{2013-01-01}...master
+
+# PR如果认为可以合并
+:+1:
+:shipit:
+LGTM(Looks good to me)

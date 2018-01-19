@@ -22,3 +22,10 @@ show warnings;
 
 # type列 这一列表示关联类型或访问类型，即MySQL决定如何查找表中的行。
 依次从最优到最差分别为：system > const > eq_ref > ref > fulltext > ref_or_null > index_merge > unique_subquery > index_subquery > range > index > ALL
+
+# 使用show profiles命令查看查询的详细耗时
+set profiling=1;
+执行SQL语句;
+set profiling=0;
+show profiles;
+show profile cpu, block io for query 1;
