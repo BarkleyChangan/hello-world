@@ -1,0 +1,26 @@
+MySql:
+1. is_deleted unsigned tinyint
+2. 表名或者字段名必须使用小写字母或数字
+3. 表名不使用复数名词
+4. 主键索引名: pk_
+   唯一索引名: uk_
+   普通索引名: idx_
+5. 小数类型为decimal,禁止使用float和double
+6. 存储长度大于5000,定义字段类型为text,独立出来一张表,用主键做对应,避免影响其他字段索引效率
+7. 表必备三个字段: id,gmt_create,gmt_modified
+   id: 为主键 unsigned bigint 单表时自增,步长为1
+   gmt_create: date_time
+   gmt_modified: date_time
+8. 单表行数超过500万行或者容量超过2G,才推荐进行分库分表
+9. 超过三个表禁止join;多表关联查询时保证被关联的字段需要有索引
+10.在varchar字段上建立索引时,必须指定索引长度,没有必要对全字段建立索引,根据实际文本区分度决定索引长度即可
+   count(distinct left(列名,索引长度))/count(*)
+11.count(distinct col): 计算该列除NULL之外的不重复行数.注意count(distinct col1,col2)如果其中一列全为NULL,返回0
+12.如果某一列全为NULL，count(col返回结果为0,sum(col)返回结果为NULL 
+	SELECT IF(ISNULL(SUM(col)),0,SUM(col)) FROM table;
+13. NULL <> NULL 返回结果为NULL
+    NULL = NULL  返回结果为NULL
+    NULL <> 1    返回结果为NULL
+14. IN 后面的集合元素数量控制在1000个之内
+15. SELECT LENGTH('轻松工作');				返回12
+	SELECT CHARACTER_LENGTH('轻松工作');	返回4
