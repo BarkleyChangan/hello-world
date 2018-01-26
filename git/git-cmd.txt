@@ -77,6 +77,8 @@ git push -u origin master -u参数可以在推送的同时,将origin仓库的mas
 
 # 创建本地work分支的远程分支
 git push [remote-name] [branch-name]
+git push <remote> --force 强行推送当前分支到远程仓库，即使有冲突
+git push <remote> --all   推送所有分支到远程仓库
 git push origin work
                 本地分支名：远程分支名
 git push origin serverfix:awesomebranch
@@ -131,8 +133,23 @@ git remote rename pb paul
 # 移除远程仓库
 git remote rm paul
 
+# 只改变提交点，暂存区和工作目录的内容都不改变
+git reset —soft <commit>
+
+# 改变提交点，同时改变暂存区的内容
+git reset —mixed <commit>
+
+# 暂存区、工作区的内容都会被修改到与提交点完全一致的状态
+git reset —hard <commit>
+
+# 让工作区回到上次提交时的状态
+git reset --hard HEAD
+
 # 回退
 git reset --hard 8cab126
+
+# 用一个新提交来消除一个历史提交所做的任何修改
+git revert 15df9b6
 
 # 更改历史
 git rebase -i HEADE~2
@@ -207,6 +224,9 @@ git push origin --delete <分支名>
 # 切换到新建的 serverfix 本地分支，其内容同远程分支 origin/serverfix 一致
 git checkout -b serverfix origin/serverfix
 git checkout --track origin/serverfix  (1.6.2 以上版本的 Git)
+
+# 选择一个 commit，合并进当前分支
+git cherry-pick <commit>
 ***************** 分支 *****************
 
 ***************** 变基 *****************
