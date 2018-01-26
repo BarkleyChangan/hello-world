@@ -11,6 +11,12 @@ init 0 关机
      5 图形界面
      6 系统重启
 
+# 关机
+shutdown -h now
+
+# 重启
+shutdown -r now
+
 # 修改默认的运行级别
 /etc/inittab的id:3:initdefault:这一行中的数字
 
@@ -183,3 +189,34 @@ crontab -r
 # 列出当前有哪些任务
 crontab -l
 ***************** 任务调度crontab *****************
+
+***************** 压缩和解压 *****************
+# 解压*.tar
+tar –xvf
+
+# 解压*.gz
+gzip -d
+gunzip
+
+# 解压*.tar.gz和*.tgz
+tar –xzf
+
+# 解压*.bz2
+bzip2 -d
+bunzip2
+
+# 解压*.tar.bz2
+tar –xjf
+
+# 解压*.Z
+uncompress
+
+# 解压*.tar.Z
+tar –xZf
+
+# 解压*.rar
+unrar e
+
+# 解压*.zip
+unzip
+***************** 压缩和解压 *****************
