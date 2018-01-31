@@ -31,7 +31,7 @@ kill PID进程号
 kill -9 PID进程号
 
 # 查看目前使用的是哪种shell
-  env  该命令显示当前操作系统的环境变量
+env  该命令显示当前操作系统的环境变量
  
 # 以后台的方式启动eclipse
 ./eclipse &
