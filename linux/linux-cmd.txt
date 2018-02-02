@@ -23,18 +23,59 @@ shutdown -r now
 # 将当前窗口切换成图形化界面
 startx
 
-# 查看动态的进程
+# 即时跟踪当前系统中的进程状态(使用q退出)
 top
-
-# 查看动态的进程(10秒更新一次)
 top -d 10
+            -d 更新频率(秒)
 
 # 查看启动的进程
 ps -aux | grep nginx
+        USER 进程创建者的用户名
+        PID  进程的ID号
+        %CPU 进程占用的CPU百分比
+        %MEM 进程占用的内存百分比
+        VSZ  进程占用的虚拟内存大小
+        RSS  内存中的页数量(页是管理内存的单位,在PC上通常为4K)
+        TTY  进程所在终端的ID号
+        STAT R 正在运行/可运行
+             D 睡眠中(不可被唤醒,通常是在等待I/O设备)
+             S 睡眠中(可以被唤醒)
+             T 停止(由于收到信号或被跟踪)
+             Z 僵尸进程(已经结束而没有释放系统资源的进程)
+             < 进程拥有比普通优先级高的优先级
+             N 进程拥有比普通优先级低的优先级
+             L 有些页面被锁在内存中
+             s 会话的先导进程
+        START 进程启动的时间
+        TIME  进程已经占用的CPU时间
+        COMMAND 命令和参数
+ps -lax  可以提供父进程ID(PPID)和谦让度(NI)但不会显示进程属主的用户名
+
+# 查看占用文件的进程
+lsof database.doc
 
 # 终止进程
 kill PID进程号
 kill -9 PID进程号
+                    -l 显示所有信号及其编号
+常用的信号       信号名     描述                      默认情况下执行的操作
+0               EXIT       程序退出时收到该信号        终止
+1               HUP        挂起                      终止
+2               INT        中断                      终止
+3               QUIT       退出                      终止
+9               KILL       杀死                      终止
+11              SEGV       段错误                    终止
+15              TERM       软件终止                  终止
+取决于硬件体系   USR1       用户定义                  终止
+取决于硬件体系   USR1       用户定义                  终止
+
+# 启动程序时设置进程的谦让度(-20~+19之间浮动)
+nice -n 2 hello
+                -n 将-n后的数值加上默认的谦让度值(相对谦让度);不带-n参数会将程序的谦让度设置为10
+nice 查看默认的谦让度
+
+# 进程运行时调整谦让度(绝对谦让度)
+renice +12 -p 8567
 
 # 查看目前使用的是哪种shell
 env  该命令显示当前操作系统的环境变量
@@ -42,8 +83,9 @@ env  该命令显示当前操作系统的环境变量
 # 以后台的方式启动eclipse
 ./eclipse &
 
-# 显示最近使用的5个命令
-history 5
+# 显示使用过的命令(这些信息被存储在用户主目录的.bash_history文件中,默认可以存储1000条命令)
+history
+history 10
 
 # 执行历史编号为5的命令
 !5
@@ -62,6 +104,23 @@ cal 3 2002
 
 # 查看年历
 cal 2008
+
+# 指示程序在后台运行
+firefox &
+
+# 查看当前系统中登录人
+who
+
+# 查看当前登录人
+whoami
+
+# 显示系统版本信息
+uname
+uname -a 当前操作系统的所有有用信息
+uname -r 内核版本信息
+
+# 共享文件夹
+vmhgfs-fuse .host:/share /mnt/hgfs
 ***************** 系统 *****************
 
 ***************** 开发 *****************
@@ -70,15 +129,47 @@ cat /dev/null > catalina.out
 ***************** 开发 *****************
 
 ***************** 用户权限 *****************
+# /etc/passwd记录用户信息,此文件对所有用户可读
+# /etc/shadow保存用户登录密码,此文件只能用root账号查看
+# /etc/group记录用户组
+
 # 添加用户
-useradd xiaoming
+useradd -m mike
+                    -m:建立用户的登入目录
+useradd -g users mike
+                    -g:指定用户所属组
+useradd -s /bin/bash mike
+                    -s:指定用户登录后所使用的Shell
 
 # 修改密码
-passwd xiao
+passwd xiaoming
 
 # 删除用户
 userdel xiaoming
 userdel -r xiaoming
+                    -r 同时删除主目录
+
+# 管理账号
+usermod 
+            -d 修改用户主目录
+            -e 修改账号的有效期以MM/DD/YY表示
+            -g 修改用户所属的组
+            -l 修改用户账号的名称
+            -s 修改用户登录后所使用的Shell
+
+# 查看用户id
+id mike
+
+# 用户切换(尽量通过绝对路径使用su命令)
+su          不带任何参数切换到root身份
+su john
+
+# 回到之前的账号
+exit
+
+# 以root身份执行命令(配置/etc/sudoers指定用户可以执行特权命令,修改此文件要使用visudo命令)
+sudo 
+        -u 改变用户身份
 
 # 添加组
 groupadd policeman
@@ -92,12 +183,13 @@ useradd -g 组名 用户名
 
 # 查看linux中所有用户信息
 cat /etc/passwd
-
-# 改变某个用户所在组
-usermod -g 组名 用户名
 ***************** 用户权限 *****************
 
 ***************** 文件,目录 *****************
+# 是否能删除或重命名文件则由其父目录的权限设置所控制
+# 对目录而言,读取权限则负责确定能否列出该目录中的内容;写入权限控制着在目录中创建,删除和重命名文件;执行权限实际控制了用户能否进入该目录;
+# 文件类型:-普通文件;d目录;c字符设备文件;b块设备文件;s本地域套接口;p有名管道;l符号链接
+
 # 显示当前工作目录
 pwd
 
@@ -112,6 +204,7 @@ ls
 
 # 建立目录
 mkdir
+mkdir -p 完整创建一个目录结构
 
 # 删除空目录
 rmdir
@@ -119,34 +212,147 @@ rmdir
 # 建立空文件
 touch
 
-# 修改权限命令
+# 文件剪切
+mv -i hello test/hello 出现同名文件进行提示
+mv -b hello test/     目标目录同名文件后加"~"避免覆盖
+
+# 复制文件
+cp -i hello test/hello 出现同名文件进行提示
+cp -b hello test/      目标目录同名文件后加"~"避免覆盖
+cp -r test/ desktop/   将子目录连同其中的文件一起复制到另一个子目录下
+
+# 删除文件
+rm -i hello
+rm -f hello 强制删除
+rm -r test/ 递归删除目录下所有的文件和子目录
+
+# 设置文件所有权
+chown lewis:root hello (属主:属组)
+chown -R lewis iso/    (改变一个目录以及其下所有文件和目录的所有权)
+
+# 设置文件属组
+chgrp nogroup hello
+chgrp -R nogroup iso/  (改变一个目录以及其下所有文件和目录的所有权)
+
+# 修改权限命令(属主u;属组g;其他人o;所有人a)
 chmod 777 文件名
+chmod u+x hello
+chmod a-x hello
+chmod ug=rw,o=r hello
+chmod o=u hello
 
 # 拷贝文件夹
 cp -rf dir1 dir2
 
 # 建立符号链接
-ln -s 源 目标
+ln -s 源 目标  (软链接:通过名称进行引用)
+ln 源 目标     (硬链接:是直接引用)
+
+# 查看文本文件
+cat test
+cat -n test (显示行号)
+
+# 一页一页显示内容(空格键向下翻一页,Enter键向下滚动一行,Q键退出)
+more 123.txt
+
+# 一页一页显示内容(空格键向下翻一页,B键向上翻一页,Enter键向下滚动一行,Q键退出)
+less 123.txt (要在文件中搜索一个字符串,使用"/"跟上要查找的内容。要继续查找相同的内容只要再次输入"/"并按下Enter键就可以了)
+less -M 123.txt (显示更多的文件信息)
+
+# 显示文件的开头和结尾
+head -n 100 123.txt
+tail -n 100 123.txt
+
+# 查找文件内容
+grep '31' 123.txt
+
+# 查找文件
+find /usr/bin -name *.txt
+              -type b块设备文件
+                    c字符设备文件
+                    d目录文件
+                    f普通文件
+                    p命名管道
+                    l符号链接
+
+# 快速定位文件
+locate *.txt
+
+# 查找特定程序(查找程序文件并提供这个文件的二进制可执行文件,源代码文件和使用手册页存放的位置)
+whereis find
+whereis -b find (只查找程序的二进制可执行文件)
+
+# 简单介绍命令文字
+whatis uname
+
+# 通过使用手册反查某个命令
+apropos search
+
+# 转移文件(if选项指定输入端的文件系统,of选项指定输出端)
+dd if=/dev/cdrom of=CD.iso
 ***************** 文件,目录 *****************
 
 ***************** 软件安装,卸载,更新 *****************
-# 查询linux中安装了那些rpm软件
-rpm -qa
-rpm -q mysql
-
 # 安装rpm包
-rpm -i RPM包全路径名称
 rpm -ivh RPM包全路径名称
-    i=install 安装
-    v=verbose 提示
-    h=hash    进度条
-
-# 卸载rpm包
-rpm -e RPM包名称
-rpm -e --nodeps RPM包名称
+    i=install 安装rpm包
+    v=verbose 显示rpm当前正在执行的工作
+    h=hash    通过打印一系列的#提醒用户当前的安装进度
+    --force   忽略一切依赖和兼容问题强行安装软件包
+    --nodeps  忽略软件包相关性冲突
 
 # 升级rpm包
-rpm -U RPM包全路径名称
+rpm -Uvh RPM包全路径名称
+
+# 查询linux中安装了那些rpm软件
+rpm -qa 软件包名字(不是安装文件名字) -a选项可以列出当前系统上已经安装的所有软件包
+rpm -qa | grep mysql
+
+# 卸载rpm包
+rpm -e RPM软件包名称(不带有版本信息)
+rpm -e --nodeps RPM包名称(不带有版本信息)
+rpm -e -vv --test RPM软件包名称    -vv输出完整调试信息 --test模拟删除软件包的全过程
+
+# 安装.deb软件
+dpkg -i[nstall] [--force]
+
+# 查看.deb软件已安装的软件包
+dpkg -l | grep openssh
+
+# 查看.deb软件安装了那些文件
+dpkg -S openssh
+
+# 卸载.deb软件
+dpkg --remove openssh
+
+# APT软件包工具:更新当前apt-get缓存中的软件包信息
+apt-get update
+
+# APT软件包工具:下载并安装软件包
+apt-get install wesnoth
+
+# APT软件包工具:下载并安装在本系统上已有的软件包的最新版本
+apt-get upgrade wesnoth
+
+# APT软件包工具:卸载特定的软件包
+apt-get remove wesnoth
+
+# APT软件包工具:下载特定的软件源代码
+apt-get source wesnoth
+
+# APT软件包工具:删除所有已下载的包文件
+apt-get clean
+
+# APT软件包工具:列出apt-get完整用法
+apt-get -h
+
+# APT软件包工具:搜索软件包列表中特定的软件包
+apt-cache search wesnoth
+
+# APT软件包工具:显示特定软件包的依赖关系
+apt-cache depends wesnoth
+
+# 配置apt-get:/etc/apt/sources.list
 ***************** 软件安装,卸载,更新 *****************
 
 ***************** 磁盘,分区,挂载 *****************
@@ -159,15 +365,73 @@ fdisk -l
 df 目录路径
 
 # 查看磁盘使用情况
-df -h
+df -h 方便阅读方式显示
+   -H 等于-h但是计算式1K=1000而不是1K=1024
+   -t ext4 显示特定的文件系统
+
+# 检查文件系统
+fsck /dev/sda1 
+                -p 会读取fstab文件来确定检查哪些文件系统
+
+# 格式化
+mkfs -t minix /dev/sdb1 Linux最早使用的文件系统
+        ext3            ext3文件系统
+        ext4            ext4文件系统
+        msdos           FAT文件系统
+mkfs -t ext4 -c /dev/sdb1 -c选项来检查指定设备上损坏的块
+
+# 初始化交换分区
+mkswap /dev/sdb2
+
+# 检查并激活交换分区
+swapon /dev/sdb2
+
+# 查看当前系统上存在的交换分区
+swapon -s
+
+# 检查文件系统
+fsck -f /dev/sdb1 
+                    -f 强制检查新的文件系统
+
+# 挂载文件系统
+mount -t 指明设备所使用的文件类型
+      -r 只读模式挂载设备
+      -w 读写模式挂载设备
+      -o rw 可读写方式挂在
+
+# 网络硬盘查看服务端导出的目录
+showmount -e 10.171.37.1
+
+# 取消挂载(如果硬盘分区已经挂载到文件系统中,那么在格式化之前必须用umount命令卸载该分区)
+unmount -r 在umount在无法卸载文件系统的情况下尝试以只读方式重新载入
+        -f 强行取消挂载    
+
+# 列出当前内核已经发现的USB设备
+lsusb
 ***************** 磁盘,分区,挂载 *****************
 
 ***************** 网络 *****************
-# 查看ip情况
+# /etc/hosts Linux中hosts文件位置
+
+# 显示当前系统上所有网络接口配置
 ifconfig
 
-# 显示网络统计信息(-an 按端口号排序)
+# 显示网络统计信息(-an按端口号排序)
 netstat -anp
+netstat -tulnp | grep 22 查看22端口
+
+# 显示系统路由信息
+netstat -r
+
+# 增加一条路由
+route add default gw 10.71.84.2
+route add -net 10.62.74.0/24 gw 10.71.84.51
+                        -net 表示后面紧跟的是网络地址
+route add -host 10.62.74.4 gw 10.71.84.51
+                        -host 表示后面紧跟的是主机地址
+
+# 删除路由
+route del default
 
 # 检测主机连接
 ping IP地址
@@ -177,6 +441,26 @@ route
 
 # 显示数据包经过历程命令
 traceroute IP地址
+
+# 登录另一台Linux服务器(exit退出)
+ssh -l root 192.168.150.139
+ssh -l root -p 22 192.168.150.139
+
+# 生成密钥对
+ssh-keygen -t rsa
+                    -t 指定密钥类型
+
+# 基于SSH文件传输
+sftp root@10.171.32.73
+
+命令                      说明
+rm                        删除文件和目录
+rename                    修改文件名
+put                       上传文件
+get                       下载文件
+
+# 基于SSH复制文件
+scp root@10.171.33.221:/home/lewis/dump.tar.gz /srv/nfs_share/
 ***************** 网络 *****************
 
 ***************** 任务调度crontab *****************
@@ -191,32 +475,125 @@ crontab -l
 ***************** 任务调度crontab *****************
 
 ***************** 压缩和解压 *****************
-# 解压*.tar
-tar –xvf
+# gzip压缩
+gzip hello.tar
 
-# 解压*.gz
-gzip -d
-gunzip
+# gzip解压
+gunzip hello.tar.gz
+gzip -d hello.tar.gz
 
-# 解压*.tar.gz和*.tgz
-tar –xzf
+# 查看gzip压缩效果
+gzip -l hello.tar.gz
 
-# 解压*.bz2
-bzip2 -d
-bunzip2
+# 测试gzip文件压缩的完整性
+gzip -tv hello.tar.gz
 
-# 解压*.tar.bz2
-tar –xjf
+# bzip2压缩
+bzip2 hello.tar
 
-# 解压*.Z
-uncompress
+# bzip2解压
+bunzip2 hello.tar.bz2
+bzip2 -d hello.tar.bz2
 
-# 解压*.tar.Z
-tar –xZf
+# 测试bzip2文件压缩的完整性
+bzip2 -tv hello.tar.bz2
 
-# 解压*.rar
-unrar e
+# tar文件打包
+tar -cvf hello.tar home/
+                          -c 指导tar创建归档文件
+                          -v 显示命令的执行过程
+                          -f 指定归档文件的文件名
+                          -w 每次将单个文件加入归档文件时征求用户意见
+                          -z 最后调用gzip压缩归档文件
+                          -j 最后调用bzip2压缩归档文件
 
-# 解压*.zip
-unzip
+# tar文件解包
+tar -xvf hello.tar       
+                          -x 指导tar解包
+                          -f 指定归档文件的文件名
+                          -z 先调用gzip解压文件
+                          -j 先调用bzip2解压文件
 ***************** 压缩和解压 *****************
+
+***************** VIM *****************
+命令                    操作
+a                       在光标后插入 
+i                       在光标所在位置插入
+o                       在光标所在位置下一行插入
+Esc                     进入命令模式
+:                       进入行命令模式
+h                       光标向左移动一格
+l                       光标向右移动一格
+J                       光标向下移动一格
+k                       光标向上移动一格
+^                       到行首
+$                       到行尾
+G                       到文件尾
+Gg                      到文件头
+W                       到下一个单词
+B                       到前一个单词
+ctrl+f                  上一页
+ctrl+b                  下一页
+x                       删除光标所在位置的字符
+dd                      删除光标所在的行
+D                       删除光标所在位置到行尾之间所有字符
+d                       普通意义上的删除
+yy                      复制光标所在的行
+y                       普通意义的复制命令
+P                       粘贴
+u                       撤销
+ctrl+R                  重做被撤销的操作
+:w                      保存文件
+:w filename             另存为filename
+:q                      退出
+:q!                     强行退出,放弃保存修改
+
+# 向后搜索
+/test
+
+# 向前搜索
+?test
+
+# 大小写不敏感
+set ignorecase
+
+# 大小写敏感
+set noignorecase
+
+# 删除^M特殊字符(^M使用ctrl+v ctrl+m输入)
+%s/^M$/ /g
+
+# 语法高亮
+syntax on
+
+# 自动缩进
+set autoindent
+
+# 设置制表符长度
+set shiftwidth=4
+***************** VIM *****************
+
+***************** Shell *****************
+#! /bin/bash
+
+# 查看当前Shell的环境变量
+printenv
+
+# 影响父Shell环境
+source test.sh
+
+# 影响子Shell环境
+export count=5
+
+# 注销变量
+unset test
+***************** Shell *****************
+
+***************** 防火墙iptables *****************
+# iptables常用选项
+iptables -F 清除链中所有的规则
+         -P 为链设置一条默认策咯
+         -A 为链增加一条规则说明
+         -D 从链中删除一条规则
+         -L 查看当前表中的链和规则
+***************** 防火墙iptables *****************
