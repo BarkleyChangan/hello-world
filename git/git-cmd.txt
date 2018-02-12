@@ -234,6 +234,7 @@ git cherry-pick <commit>
 git rebase master
 git rebase [主分支] [特性分支]
 git rebase --onto master server client
+git pull --rebase 解决问题
 
 # 修改多个提交说明(四次提交之前，即你想修改的提交的父提交)
 git rebase -i HEAD~3
