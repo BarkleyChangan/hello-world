@@ -1,3 +1,75 @@
+####################### CMD命令 #######################
+# 启动MySQL服务
+net start mysql
+
+# 停止MySQL服务
+net stop mysql
+
+# 命令
+mysql -h hostname -u username -p
+      -h 主机名
+      -u 用户名
+      -p 密码(改字段后面的字符串和-p之间不能有空格)
+      -P 端口号
+      数据库名
+      -e 执行sql语句(如果指定了该参数,将在登录后执行-e后面的命令或者sql语句并退出)
+####################### CMD命令 #######################
+
+####################### 用户管理 #######################
+# 创建用户
+CREATE USER 'jeffrey'@'localhost' IDENTIFIED BY 【PASSWORD】 'password'
+             jeffrey   用户名
+             localhost 主机名(默认为%即对所有的主机开放权限)
+             【PASSWORD】使用哈希值设置密码(利用password('password')生成哈希值)
+
+# 创建用户并授予权限
+GRANT INSERT,DELETE,UPDATE,SELECT ON *.* TO 'username'@'%' IDENTIFIED BY 'password';
+
+# 删除用户
+DROP USER 'username'@'%'
+
+# 修改密码(使用mysqladmin和GRANT命令设置密码均会加密密码不需要使用PASSWORD()函数)
+mysqladmin -u username -h host -p password "newpwd";
+SET PASSWORD=PASSWORD('newpwd'); 为了使更改生效需要重新启动MySQL或使用FLUSH PRIVILEGES;语句刷新权限,重新加载权限列表
+SET PASSWORD FOR 'username'@'host'=PASSWORD('newpwd');  修改其他用户的密码
+GRANT USAGE ON *.* TO 'username'@'host' IDENTIFIED BY 'newpwd';
+
+# 重新加载权限
+FLUSH PRIVILEGES;
+
+# 忘记root密码
+Windows系统下: 在命令行下切换到MySQL的bin目录
+mysqld --skip-grant-tables
+mysql-nt --skip-grant-tables
+Linux系统下:
+mysqld_safe --skip-grant-tables user=mysql
+/etc/init.d/mysql start-mysqld --skip-grant-tables
+
+# 查看权限
+SHOW GRANTS FOR 'username'@'host'
+####################### 用户管理 #######################
+
+####################### 基本操作 #######################
+# 查看警告信息
+SHOW WARNINGS;
+
+# 查看存储过程和函数
+SHOW PROCEDURE|FUNCTION STATUS LIKE 'C%';
+SELECT * FROM information_schema.Routines WHERE ROUTINE_NAME='sp_name';
+
+# 查看存储过程和函数定义
+SHOW CREATE PROCEDURE|FUNCTION sp_name;
+
+# 查看视图
+DESCRIBE 视图名;
+SHOW TABLE STATUS LIKE 'viewname';
+SHOW CREATE VIEW 视图名;
+SELECT * FROM information_schema.views;
+
+# 查看触发器
+SHOW TRIGGERS;
+SELECT * FROM information_schema.triggers WHERE TRIGGER_NAME='trig_update';
+
 # 关闭保护模式
 SET SQL_SAFE_UPDATES=0;
 
@@ -29,3 +101,332 @@ set profiling=1;
 set profiling=0;
 show profiles;
 show profile cpu, block io for query 1;
+
+# 区分大小写比较
+SELECT BINARY 'a'='A';
+
+# 修改MySQL结束符
+DELIMITER //
+
+# 连接MySQL服务器的次数
+SHOW STATUS LIKE 'Connections';
+
+# MySQL服务器的上线时间
+SHOW STATUS LIKE 'Uptime';
+
+# 慢查询次数
+SHOW STATUS LIKE 'Slow_queries';
+
+# 查询操作的次数
+SHOW STATUS LIKE 'Com_select';
+
+# 插入操作的次数
+SHOW STATUS LIKE 'Com_insert';
+
+# 更新操作的次数
+SHOW STATUS LIKE 'Com_update';
+
+# 删除操作的次数
+SHOW STATUS LIKE 'Com_delete';
+
+# 禁用/启用索引
+ALTER TABLE tablename DISABLE KEYS;
+ALTER TABLE tablename ENABLE KEYS;
+
+# 禁用/启用唯一性检查
+SET UNIQUE_CHECKS=0;
+SET UNIQUE_CHECKS=1;
+
+# 禁用/启用外键检查
+SET FOREIGN_HKEYCHECKS=0;
+SET FOREIGN_KEYCHECKS=1;
+
+# 禁用/启用自动提交
+SET AUTOCOMMIT=0;
+SET AUTOCOMMIT=1;
+
+# 查看datadir路径
+SHOW VARIABLES LIKE '%datadir%';
+
+# 查看二进制日志是否开启
+SHOW VARIABLES LIKE '%log_bin%';
+####################### 基本操作 #######################
+
+####################### 数据库基本操作 #######################
+# 创建数据库
+CREATE DATABASE test_db;
+
+# 删除数据库
+DROP DATABASE test_db;
+
+# 查看数据库定义
+SHOW CREATE DATABASE test_db;
+
+# 查看系统支持的引擎类型
+SHOW ENGINES;
+
+# 查看默认存储引擎
+SHOW VARIABLES LIKE 'default_storage_engine';
+
+# 查看当前字符集
+SHOW VARIABLES LIKE 'character_set_%';
+####################### 数据库基本操作 #######################
+
+####################### 数据表基本操作 #######################
+# 创建数据表
+CREATE TABLE tb_emp2
+(
+    id INT(11) PRIMARY KEY,
+    name VARCHAR(25),
+    deptId INT(11),
+    salary FLOAT
+);
+
+# 查看数据表
+SHOW TABLES;
+
+# 查看创建表时的CREATE TABLE语句
+SHOW CREATE TABLE 表名;
+
+# 查看表结构
+DESCRIBE 表名;
+
+# 修改表名
+ALTER TABLE 旧表名 RENAME 新表名;
+
+# 修改字段数据类型
+ALTER TABLE 表名 MODIFY 字段名 数据类型;
+
+# 修改字段名(新数据类型不能为空)
+ALTER TABLE 表名 CHANGE 旧字段名 新字段名 新数据类型;
+
+# 添加字段
+ALTER TABLE 表名 ADD 新字段名 数据类型 约束条件 (FIRST|AFTER 已存在字段名)；
+
+# 删除字段
+ALTER TABLE 表名 DROP 字段名;
+
+# 修改字段排列位置
+ALTER TABLE 表名 MODIFY 字段名 数据类型 FIRST|AFTER 字段名;
+
+# 更改表的存储引擎
+ALTER TABLE 表名 ENGINE=InnoDB;
+
+# 删除表的外键关系
+ALTER TABLE 表名 DROP FOREIGN KEY 外键约束名;
+
+# 删除表
+DROP TABLE [IF EXISTS] 表1,表2...;
+
+# 查看指定表中的创建的索引
+SHOW INDEX FROM book;
+####################### 数据表基本操作 #######################
+
+####################### 函数 #######################
+# 返回当前系统的日期和时间
+NOW()
+SYSDATE()
+
+# UTC时间
+UTC_DATE()
+UTC_TIME()
+UTC_TIMESTAMP()
+
+# UNIX时间戳
+UNIX_TIMESTAMP()
+UNIX_TIMESTAMP(date)
+
+# 将UNIX时间戳转换为普通格式时间
+FROM_UNIXTIME(date)
+
+# 获取星期
+DAYOFWEEK(date)  1:周日;2:周一...7:周六;
+WEEKDAY(date)    0:周一;1:周二...6:周日;
+
+# 获取一年中的第几天
+DAYOFYEAR(date)
+
+# 获取一个月中的第几天
+DAYOFMONTH(d)
+
+# 获取年份
+YEAR(date)
+
+# 获取季度
+QUARTER(date)
+
+# 获取月份(范围值1~12)
+MONTH(date)
+
+# 获取小时
+HOUR(date)
+
+# 获取分钟
+MINUTE(date)
+
+# 获取秒数
+SECOND(date)
+
+# 将时间转化为秒
+TIME_TO_SEC(time)
+
+# 将秒数转化为小时:分钟:秒
+SEC_TO_TIME(seconds)
+
+# 返回字符个数
+CHAR_LENGTH(str)
+
+# 返回字节长度(一个汉字3个字节,一个数字或字母一个字节)
+LENGTH(str)
+
+# 连接字符串
+CONCAT(s1,s2...)
+
+# 连接带分隔符的字符串
+CONCAT_WS(x,s1,s2...)
+
+# 获取指定长度的字符串
+LEFT(s, length)
+RIGHT(s,length)
+
+# 填充字符串
+LPAD(s1,length,s2)
+RPAD(s1,length,s2)
+
+# 删除空格
+LTRIM(s)
+RTRIM(s)
+TRIM(s)
+
+# 删除两端指定的字符串
+TRIM(ss FROM s)
+
+# 重复生成字符串
+REPEAT(s,n)
+
+# 替换字符串(使用字符串s2替换字符串s中所有的s1字符串)
+REPLACE(s,s1,s2)
+
+# 比较字符串大小
+STRCMP(s1,s2)
+
+# 获取子字符串
+SUBSTRING(s,index,length)
+
+# 获取子串的位置
+LOCATE(ss,s)
+POSITION(ss IN s)
+INSTR(s,ss)
+
+# IF函数
+IF(expr,v1,v2)  (expr<>0 and expr<>NULL 返回v1否则返回v2)
+
+# IFNULL函数(如果v1不为NULL返回v1,否则返回v2)
+IFNULL(v1,v2)
+
+# 获取MySQL版本号
+VERSION()
+
+# 查看当前用户连接次数
+CONNECTION_ID()
+
+# 显示当前所有的连接数和状态
+SHOW PROCESSLIST (显示100条)
+SHOW FULL PROCESSLIST
+
+# 获取数据库名
+DATABASE()
+SCHEMA()
+
+# 获取当前登录用户名称
+USER()
+CURRENT_USER()
+SYSTEM_USER()
+
+# 获取字符串的字符集
+CHARSET(s)
+
+# 获取字符串的排序方式
+COLLATION(s)
+
+# 获取最后一个自动生成的ID
+LAST_INSERT_ID()
+
+# 数字格式化(四舍五入方式保留小数点后n位,结果以字符串的形式返回;若n为0,返回结果不包含小数部分)
+FORMAT(x,n)
+
+# 重复执行指定的操作
+BENCHMARK(count,expr)
+
+# 改变字符集
+CONVERT('string' USING latin1)
+
+# 改变数据类型
+CAST(x AS type)
+CONVERT(x, type)
+
+# 在分组查询中将分组中各个字段的值显示出来
+GROUP_CONCAT(name)
+
+# 分组查询后显示所有记录的总和
+WITH ROLLUP
+####################### 函数 #######################
+
+####################### 备份还原 #######################
+# 使用mysqldump命令备份
+mysqldump -u username -h host -ppassword --databases dbname > filename.sql
+
+# 还原数据库
+mysql -u username -p [dbname] < filename.sql
+
+# 导出表到文件
+SELECT columnlist FROM table WHERE condition INTO OUTFILE 'filename'
+mysqldump -T path dbname tablename -u root -p
+mysql -u root -p [--vertical] [-html|-xml] --execute="SELECT * FROM person;" dbname > C:\person.txt
+
+# 导入表
+LOAD DATA INFILE 'filename' INTO TABLE tablename
+mysqlimport -u root -p dbname filename.txt
+####################### 备份还原 #######################
+
+####################### 日志 #######################
+错误日志: 记录MySQL服务启动,运行或停止服务时出现的问题
+查询日志: 记录建立的客户端连接和执行的预计
+二进制日志: 记录所有更改数据的语句,可以用于数据复制
+慢查询日志: 记录所有执行时间超过long_query_time的所有查询或不使用索引的查询
+
+# 刷新日志
+FLUSH LOGS
+mysqladmin -u root -p flush-logs
+mysqladmin refresh
+
+# 查看日志设置
+SHOW VARIABLES LIKE 'log_%';
+SHOW BINARY LOGS;
+mysqlbinlog filename
+
+# 删除所有二进制日志文件
+RESET MASTER;
+
+# 删除指定的二进制日志文件
+PURGE MASTER|BINARY LOGS TO 'filename' 将删除文件名编号比指定文件名编号小的所有日志文件
+PURGE MASTER|BINARY LOGS BEFORE '20130330' 将删除指定日期以前的所有日志文件
+
+# 使用二进制日志还原数据库
+mysqlbinlog --stop-date='2013-03-30' filename|mysql --user --ppass
+
+# 开启/停止二进制日志功能
+SET sql_log_bin={0|1}
+####################### 日志 #######################
+
+####################### explain语句解释 #######################
+select_type: 指定所使用SELECT查询类型;其他可能取值有:PRIMARY,UNION,SUBQUERY等
+table:       数据库读取的数据表名字,按读取的先后顺序排列
+type:        指定本数据表与其他数据表之间的关联关系,可能取值有:system,const,eq_ref,ref,range,index和all
+possible_keys: MySQL在搜索记录时可选用的各个索引
+key:         实际选用的索引
+key_len:     索引按字节计算的长度,key_len数据越小表示越快
+ref:         指出关联关系中另一个数据表里的数据列的名字
+rows:        在执行这个查询时预计会从数据表里读出的数据行个数
+extra:       与关联操作有关的信息
+####################### explain语句解释 #######################
