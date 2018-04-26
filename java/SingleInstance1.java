@@ -1,25 +1,29 @@
-package com.post.thread;
+package singleton;
 
-import java.io.ObjectStreamException;
 import java.io.Serializable;
 
-public class SingleInstance1 implements Serializable {
-	private static final long serialVersionUID = 3501693088254419824L;
+public class LazySingleton implements Serializable {
+    private static boolean initialized = false;
 
-	private SingleInstance1() {
+    private LazySingleton() {
+        synchronized (LazySingleton.class) {
+            if (initialized == false) {
+                initialized = !initialized;
+            } else {
+                throw new RuntimeException("单例已被破坏");
+            }
+        }
+    }
 
-	}
+    static class SingletonHolder {
+        private static final LazySingleton instance = new LazySingleton();
+    }
 
-	private static class InnerSingleInstance1 {
-		private static SingleInstance1 _instance = new SingleInstance1();
-	}
-
-	public static SingleInstance1 getInstance() {
-		return InnerSingleInstance1._instance;
-	}
-
-	protected Object readResolve() throws ObjectStreamException {
-		System.out.println("调用了readResolve方法!");
-		return InnerSingleInstance1._instance;
-	}
+    public static LazySingleton getInstance() {
+        return SingletonHolder.instance;
+    }
+    
+    private Object readResolve() {
+        return getInstance();
+    }
 }

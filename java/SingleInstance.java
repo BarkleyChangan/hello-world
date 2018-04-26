@@ -1,7 +1,7 @@
 package com.post.thread;
 
 public class SingleInstance {
-	private static SingleInstance _instance;
+	private static volatile SingleInstance _instance;
 
 	private SingleInstance() {
 
