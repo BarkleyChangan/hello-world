@@ -1,0 +1,150 @@
+1. 查询系统磁盘整体使用情况
+   df -lh
+2. 查询指定目录的磁盘使用情况
+   du -h 目录
+3. 统计/home文件夹下文件的个数
+   ls -l /home | grep "^-" | wc -l
+4. 统计/home文件夹下目录的个数
+   ls -l /home | grep "^d" | wc -l
+5. 统计/home文件夹下文件的个数,包括子文件夹里的
+   ls -lR /home | grep "^-" | wc -l
+6. 统计/home文件夹下文件的个数
+   ls -lR /home | grep "^d" | wc -l
+7. 磁盘分区
+   fdisk /dev/sdb1
+8. 磁盘格式化
+   mkfs -t ext4 /dev/sdb1
+9. 挂载
+   mount /dev/sdb1 /home/newdisk
+10.卸载
+   umount /dev/sdb1
+   umount /home/newdisk
+11.开机挂载
+   a. vim /etc/fstab
+      /dev/sdb1 / ext4 defaults 1 1
+   b. mount -a
+12.定时任务
+   crontab -e 编辑定时任务
+   crontab -l 查看定时任务
+   crontab -r 删除所有定时任务
+13.设置静态IP
+   vim /etc/sysconfig/network-scripts/ifcfg-eth0
+   ONBOOT=yes
+   BOOTPROTO=static
+   IPADDR=192.168.136.128
+   GATEWAY=192.168.136.2
+   DNS1=192.168.136.2
+
+   # 修改后一定要重启服务或重启系统
+   service network restart
+14.查看当前系统运行的进程
+   ps -aux
+   ps -ef  可以显示父进程ID
+   pstree -p
+15.终止进程
+   kill -9 PID (-9表示强迫某个进程立即停止)
+   killall 进程名称
+16.服务管理
+   service 服务名 start|stop|restart|reload|status    (临时生效)
+   systemctl start|stop|restart|reload|status 服务名  (CentOS7,临时生效)
+   chkconfig 可以给每个服务的每个运行级别设置自启动/关闭
+   chkconfig --list | grep 服务名
+   chkconfig 服务名 --list
+   chkconfig --level 5 服务名 on|off
+17.查看服务
+   setup
+   /etc/rc.d/init.d
+18.修改系统启动的运行级别
+   /etc/inittab
+19.查看动态进程
+   top -d 秒数
+       -i 不现实任何闲置或者僵尸进程
+       -p 指定进程ID监控某一个进程
+   交互指令:
+   		P 以CPU使用率排序
+   		M 以内存使用率排序
+   		N 以PID排序
+   		q 退出
+   		输入u,再输入用户名,可以显示某个用户的进程
+   		输入k,再输入PID,可以结束进程
+20.查看网络服务
+   netstat -tnlp
+   netstat -anp
+21.RPM包管理
+   rpm -qa | grep 软件包名
+   rpm -qi firefox 查询软件信息
+   rpm -qi file    查询软件信息
+   rpm -ql 软件包名 查询软件文件安装位置
+   rpm -qf file    查询文件属于哪个软件包
+   rpm -e 软件包名  卸载
+   rpm -e --nodeps foo 强制卸载
+   rpm -ivh 软件包名 
+        i 安装
+        v 提示
+        h 显示安装进度
+22.YUM包管理
+   yum list | grep 软件包名
+   yum install 软件包名 下载安装软件包
+23.防火墙文件配置地址
+   vim /etc/sysconfig/iptables
+   修改后执行:
+   service iptables restart
+24.
+########## Shell ##########
+1. 显示当前系统所有的变量
+   set
+2. 变量
+   变量名=变量值
+   unset 变量名
+   readonly 变量名 (只读变量=>不能unset)
+   A=`ls -la`  (将命令执行的结果赋值给变量)
+   A=$(ls -la) (将命令执行的结果赋值给变量)
+3. 设置环境变量(/etc/profile)
+   export 变量名=变量值 (将Shell变量输出为环境变量)
+   source 配置文件      (让修改后的配置信息立即生效)
+4. 多行注释
+   :<<!  !>>:
+5. 位置参数变量
+   $n $0代表命令本身 $1~$9代表第1到9个参数 10个以上的参数需要用大括号包含${10}
+   $* 代表所有参数,把所有参数看成一个整体
+   $@ 代表所有参数,把所有参数区分对待
+   $# 代表所有参数个数
+6. 预定义变量
+   $$ 获取进程号PID
+   $! 后台运行的最后一个进程号
+   $? 上一个命令执行在状态0:成功;非0:不成功
+7. 运算符
+   $((运算式))
+   $[运算式]
+   expor 运算式 (运算式之间要有空格\*、/、+、-)
+8. 判断语句
+   [ condition ] 非空返回true,可以使用$?验证(0为true,>1为false)
+   = 字符串比较
+   -lt 小于
+   -le 小于等于
+   -eq 等于
+   -gt 大于
+   -ge 大于等于
+   -ne 不等于
+   -r  是否有读取权限
+   -w  是否有写入权限
+   -x  是否有执行权限
+   -f 文件存在并且是一个常规文件
+   -e 文件存在
+   -d 文件存在并且是一个目录
+9. if语句
+   if [ condition ]
+     then
+
+     elif [ condition ]
+     then
+   fi
+10.case语句
+   case $变量名 in
+   "值1")
+
+   ;;
+   *)
+
+   ;;
+   esac
