@@ -1,0 +1,23 @@
+1. 文件编码设置:
+    文本文件编码设置: Window -> Preferences -> General -> Workspace -> Text file encoding -> Other：
+    JSP文件编码设置:  Window -> Preferences -> Web -> JSP Files -> Text file encoding-> Other：
+    properties文件编码设置: Window -> Preferences -> General -> Content Types -> Text -> Java Properties File -> UTF-8 -> Update -> OK
+
+2. 关联jar包以及源文件，doc文件
+    windows -> preferences -> java -> installed jres 目录选中你的安装jres单击edit在选中所有的jre system libraries 单击source attachment 将location path 指向src.zip的目录位置保存退出即可
+
+3. Tomcat配置
+   Window -> Preferences -> Server -> Runtime Environments -> Add -> 选择Apache Tomcat v9.0 -> Browse:D:\Program\Green\64\apache-tomcat-9.0.1
+                                  JRE:jdk1.8.0_144(选择自己安装的jdk版本) -> Finish
+
+4. Maven配置
+        Window -> Preferences -> Maven -> Installations -> Add:
+        Installation home: D:\Program\Green\64\apache-maven-3.5.2
+        Installation name: apache-maven-3.5.2
+
+5. Maven插件安装
+    Helper -> Install New Software... -> 点击Work With:字段边上的Add按钮,
+        Name: m2e
+        Location: http://m2eclipse.sonatype.org/sites/m2e
+        Name: m2e-extras
+        Location: http://m2eclipse.sonatype.org/sites/m2e-extras
