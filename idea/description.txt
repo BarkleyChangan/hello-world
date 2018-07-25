@@ -29,37 +29,37 @@
      */
     h. 设置项目文件编码
     Editor -> File Encodings -> Global Encoding: UTF-8
-     							Project Encoding:UTF-8
-     							Default encoding for properties files:UTF-8(勾选Transparent native-to-ascii conversion)
+     							        Project Encoding:UTF-8
+     							        Default encoding for properties files:UTF-8(勾选Transparent native-to-ascii conversion)
     i. 设置自动编译
-    Build,Execution,Deployment -> Compiler -> Build project automatically
-    										  Compile independent modules in parallel
+    Build,Execution,Deployment -> Compiler -> 勾选Build project automatically
+    										             勾选Compile independent modules in parallel
 4. 快捷键
-   alt + enter      	万能纠错
-   alt + r 				执行
-   alt + up 			向上移动行
-   alt + down 			向下移动行
-   alt + shift + c  	收起所有方法
-   alt + shift + m 		抽取方法
-   alt + shift + r  	重构:修改变量名或方法名
-   alt + shift + s  	生成构造器/get/set/toString
-   alt + shift + x  	打开所有方法
-   alt + shift + z  	生成try...catch
-   ctrl + e 			打开最近修改的文件
-   ctrl + o 			查看类的结构
-   ctrl + w 			关闭当前的tab
-   ctrl + alt + /   	提示方法参数类型
-   ctrl + alt + f   	添加到收藏
-   ctrl + alt + down	向下复制一行
+   alt + enter      	   万能纠错
+   alt + r 				   执行
+   alt + up 			   向上移动行
+   alt + down 			   向下移动行
+   alt + shift + c  	   收起所有方法
+   alt + shift + m 	   抽取方法
+   alt + shift + r  	   重构:修改变量名或方法名
+   alt + shift + s  	   生成构造器/get/set/toString
+   alt + shift + x  	   打开所有方法
+   alt + shift + z  	   生成try...catch
+   ctrl + e 			   打开最近修改的文件
+   ctrl + o 			   查看类的结构
+   ctrl + w 			   关闭当前的tab
+   ctrl + alt + /   	   提示方法参数类型
+   ctrl + alt + f   	   添加到收藏
+   ctrl + alt + down	   向下复制一行
    ctrl + shift + enter 向上开始新的一行
    ctrl + shift + h     查找方法在哪里被调用
-   ctrl + shift + q 	快速搜索类中的错误
-   ctrl + shift + t 	查看源码
-   ctrl + shift + v 	选择要粘贴的内容
+   ctrl + shift + q 	   快速搜索类中的错误
+   ctrl + shift + t 	   查看源码
+   ctrl + shift + v 	   选择要粘贴的内容
    ctrl + shift + w     关闭所有的tab
-   ctrl + shift + x 	打开代码所在硬盘的文件夹  
-   shift + enter		向下开始新的一行
-   shift + shift		查找文件
+   ctrl + shift + x 	   打开代码所在硬盘的文件夹  
+   shift + enter		   向下开始新的一行
+   shift + shift		   查找文件
    
     
    
