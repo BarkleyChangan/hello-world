@@ -29,37 +29,72 @@
      */
     h. 设置项目文件编码
     Editor -> File Encodings -> Global Encoding: UTF-8
-     							        Project Encoding:UTF-8
-     							        Default encoding for properties files:UTF-8(勾选Transparent native-to-ascii conversion)
+     							              Project Encoding:UTF-8
+     							              Default encoding for properties files:UTF-8(勾选Transparent native-to-ascii conversion)
     i. 设置自动编译
     Build,Execution,Deployment -> Compiler -> 勾选Build project automatically
-    										             勾选Compile independent modules in parallel
+    										                      勾选Compile independent modules in parallel
+    j. 调试优化
+    Build,Execution,Deployment -> Debugger -> Transport: Shared memory
+    k. 取消自动更新
+    Appearance & Behavior -> System Settings -> Updates -> 取消勾选Automatically Check updates for
 4. 快捷键
    alt + enter      	   万能纠错
-   alt + r 				   执行
-   alt + up 			   向上移动行
-   alt + down 			   向下移动行
+   alt + r 				       执行
+   alt + up 			       向上移动行
+   alt + down 			     向下移动行
    alt + shift + c  	   收起所有方法
-   alt + shift + m 	   抽取方法
+   alt + shift + m 	     抽取方法
    alt + shift + r  	   重构:修改变量名或方法名
    alt + shift + s  	   生成构造器/get/set/toString
    alt + shift + x  	   打开所有方法
    alt + shift + z  	   生成try...catch
-   ctrl + e 			   打开最近修改的文件
-   ctrl + o 			   查看类的结构
-   ctrl + w 			   关闭当前的tab
+   ctrl + e 			       打开最近修改的文件
+   ctrl + o 			       查看类的结构
+   ctrl + u              调试:查看表达式的值
+   ctrl + w 			       关闭当前的tab
    ctrl + alt + /   	   提示方法参数类型
    ctrl + alt + f   	   添加到收藏
    ctrl + alt + down	   向下复制一行
-   ctrl + shift + enter 向上开始新的一行
-   ctrl + shift + h     查找方法在哪里被调用
+   ctrl + shift + enter  向上开始新的一行
+   ctrl + shift + h      查找方法在哪里被调用
    ctrl + shift + q 	   快速搜索类中的错误
    ctrl + shift + t 	   查看源码
    ctrl + shift + v 	   选择要粘贴的内容
-   ctrl + shift + w     关闭所有的tab
-   ctrl + shift + x 	   打开代码所在硬盘的文件夹  
-   shift + enter		   向下开始新的一行
-   shift + shift		   查找文件
+   ctrl + shift + w      关闭所有的tab
+   ctrl + shift + x 	   打开代码所在硬盘的文件夹
+   ctrl + shift + y      大小写转换
+   shift + enter		     向下开始新的一行
+   shift + shift		     查找文件
+5. 代码模板
+   psvm                  main方法
+   sout/soutm/soutv      System.out.println()
+   fori/itar             for循环
+   iter                  foreach
+   list.for/list.fori/list.forr
+   ifn                   if(xxx == null)
+   inn                   if(xxx != null)
+   psf                   public static final
+   prsf                  private static final
+   psfi                  public static final int
+   psfs                  public static final String
+6. 版本控制
+   Settings -> Version Control -> Git -> Path to Git executable: D:\Program\64\Git\bin\git.exe
+   Settings -> Version Control -> GitHub -> Host: github.com 
+                                            Auth Type: Password
+                                            Login: changan25801@163.com
+                                            Password: ******
+7. Maven配置
+   Build,Execution,Deployment -> Build Tools -> Maven -> 
+    Maven home directory: D:\Program\Green\64\apache-maven-3.5.2
+    User settings file: D:\Program\Green\64\apache-maven-3.5.2\conf\settings.xml
+    Local repository: D:\MavenRepository
+   Build,Execution,Deployment -> Build Tools -> Maven -> Importing -> 勾选Import Maven projects automatically
+8. 缓存和索引清理
+   File -> Invalidate Cache/Restart...
+9. 插件
+   https://plugins.jetbrains.com/   Gsonformat
+
    
     
    
