@@ -14,10 +14,20 @@
                                   JRE:jdk1.8.0_144(选择自己安装的jdk版本) -> Finish
 
 5. Maven配置
+        5.1 配置Maven
         Window -> Preferences -> Maven -> Installations -> Add:
         Installation home: D:\Program\Green\64\apache-maven-3.5.2
         Installation name: apache-maven-3.5.2
 
+        5.2 配置Maven仓库位置
+        Window -> Preferences -> Maven-> User Settings
+        User Settings: D:\Program\Green\64\apache-maven-3.5.2\conf\settings.xml
+        重构索引，即将仓库中的内容让eclipse加载一下
+
+        5.3 重构索引，即将仓库中的内容让eclipse加载一下
+        Show View->Other->Maven Repositories->在Local Repository上右键点击Rebuild Index
+        这样就能在eclipse local Repository中查看我们本地仓库的内容了
+        
 6. Maven插件安装
     Helper -> Install New Software... -> 点击Work With:字段边上的Add按钮,
         Name: m2e
