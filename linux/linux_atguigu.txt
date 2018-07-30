@@ -53,6 +53,7 @@
    chkconfig --level 5 服务名 on|off
 17.查看服务
    setup
+   ntsysv
    /etc/rc.d/init.d
 18.修改系统启动的运行级别
    /etc/inittab
