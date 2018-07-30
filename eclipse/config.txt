@@ -9,34 +9,40 @@
 3. 关联jar包以及源文件，doc文件
     windows -> preferences -> java -> installed jres 目录选中你的安装jres单击edit在选中所有的jre system libraries 单击source attachment 将location path 指向src.zip的目录位置保存退出即可
 
-3. Tomcat配置
+4. 格式化代码长度
+   a. 修改java类文件行长度:
+   Window -> Preferences -> Java-> Code Style -> Formatter -> Edit/Show -> Line Wrapping -> Maximum line width:300
+   b. 修改html、jsp、js的代码行长度
+   Window -> Preferences -> MyEclipse -> Files and Editors -> Html -> Html Source -> Line width -> 加个0
+
+5. Tomcat配置
    Window -> Preferences -> Server -> Runtime Environments -> Add -> 选择Apache Tomcat v9.0 -> Browse:D:\Program\Green\64\apache-tomcat-9.0.1
                                   JRE:jdk1.8.0_144(选择自己安装的jdk版本) -> Finish
                                   
-5. Maven配置
-        5.1 配置Maven
+6. Maven配置
+        6.1 配置Maven
         Window -> Preferences -> Maven -> Installations -> Add:
         Installation home: D:\Program\Green\64\apache-maven-3.5.2
         Installation name: apache-maven-3.5.2
 
-        5.2 配置Maven仓库位置
+        6.2 配置Maven仓库位置
         Window -> Preferences -> Maven-> User Settings
         User Settings: D:\Program\Green\64\apache-maven-3.5.2\conf\settings.xml
         重构索引，即将仓库中的内容让eclipse加载一下
 
-        5.3 重构索引，即将仓库中的内容让eclipse加载一下
+        6.3 重构索引，即将仓库中的内容让eclipse加载一下
         Show View->Other->Maven Repositories->在Local Repository上右键点击Rebuild Index
         这样就能在eclipse local Repository中查看我们本地仓库的内容了
         
-6. Maven插件安装
+7. Maven插件安装
     Helper -> Install New Software... -> 点击Work With:字段边上的Add按钮,
         Name: m2e
         Location: http://m2eclipse.sonatype.org/sites/m2e
         Name: m2e-extras
         Location: http://m2eclipse.sonatype.org/sites/m2e-extras
 
-7. Sping插件下载地址
+8. Sping插件下载地址
    http://download.springsource.com/release/TOOLS/update/3.9.0.RELEASE/e4.7/springsource-tool-suite-3.9.0.RELEASE-e4.7.0-updatesite.zip
 
-8. Hibernate插件下载地址(在线安装)
+9. Hibernate插件下载地址(在线安装)
    http://download.jboss.org/jbosstools/updates/stable/

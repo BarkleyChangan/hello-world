@@ -2,9 +2,11 @@
    -Xms500m
    -Xmx1500m
    -XX:ReservedCodeCacheSize=500m
+   
 2. 视图设置
    View->Toolbar
    View->Tool Buttons
+
 3. Settings
    a. 设置鼠标滚轮修改字体大小
    Editor -> General -> 勾选Change font size(Zoom) with Ctrl+Mouse Wheel
@@ -36,8 +38,16 @@
     										                      勾选Compile independent modules in parallel
     j. 调试优化
     Build,Execution,Deployment -> Debugger -> Transport: Shared memory
+
     k. 取消自动更新
     Appearance & Behavior -> System Settings -> Updates -> 取消勾选Automatically Check updates for
+
+    l. 选择jdk
+       Ctrl + Alt + Shift + S(Project Structure) -> Platform Settings -> SDKs -> Name: 1.8
+          JDK home path: D:\program\install\64\Java\jdk1.8.0_162
+       Settings -> Build,Execution,Deployment -> Compiler -> Java Compiler -> 取消勾选User '--release' option for cross-compilation(Java 9 and later)
+       Project bytecode version: 8
+
 4. 快捷键
    alt + enter      	   万能纠错
    alt + r 				       执行
@@ -66,6 +76,7 @@
    ctrl + shift + y      大小写转换
    shift + enter		     向下开始新的一行
    shift + shift		     查找文件
+
 5. 代码模板
    psvm                  main方法
    sout/soutm/soutv      System.out.println()
@@ -78,20 +89,24 @@
    prsf                  private static final
    psfi                  public static final int
    psfs                  public static final String
+
 6. 版本控制
    Settings -> Version Control -> Git -> Path to Git executable: D:\Program\64\Git\bin\git.exe
    Settings -> Version Control -> GitHub -> Host: github.com 
                                             Auth Type: Password
                                             Login: changan25801@163.com
                                             Password: ******
+
 7. Maven配置
    Build,Execution,Deployment -> Build Tools -> Maven -> 
     Maven home directory: D:\Program\Green\64\apache-maven-3.5.2
     User settings file: D:\Program\Green\64\apache-maven-3.5.2\conf\settings.xml
     Local repository: D:\MavenRepository
    Build,Execution,Deployment -> Build Tools -> Maven -> Importing -> 勾选Import Maven projects automatically
+
 8. 缓存和索引清理
    File -> Invalidate Cache/Restart...
+
 9. 插件
    https://plugins.jetbrains.com/   Gsonformat
 
