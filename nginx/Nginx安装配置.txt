@@ -62,7 +62,14 @@
        tar -zxvf apache-tomcat-9.0.10.tar.gz
     3. 配置防火墙
        iptables -I INPUT -p tcp --dport 8080 -j ACCEPT
+       # 保存配置 
        service iptables save
+       # 重启服务
+       /etc/rc.d/init.d/iptables restart
+       # 查看已开放端口
+       /etc/init.d/iptables status
+       # 删除端口（2表示上面的num列）
+       /sbin/iptables  -D INPUT 2
     4. 查看防火墙状态
        service iptables status
     5. 使用特定用户启动tomcat
