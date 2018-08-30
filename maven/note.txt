@@ -1,0 +1,94 @@
+# POM -> Project Object Model项目对象模型
+
+# 添加环境变量
+  MAVEN_HOME(M2_HOME):  D:\Program\Green\64\apache-maven-3.5.2
+  Path:                 %MAVEN_HOME%\bin
+  
+# 本地仓库默认位置
+  C:\Users\chang\.m2\repository
+
+# 修改默认本地仓库位置
+  D:\Program\Green\64\apache-maven-3.5.2\conf\settings.xml
+  <localRepository>D:\MavenRepository</localRepository>
+
+# Maven坐标
+  groupid:      公司或组织域名倒叙+项目名(com.atguigu.mavenproject)
+  artifactid:   模块名称(HelloWorld)
+  verrsion:     版本(1.0.0)
+
+# Maven生命周期
+  1.Clean Lifecycle
+    pre-clean
+    clean
+    post-clean
+  2.Default Lifecycle*
+
+  3.Site Lifecycle
+    pre-site
+    site
+    post-site
+    site-deploy
+
+  清理: 将以前编译的旧的class字节码文件删除,为下一次编译做准备
+  编译: 将Java源程序编译成class字节码文件
+  测试: 自动测试,自动调用JUnit程序
+  报告: 测试程序执行的结果
+  打包: 动态Web工程打war包,Java工程打jar包
+  安装: 将打包得到的文件复制到仓库的指定位置
+  部署: 将动态Web工程生成的war包复制到Servlet容器的指定目录下,使其可以运行
+
+# 常用命令(执行与构建过程相关的Maven命令必须进入pom.xml所在的目录)
+  mvn clean: 		清理
+  mvn compile: 		编译主程序
+  mvn test-compile: 编译测试程序
+  mvn test: 		执行测试
+  mvn package: 		打包
+  mvn install:      将自己Maven工程添加到本地仓库
+  mvn site:         生成站点
+  mvn deploy:       部署
+
+# 依赖范围scope
+  compile:  
+    对主程序是否有效:   有效
+    对测试程序是否有效: 有效
+    是否参与打包:       参与   
+  test:     
+    对主程序是否有效:   无效
+    对测试程序是否有效: 有效
+    是否参与打包:       不参与
+    典型的例子:         junit
+  provided: 
+    对主程序是否有效:   有效
+    对测试程序是否有效: 有效
+    是否参与打包:       不参与
+    是否参与部署:       不参与
+    典型的例子:         servlet-api.jar
+
+# eclipse中使用Maven
+  指定Maven核心程序位置
+  Windows -> Preferences -> Maven -> Installations -> Add ->
+  Installation home: D:\Program\Green\64\apache-maven-3.5.2
+  Installation name: apache-maven-3.5.2
+  
+  指定conf/settings.xml文件的位置,进而获取本地仓库的位置
+  Windows -> Preferences -> Maven -> User Settings ->
+  User Settings: D:\Program\Green\64\apache-maven-3.5.2\conf\settings.xml
+  
+  设置通过Maven创建工程的JDK版本
+  1. 打开settings.xml文件
+  2. 找到profiles标签
+  3. 加入如下配置
+  <profile>
+    <id>jdk-1.8</id>
+    <activation>
+        <activeByDefault>true</activeByDefault>
+        <jdk>1.8</jdk>
+    </activation>
+    <properties>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.compilerVersion>1.8</maven.compiler.compilerVersion>
+    </properties>
+  </profile>
+
+# 非Compile范围的以来不能传递
