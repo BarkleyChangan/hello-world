@@ -1,0 +1,22 @@
+# 创建线程池
+  int poolSize = Runtime.getRuntime().availableProcessors() * 2;
+  BlockingQueue<Runnable> queue = new ArrayBlockingQueue<>(512);
+  RejectedExecutionHandler policy = new ThreadPoolExecutor.DiscardPolicy();
+  ThreadPoolExecutor executor = new ThreadPoolExecutor(poolSize, poolSize, 0, TimeUnit.SECONDS, queue, policy);
+
+# 提交多个任务获取多个结果
+  void solve(Executor executor, Collection<Callable<String>> solvers) throws InterruptedException, ExecutionException {
+    CompletionService<String> ecs = new ExecutorCompletionService<>(executor);
+
+    for (Callable<String> s : solvers) {
+         ecs.submit(s);
+    }
+
+    int n = solvers.size();
+
+    for (int i = 0; i < n; i++) {
+        String result = ecs.take().get();
+
+        // TODO
+    }
+ }
