@@ -1,0 +1,56 @@
+用户变量:
+	SET @用户变量名=值;
+	SET @用户变量名:=值;
+	SELECT @用户变量名:=值;
+	SELECT 字段 INTO @变量名 FROM 表;
+	SELECT @用户变量名;
+局部变量(应用在begin...end中的第一句):
+	DECLARE 局部变量名 类型;
+	DECLARE 局部变量名 类型 DEFAULT 值;
+	
+	SET 局部变量名=值;
+	SET 局部变量名:=值;
+	SELECT @局部变量名:=值;
+	SELECT 字段 INTO 局部变量名 FROM 表;
+	SELECT 局部变量名;
+
+[标签:]WHILE 循环条件 DO
+  循环体;
+END WHILE [标签];
+
+[标签] LOOP
+  循环体;
+END LOOP [标签];
+
+[标签] REPEAT
+  循环体;
+UNTIL 结束循环的条件
+END REPEAT [标签];
+
+CREATE OR REPLACE VIEW myv1 
+AS
+  SELECT AVG(salary),job_id FROM employees GROUP BY job_id;
+
+
+DROP FUNCTION IF EXISTS test_if;
+DELIMITER $
+CREATE FUNCTION test_if(score INT)RETURNS CHAR
+BEGIN
+	IF score>=90 THEN RETURN 'A';
+	ELSEIF score>=80 THEN RETURN 'B';
+	ELSEIF score>=60 THEN RETURN 'C';
+	ELSE RETURN 'D';
+	END IF;
+END $
+DELIMITER ;
+SELECT test_if(100);
+
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS `myp7`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `myp7`(INOUT a INT, INOUT b INT)
+BEGIN
+	SET a:=a*2;
+	SET b:=b*3;
+END$$
+DELIMITER ;

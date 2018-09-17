@@ -17,6 +17,16 @@
 # 加锁的方式：自动加锁。对于UPDATE、DELETE和INSERT语句，InnoDB会自动给涉及数据集加排他锁；对于普通SELECT语句，InnoDB不会加任何锁；当然我们也可以显示的加锁：
   共享锁：select * from tableName where ... + lock in share more
   排他锁：select * from tableName where ... + for update
+
+  select * from table where ? lock in share mode; （加S锁）
+  select * from table where ? for update; （加X锁）
+  insert, update, delete 操作前会先进行一次当前读（加X锁）
+  innoDB对select语句支持两种锁定读(意向锁Intention Locks)：
+  1）SELECT...FOR UPDATE:
+  对读取的行加排它锁（X锁）,其他事务不能对已锁定的行再加任何锁。
+  2 ) SELECT...LOCK IN SHARE MODE:
+  对读取的行加共享锁（S锁）,其他事务可以再加S锁,X锁会阻塞等待。
+  注：这两种锁都必须处于事务中，事务commit，锁释放。所以必须begin或者start transaction 开启一个事务或者索性set autocommit=0把自动提交关掉（mysql默认是1，即执行完sql立即提交）
 # 分析行锁定: 通过检查InnoDB_row_lock 状态变量分析系统上的行锁的争夺情况 show status like 'innodb_row_lock%'
   innodb_row_lock_current_waits: 当前正在等待锁定的数量
   innodb_row_lock_time: 		 从系统启动到现在锁定总时间长度；非常重要的参数，

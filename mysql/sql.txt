@@ -227,6 +227,10 @@ SHOW INDEX FROM book;
 NOW()
 SYSDATE()
 
+# 字符串与日期转换
+SELECT STR_TO_DATE('2018-9-1 14:25:12','%Y-%m-%d %H:%i:%s');
+SELECT DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s');
+
 # UTC时间
 UTC_DATE()
 UTC_TIME()

@@ -1,0 +1,111 @@
+# 解决MySQL 5.5.48依赖问题
+yum -y install glibc.i686
+yum -y install libncurses.so.5
+yum -y install libaio.so.1
+yum -y install libz.so.1
+
+# 查看是否安装过MySQL
+rpm -qa | grep -i mysql
+rpm -e --nodeps  mysql-libs-5.1.73-8.el6_8.x86_64
+
+# 安装MySQL的Server端
+rpm -ivh MySQL-server-5.5.48-1.el6.x86_64.rpm 
+rpm -ivh MySQL-client-5.5.48-1.el6.x86_64.rpm
+
+# 查看安装是否成功(安装路径:/var/lib/mysql/)
+ps -ef | grep mysql
+mysqladmin --version
+
+# 启动MySQL服务
+  Starting MySQL...The server quit without updating PID file (/var/lib/mysql/localhost.localdomain.pid).
+  [ERROR] Fatal error: Can't open and lock privilege tables: Table 'mysql.host' doesn't exist
+  1. mysql_install_db(初始化MySQL)
+  2. chown -R mysql:mysql /var/lib/mysql(给MySQL安装目录赋予权限)
+  3. service mysql start
+  4. service mysql stop
+  5. service mysql restart
+
+# 设置MySQL开机自启动
+chkconfig mysql on
+chkconfig --list | grep mysql
+ntsysv
+setup
+
+# 设置root密码
+/usr/bin/mysqladmin -u root password Server2008
+
+# 开放端口和IP地址
+iptables -I INPUT -p tcp --dport 3306 -j ACCEPT
+service iptables save
+service iptables restart
+service iptables status(查看开放端口)
+
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY 'Server2008' WITH GRANT OPTION;
+flush privileges;
+use mysql;
+select user,host from user;
+
+# MySQL相关路径说明
+/var/lib/mysql/		MySQL数据库文件的存放路径		/var/lib/mysql/localhost.localdomain.pid
+/usr/share/mysql    配置文件目录					MySQL.server命令以及配置文件
+/usr/bin			相关命令目录					mysqladmin,mysqldump等命令
+/etc/init.d/mysql   MySQL服务相关脚本
+
+# 拷贝MySQL配置文件
+cp /usr/share/mysql/my-huge.cnf /etc/my.cnf
+
+# 修改字符集编码
+[client]
+default-character-set=utf8
+
+[mysqld]
+character_set_server=utf8
+character_set_client=utf8
+collation-server=utf8_general_ci
+
+[mysql]
+default-character-set=utf8
+
+# 查看表锁
+SHOW OPEN TABLES;
+SHOW STATUS LIKE 'table%';
+
+# 查看行锁
+show status like 'innodb_row_lock%';
+
+# 锁定一行
+begin
+select * fro test_innodb_lock where id=8 for update;
+select * from test_innodb_lock where id=8 lock in share mode;
+
+# 强制指定索引查询
+SELECT * FROM `yrd_pay_flow` FORCE INDEX(`idx_trxn_date`) WHERE trxn_date > '2017-08-12 59:59:59' AND trxn_date<'2016-06-23 00:00:00';
+
+# 主从复制
+主机配置
+log-bin=自己本地路径/mysqlbin
+log-err=自己本地路径/mysqlerr
+basedir=自己本地路径
+tmpdir=自己本地路径
+datadir=自己本地路径/data
+binlog-ignore-db=mysql
+binlog-do-db=test
+
+主机执行:
+GRANT REPLICATION SLAVE ON *.* TO 'z3'@'从机IP' IDENTIFIED BY '123456';
+flush privileges;
+show master status;
+
+从机执行:
+CHANGE MASTER TO MASTER_HOST='192.168.14.165',
+MASTER_USER='z3',
+MASTER_PASSWORD='123456',
+MASTER_LOG_FILE='mysqlbin.000012',
+MASTER_LOG_POS=4386;
+
+start slave;
+stop slave;
+show slave status\G;
+
+Slave_IO_Running: Yes
+Slave_SQL_Running: Yes
