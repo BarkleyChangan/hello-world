@@ -11,24 +11,57 @@
   D:\Program\Green\64\apache-maven-3.5.2\conf\settings.xml
   <localRepository>D:\MavenRepository</localRepository>
 
+# 修改默认中央仓库地址
+<mirrors>
+  <mirror>
+    <id>nexus-aliyun</id>  
+    <mirrorOf>*,!jeecg,!jeecg-snapshots</mirrorOf>  
+    <name>Nexus aliyun</name>  
+    <url>http://maven.aliyun.com/nexus/content/groups/public</url>  
+  </mirror>
+</mirrors>
+
 # Maven坐标
   groupid:      公司或组织域名倒叙+项目名(com.atguigu.mavenproject)
   artifactid:   模块名称(HelloWorld)
   verrsion:     版本(1.0.0)
 
 # Maven生命周期
-  1.Clean Lifecycle
-    pre-clean
-    clean
-    post-clean
-  2.Default Lifecycle*
+  1.Clean Lifecycle: 在进行真正的构建之前进行一些清理工作
+    pre-clean: 在实际的项目清理之前执行所需的过程
+    clean:     删除前一个构建生成的所有文件
+    post-clean:执行完成项目清理所需的过程
+  2.Default Lifecycle: 构建的核心部分，编译，测试，打包，部署等等
+    validate            验证项目是正确的，所有必要的信息都是可用的
+    initialize          初始化构建状态，例如设置属性或创建目录
+    generate-sources    生成包含在编译中的任何源代码
+    process-sources     处理源代码，例如过滤任何值
+    generate-resources  生成包含在包中的资源
+    process-resources   将资源复制并处理到目标目录中，准备打包
+    compile             编译项目的源代码
+    process-classes     从编译后生成生成的文件，例如在Java类上执行字节码增强。
+    generate-test-sources   生成包含在编译中的任何测试源代码
+    process-test-sources    处理测试源代码，例如过滤任何值
+    generate-test-resources 为测试创建资源。
+    process-test-resources  将资源复制并处理到测试目标目录中
+    test-compile            将测试源代码编译到测试目标目录
+    process-test-classes    从测试编译后post-process生成文件，例如在Java类上执行字节码增强。对于Maven 2.0.5和以上
+    test             使用合适的单元测试框架运行测试。这些测试不应该要求打包或部署代码。
+    prepare-package 在实际包装前执行必要的准备工作。这通常会导致包的一个未打包的、经过处理的版本。(Maven 2.1及以上)
+    package          使用已编译的代码，并将其打包成可部署格式，例如JAR。
+    pre-integration-test  执行集成测试之前需要执行的操作。这可能涉及到设置所需的环境等问题。
+    integration-test  在需要集成测试的环境中，处理并部署包。
+    post-integration-test 执行集成测试后所需要的操作。这可能包括清理环境。
+    verify                运行任何检查以验证包是否有效，并满足质量标准。
+    install               将该包安装到本地存储库中，作为本地其他项目的依赖项。
+    deploy                集成或发布环境中完成，将最终包复制到远程存储库中，以便与其他开发人员和项目共享。
+  3.Site Lifecycle: 生成项目报告，站点，发布站点
+    pre-site        在实际的项目站点生成之前执行过程     
+    site            生成项目的站点文档
+    post-site       执行确定站点生成的过程，并为站点部署做好准备
+    site-deploy     将生成的站点文档部署到指定的web服务器
 
-  3.Site Lifecycle
-    pre-site
-    site
-    post-site
-    site-deploy
-
+  编译、测试、打包、集成测试、验证、部署
   清理: 将以前编译的旧的class字节码文件删除,为下一次编译做准备
   编译: 将Java源程序编译成class字节码文件
   测试: 自动测试,自动调用JUnit程序
@@ -38,31 +71,43 @@
   部署: 将动态Web工程生成的war包复制到Servlet容器的指定目录下,使其可以运行
 
 # 常用命令(执行与构建过程相关的Maven命令必须进入pom.xml所在的目录)
-  mvn clean: 		清理
-  mvn compile: 		编译主程序
-  mvn test-compile: 编译测试程序
-  mvn test: 		执行测试
-  mvn package: 		打包
-  mvn install:      将自己Maven工程添加到本地仓库
-  mvn site:         生成站点
-  mvn deploy:       部署
+  mvn clean: 		      清理
+  mvn compile: 		    编译主程序
+  mvn test-compile:   编译测试程序
+  mvn test: 		      执行测试
+  mvn package: 		    打包
+  mvn install:        将自己Maven工程添加到本地仓库
+  mvn site:           生成站点
+  mvn deploy:         部署
+
+  mvn idea:idea       将项目转换成IDEA项目
 
 # 依赖范围scope
   compile:  
-    对主程序是否有效:   有效
-    对测试程序是否有效: 有效
-    是否参与打包:       参与   
-  test:     
-    对主程序是否有效:   无效
-    对测试程序是否有效: 有效
-    是否参与打包:       不参与
-    典型的例子:         junit
-  provided: 
-    对主程序是否有效:   有效
-    对测试程序是否有效: 有效
-    是否参与打包:       不参与
-    是否参与部署:       不参与
-    典型的例子:         servlet-api.jar
+    编译:   Y
+    测试:   Y
+    运行时: Y
+    例子:   sping-core
+  test:    
+    编译:   N
+    测试:   Y
+    运行时: N
+    例子:   JUnit
+  provided:
+    编译:   Y
+    测试:   Y
+    运行时: N
+    例子:   servlet-api
+  runtime:
+    编译:   N
+    测试:   Y
+    运行时: Y
+    例子:   JDBC驱动
+  system:必须通过systemPath元素显示的指定依赖文件
+    编译:   Y
+    测试:   Y
+    运行时: N
+    例子:   本地的,Maven仓库之外的类库文件
 
 # eclipse中使用Maven
   指定Maven核心程序位置
@@ -78,17 +123,24 @@
   1. 打开settings.xml文件
   2. 找到profiles标签
   3. 加入如下配置
-  <profile>
-    <id>jdk-1.8</id>
-    <activation>
-        <activeByDefault>true</activeByDefault>
-        <jdk>1.8</jdk>
-    </activation>
-    <properties>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-        <maven.compiler.compilerVersion>1.8</maven.compiler.compilerVersion>
-    </properties>
+  <profile>   
+    <id>jdk1.7</id>    
+    <activation>   
+        <activeByDefault>true</activeByDefault>    
+        <jdk>1.7</jdk>   
+    </activation>    
+    <properties>   
+        <maven.compiler.source>1.7</maven.compiler.source>    
+        <maven.compiler.target>1.7</maven.compiler.target>    
+        <maven.compiler.compilerVersion>1.7</maven.compiler.compilerVersion>   
+    </properties>   
   </profile>
 
-# 非Compile范围的以来不能传递
+# 非Compile范围的依赖不能传递
+
+# Maven的版本规范
+<major version>.<minor version>.<incremental version>-<qualifier>
+maven自己判断版本的算法是major,minor,incremental部分用数字比较，qualifier部分用字符串比较，所以要小心 alpha-2和alpha-15的比较关系，最好用 alpha-02的格式。
+
+# 如何寻找jar包
+http://mvnrepository.com/
