@@ -369,6 +369,10 @@ cat /dev/null > catalina.out
 
 # 后台进程
 tar -zpcf /tmp/etc.tar.gz /etc &
+
+# 使用16进制打开class文件
+vim test.class
+然后在交互模式下,输入:%!xxd即可
 ***************** 开发 *****************
 
 ***************** Daemon Service *****************
