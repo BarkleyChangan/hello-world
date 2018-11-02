@@ -1,0 +1,193 @@
+# 前提条件
+CentOS7,要求系统为64位、系统内核版本为3.10以上
+cat /etc/redhat-release
+CentOS6.5或更高版本,要求系统为64位、系统内核版本为2.6.32-431或更高版本
+uname -r
+
+# Docker三大核心
+镜像(Image):      一个只读模板,镜像可以用来创建Docker容器,一个镜像可以创建很多容器
+容器(Container):  容器是用镜像创建的运行实例
+仓库(Repository): 集中存放镜像的场所 https://hub.docker.com
+
+# 安装
+CentOS6.8安装Docker
+1. yum install -y epel-release
+2. yum install -y docker-io
+3. 安装后配置文件: /etc/sysconfig/docker
+4. 启动Docker后台服务: servie docker start
+5. docker version验证:
+
+CentOS7安装Docker:
+1. 官网中文安装参考手册
+https://docs.docker-cn.com/engine/installation/linux/docker-ce/centos
+2. 确定你是CentOS7及以上版本
+cat /etc/redhat-release
+3. yum安装gcc相关
+yum -y install gcc 
+yum -y install gcc-c++
+gcc -v
+4. 卸载Docker旧版本
+sudo yum remove docker docker-client docker-client-latest docker-common docker-latest docker-latest-logrotate docker-logrotate docker-selinux  docker-engine-selinux docker-engine
+5. 安装需要的软件包
+sudo yum install -y yum-utils device-mapper-persistent-data lvm2
+6. 设置stable镜像仓库
+sudo yum-config-manager --add-repo https://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
+cat /etc/yum.repos.d/docker-ce.repo
+7. 更新yum软件包索引
+yum makecache fast
+8. 安装DockerCE
+yum -y install docker-ce
+9. 启动Docker
+systemctl start docker
+10. 测试
+docker version
+docker run hello-world
+docker images
+11. 配置镜像加速
+mkdir -p /etc/docker
+vim /etc/docker/daemon.json
+
+a. 网易云
+{"registry-mirrors":["http://hub-mirror.c.163.com"]}
+b. 阿里云
+{"registry-mirrors":["https://e71pr2ry.mirror.aliyuncs.com"]}
+
+systemctl daemon-reload
+systemctl restart docker
+12. 卸载
+systemctl stop docker
+yum -y remove docker-ce
+rm -rf /var/lib/docker
+
+# 阿里云镜像加速
+CentOS6.8:
+1. vim /etc/sysconfig/docker
+2. other_args="--registry-mirror=https://e71pr2ry.mirror.aliyuncs.com"
+3. service docker restart
+4. ps -ef | grep docker
+root 733 1 10 22:58 pts/1 00:00:00 /usr/bin/docker -d --registry-mirror=https://e71pr2ry.mirror.aliyuncs.com
+
+CentOS7:
+1. sudo mkdir -p /etc/docker
+2. sudo vim /etc/docker/daemon.json
+{
+  "registry-mirrors": ["https://e71pr2ry.mirror.aliyuncs.com"]
+}
+3. sudo systemctl daemon-reload
+4. sudo systemctl restart docker
+
+# 常用命令
+1. 帮助命令
+docker version
+docker info
+docker --help
+
+2. 镜像命令
+docker images
+               -a All
+               -q 只显示镜像ID
+               --digests  显示镜像的摘要信息
+               --no-trunc 显示完整镜像ID
+docker search 
+               -s 30 tomcat       列出收藏数不小于指值的镜像
+               --no-trunc tomcat  显示完整的镜像描述
+               --automated tomcat 只列出automated build类型的镜像
+https://hub.docker.com/
+
+docker pull tomcat[:TAG] 从仓库拉取镜像(等价于docker pull tomcat:latest)
+docker rmi  删除某个镜像(等价于docker rmi tomcat:latest)
+            -f tomcat               强制删除
+            -f $(docker images -qa) 全部删除
+docker history 镜像ID： 查看指定镜像的创建历史       
+docker commit 提交容器副本是指成为一个新的镜像
+docker commit -m="提交的描述信息" -a="作者" 容器ID 要创建的目标镜像名:[标签名]
+docker commit -m="tomcat without docs" -a="zzyy" 6ebfb1adb919 atguigu/mytomcat:1.2
+docker tag [镜像ID] [镜像名]:[新的标签名]: 为镜像添加一个新的标签
+
+本地镜像推送阿里云:
+docker login --username= registry.cn-hangzhou.aliyuncs.com
+docker tag 镜像ID registry.cn-hangzhou.aliyuncs.com/zzyybuy/mycentos:[镜像版本号]
+docker push registry.cn-hangzhou.aliyuncs.com/zzyybuy/mycentos:[镜像版本号]
+
+3. 容器命令
+docker run [OPTIONS] IMAGE [COMMAND] [ARG...]
+           --name "容器新名字":为容器指定一个名称
+           -d                 后台运行容器,并返回容器ID
+           -i                 允许你对容器内的标准输入(STDIN)进行交互
+           -t                 在新容器内指定一个伪终端或终端
+           -P                 随机端口
+           -p                 指定端口: 
+                                        ip:hostPort:containerPort
+                                        ip::containerPort
+                                        hostPort:containerPort
+                                        containerPort
+docker ps 列出当前所有正在运行的容器
+          -a 显示当前所有正在运行的容器+历史上运行过的容器
+          -l 显示最近创建的容器
+          -n 显示最近n个创建的容器
+          -q 静默模式,只显示容器编号
+          --no-trunc 不截断输出
+
+exit     容器停止退出
+ctrl+P+Q 容器不停止退出
+docker start   启动容器
+docker restart 重启容器
+docker stop    停止容器
+docker kill    强制停止容器
+docker rm      删除已停止的容器
+docker rm -f   强制删除容器
+docker rm -f $(docker ps -aq)       一次性删除多个容器
+docker ps -aq | xargs docker rm     一次性删除多个容器
+docker logs -f -t --tail 10 容器ID：查看容器日志
+            -f: 让 docker logs 像使用 tail -f一样来输出容器内部的标准输出
+docker top 容器ID:                  查看容器内运行的进程
+docker inspect 容器ID:              查看容器内部细节
+docker port 容器ID：                查看容器端口映射到宿主机端口
+docker exec -it 容器ID /bin/bash:   重新进入容器并以命令交互(是在容器中打开终端,并且可以启动新的进程) 
+docker attach 容器ID:               重新进入容器并以命令交互(直接进入容器启动命令终端,不会启动新的进程)
+docker cp 容器ID:/tmp/yum.log /root:     从容器内拷贝文件到主机
+
+4. 数据卷
+docker run -it -v /宿主机绝对路径:/容器内的目录[:ro] [--privileged=true] 镜像名
+docker run -it -v /myDataVolumn:/dataVolumnContainer centos
+
+5. Dockerfile
+生成自己的镜像
+docker build -f /mydocker/Dockerfile -t zzyy/centos .
+             -t ：指定要创建的目标镜像名
+              . ：Dockerfile 文件所在目录，可以指定Dockerfile 的绝对路径
+--volumes-from:继承doc01的数据卷,实现数据卷共享
+docker run -it --name doc02 --volumes-from doc01 zzyy/centos
+
+
+# 案例
+1. 安装MySQL
+docker search mysql
+docker pull mysql:5.6
+docker images mysql
+docker run -p3306:3306 --name mysql56 -v /zzyyuse/mysql/conf:/etc/mysql/conf.d -v /zzyyuse/mysql/logs:/logs -v /zzyyuse/mysql/data:/var/lib/mysql -e MYSQL_ROOT_PASSWOR=Server2008 -d mysql:5.6
+docker exec ba194da55684 sh -c 'exec mysqldump --all-database -uroot -p"Server2008"' > /zzyyuse/all-databases.sql
+
+2. 安装Redis
+docker search redis
+docker pull redis:3.2
+docker images redis
+docker run -p 6379:6379 -v /zzyyuse/myredis/data:/data -v /zzyyuse/myredis/conf/redis.conf:/usr/local/etc/redis/redis.conf -d redis:3.2 redis-server /usr/local/etc/redis/redis.conf --appendonly yes
+docker ps
+docker exec -it ce38c8665cd5 redis-cli
+
+# 问题汇总
+1. Error running DeviceCreate (createSnapDevice) dm_task_run failed__docker
+service docker stop
+thin_check /var/lib/docker/devicemapper/devicemapper/metadata
+thin_check --clear-needs-check-flag /var/lib/docker/devicemapper/devicemapper/metadata
+service docker start
+
+2. ApplyLayer exit status 1 stdout:  stderr: read-only file system
+service docker stop
+rm -rf /var/lib/docker/
+service docker start
+
+3. error pulling image configuration: Get https://production.cloudflare.docker.com/registry-v2/docker/registry/v2/blobs/sha256/4a/4ab4c602aa5eed5528a6620ff18a1dc4faef0e1ab3a5eddeddb410714478c67f/data?verify=1541143423-6%2BUjQFotUGqJMZg%2FfUY1SRgx41o%3D: net/http: TLS handshake timeout.
+CentOS7上需要先配置镜像加速
+
