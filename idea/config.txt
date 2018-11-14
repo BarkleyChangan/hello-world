@@ -1,7 +1,13 @@
 1. \bin\idea64.exe.vmoptions
+   \bin\idea.exe.vmoptions
    -Xms500m
    -Xmx1500m
    -XX:ReservedCodeCacheSize=500m
+
+   -Xms1024m
+   -Xmx4096m
+   -XX:ReservedCodeCacheSize=1024m
+   -XX:+UseCompressedOops
    
 2. 视图设置
    View->Toolbar
@@ -59,13 +65,24 @@
    alt + shift + s  	   生成构造器/get/set/toString
    alt + shift + x  	   打开所有方法
    alt + shift + z  	   生成try...catch
+   alt + 7               查看一个类里面有那些方法
+   alt + F8              debug时计算表达式
+
    ctrl + e 			       打开最近修改的文件
    ctrl + o 			       查看类的结构
    ctrl + u              调试:查看表达式的值
    ctrl + w 			       关闭当前的tab
+   ctrl + F12            查看一个类里面有那些方法
+   ctrl + b              查看某个方法被那些地方调用
+
    ctrl + alt + /   	   提示方法参数类型
    ctrl + alt + f   	   添加到收藏
    ctrl + alt + down	   向下复制一行
+   ctrl + alt + F7       查看一个类里面定义的变量在那些地方被调用
+   ctrl + alt + b        需要看一个类/方法的实现类/方法
+   ctrl + alt + h        查看某个方法的调用链关系
+   ctrl + alt + 左方向键  debug时跳回来
+
    ctrl + shift + enter  向上开始新的一行
    ctrl + shift + h      查找方法在哪里被调用
    ctrl + shift + q 	   快速搜索类中的错误
@@ -74,6 +91,7 @@
    ctrl + shift + w      关闭所有的tab
    ctrl + shift + x 	   打开代码所在硬盘的文件夹
    ctrl + shift + y      大小写转换
+
    shift + enter		     向下开始新的一行
    shift + shift		     查找文件
 
