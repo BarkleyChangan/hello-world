@@ -1,28 +1,57 @@
-1. 文件编码设置:
-    文本文件编码设置: Window -> Preferences -> General -> Workspace -> Text file encoding -> Other：
-    JSP文件编码设置:  Window -> Preferences -> Web -> JSP Files -> Text file encoding-> Other：
-    properties文件编码设置: Window -> Preferences -> General -> Content Types -> Text -> Java Properties File -> UTF-8 -> Update -> OK
+1. jdk编译版本
+   Window -> Preferences -> Java -> Java Compiler -> Compiler compliance level: 1.8
 
-2. 自动提示
-   Window -> Preferences  -> Java  -> Editor  -> Content Assist -> Auto Activation triggers for Java: abcdefghijklmnopqrstuvwxyz.
+2. Java运行环境jre
+   Window -> Preferences -> Java -> Installed JREs -> Add
 
-3. 关联jar包以及源文件，doc文件
+3. Web Server配置
+   Window -> Preferences -> Server -> Runtime Environments -> Add
+
+4. Tomcat配置
+   Window -> Preferences -> Server -> Runtime Environments -> Add -> 选择Apache Tomcat v9.0 -> Browse:D:\Program\Green\64\apache-tomcat-9.0.1
+                                  JRE:jdk1.8.0_144(选择自己安装的jdk版本) -> Finish
+   双击Server(删除Tomcat已部署的项目并右键Server -> Clean):
+   a. Open launch configuration -> Arguments(参数配置):
+      -Xms128M -Xmx512M -XX:PermSize=512m -XX:MaxPermSize=1024m
+   b. Server Location -> Use Tomcat installation (takes control of Tomcat installation)
+      Server Path: ...
+      Deploy path: ...
+   c. Server Options -> Publish module contexts to separate XML files
+                        Modules auto reload by default
+
+5. 设置字符集:
+   Window -> Preferences -> General -> Content TypeS -> Text -> JSP
+   Window -> Preferences -> General -> Content Types -> Text -> Java Properties File
+   Window -> Preferences -> General -> Workspace面板 -> 
+             Text file encoding -> UTF-8
+             New text file line delimiter -> Unix
+   Window -> Preferences -> Web -> JSP Files -> ISO 10646/Unicode(UTF-8)
+
+6. 修改eclipse.ini配置运行内存
+  -Xms256m
+  -Xmx1024m
+  -XX:PermSize=512m
+  -XX:MaxPermSize=1024m
+
+7. 代码提示
+   Window -> Preferences  -> Java  -> Editor  -> Content Assist -> Auto Activation triggers for Java: .abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ
+
+8. 关联jar包以及源文件，doc文件
     windows -> preferences -> java -> installed jres 目录选中你的安装jres单击edit在选中所有的jre system libraries 单击source attachment 将location path 指向src.zip的目录位置保存退出即可
 
-4. 格式化代码长度
+9. 格式化代码长度
    a. 修改java类文件行长度:
    Window -> Preferences -> Java-> Code Style -> Formatter -> Edit/Show -> Line Wrapping -> Maximum line width:300
    b. 修改html、jsp、js的代码行长度
    Window -> Preferences -> MyEclipse -> Files and Editors -> Html -> Html Source -> Line width -> 加个0
 
-5. Tomcat配置
-   Window -> Preferences -> Server -> Runtime Environments -> Add -> 选择Apache Tomcat v9.0 -> Browse:D:\Program\Green\64\apache-tomcat-9.0.1
-                                  JRE:jdk1.8.0_144(选择自己安装的jdk版本) -> Finish
-   双击Server(删除Tomcat已部署的项目并右键Server -> Clean) ->
-        Server Location -> 选中Use Tomcat installation (takes control of Tomcat installation)
-        Server Options -> 选中Publish module contexts to separate XML files
+10. 设置New中显示的菜单
+   windows -> Perspective -> Customize Perspective... -> Shortcuts ->
+        取消勾选EJB、JavaEE、JPA
+        Maven -> 全部勾选
+        Java -> Annotation、Class、Enum、Interface、Java Project、Package、Source Folder 
                                   
-6. Maven配置
+11. Maven配置
         6.1 配置Maven
         Window -> Preferences -> Maven -> Installations -> Add:
         Installation home: D:\Program\Green\64\apache-maven-3.5.2
@@ -37,15 +66,21 @@
         Show View->Other->Maven Repositories->在Local Repository上右键点击Rebuild Index
         这样就能在eclipse local Repository中查看我们本地仓库的内容了
         
-7. Maven插件安装
+12. Maven插件安装
     Helper -> Install New Software... -> 点击Work With:字段边上的Add按钮,
         Name: m2e
         Location: http://m2eclipse.sonatype.org/sites/m2e
         Name: m2e-extras
         Location: http://m2eclipse.sonatype.org/sites/m2e-extras
 
-8. Sping插件下载地址
+13. Sping插件下载地址
    http://download.springsource.com/release/TOOLS/update/3.9.0.RELEASE/e4.7/springsource-tool-suite-3.9.0.RELEASE-e4.7.0-updatesite.zip
 
-9. Hibernate插件下载地址(在线安装)
+14. Hibernate插件下载地址(在线安装)
    http://download.jboss.org/jbosstools/updates/stable/
+
+15. SVN插件安装
+    Help -> Install New Software… -> Add.. --> 输入Name -> 输入地址：http://subclipse.tigris.org/update_1.8.x
+    注意: 采用下面两种方法来提升安装更新的速度：
+    a. Windows -> Preferences -> Install/Update -> Available Software Sites，将里面不用的信息删除，将本次更新不需要的停用（选中之后然后点右边的Disable按钮）。
+    b. 在线安装插件的Install窗口,将下面的Contact all update sites during install to find required software前面的选项去掉

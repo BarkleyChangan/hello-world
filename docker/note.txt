@@ -15,7 +15,7 @@ CentOS6.8安装Docker
 2. yum install -y docker-io
 3. 安装后配置文件: /etc/sysconfig/docker
 4. 启动Docker后台服务: servie docker start
-5. docker version验证:
+5. docker version验证: docker -v
 
 CentOS7安装Docker:
 1. 官网中文安装参考手册
@@ -98,6 +98,8 @@ docker pull tomcat[:TAG] 从仓库拉取镜像(等价于docker pull tomcat:lates
 docker rmi  删除某个镜像(等价于docker rmi tomcat:latest)
             -f tomcat               强制删除
             -f $(docker images -qa) 全部删除
+docker rm   移除一个或多个镜像
+       docker image rm nginx
 docker history 镜像ID： 查看指定镜像的创建历史       
 docker commit 提交容器副本是指成为一个新的镜像
 docker commit -m="提交的描述信息" -a="作者" 容器ID 要创建的目标镜像名:[标签名]
@@ -108,6 +110,13 @@ docker tag [镜像ID] [镜像名]:[新的标签名]: 为镜像添加一个新的
 docker login --username= registry.cn-hangzhou.aliyuncs.com
 docker tag 镜像ID registry.cn-hangzhou.aliyuncs.com/zzyybuy/mycentos:[镜像版本号]
 docker push registry.cn-hangzhou.aliyuncs.com/zzyybuy/mycentos:[镜像版本号]
+
+docker load 加载一个镜像从tar压缩包或者标准输入
+       docker image load < redis_img.tar.gz
+docker save 保存一个或者多个镜像到tar压缩包，默认情况下流式传输到
+       docker image save  nginx > /tmp/nginx.tar.gz
+docker inspect 显示一个一个或多个镜像的详细信息
+docker prune 移除没有被使用的镜像
 
 3. 容器命令
 docker run [OPTIONS] IMAGE [COMMAND] [ARG...]

@@ -1,0 +1,30 @@
+1. 环境配置
+   cd /tmp && wget --no-check-certificate --no-cookies --header "Cookie: oraclelicense=accept-securebackup-cookie" http://download.oracle.com/otn-pub/java/jdk/8u131-b11/d54c1d3a095b4ff2b6607d096fa80163/jdk-8u131-linux-x64.rpm
+   rpm -ivh jdk-8u131-linux-x64.rpm
+   环境变量：
+    vi + /etc/profile 
+    JAVA_HOME=/usr/java/jdk1.8.0_131 
+    CLASSPATH=.:$JAVA_HOME/lib.tools.jar 
+    PATH=$JAVA_HOME/bin:$PATH export 
+    JAVA_HOME CLASSPATH PATH
+
+2. 安装
+    # 安装wget
+    yum install wget -y
+    # 下载tomcat包
+    cd /tmp &&wget http://mirrors.shu.edu.cn/apache/tomcat/tomcat-9/v9.0.13/bin/apache-tomcat-9.0.13.tar.gz
+    # 解压
+    tar -xzvf  apache-tomcat-9.0.13.tar.gz
+    # 移动到指定位置并重命名
+    mv /tmp/apache-tomcat-9.0.13 /opt/tomcat9
+    # 启动 tomcat
+    /opt/tomcat9/bin/startup.sh 
+    或者
+    /opt/tomcat9/bin/catalina.sh start
+
+3. 配置编码server.xml 
+   useBodyEncodingForURI="true" URIEncoding="UTF-8"
+
+4. 更改防火墙规则,不对外开放8080端口.
+   firewall-cmd  --remove-port=8080/tcp --permanent
+   firewall-cmd  --reload

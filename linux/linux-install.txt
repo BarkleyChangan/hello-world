@@ -1,7 +1,7 @@
 # 手动分区
 1. 分区
 /boot：1024mb	标准分区格式
-swap： 4096mb	标准分区格式
+swap： 2048mb	标准分区格式
 /：    剩余所有空间	采用lvm卷组格式
 
 2. 分区(40G)
@@ -40,6 +40,32 @@ swap：就是磁碟模拟成为记忆体，由于swap并不会使用到目录树
 BIOS Boot：就是GPT分割表可能会使用到的项目，若你使用MBR分割，那就不需要这个项目了！
 xfs：这个是目前CentOS预设的档案系统，最早是由大型伺服器所开发出来的！他对于大容量的磁碟管理非常好，而且格式化的时候速度相当快，很适合当今动不动就是好几个TB的磁碟的环境喔！因此我们主要用这玩意儿！
 vfat：同时被Linux与Windows所支援的档案系统类型。如果你的主机硬碟内同时存在Windows与Linux作业系统，为了资料的交换，确实可以建置一个vfat的档案系统喔！
+
+# CentOS 6网络配置
+1. vi /etc/sysconfig/network-scripts/ifcfg-eth0
+
+DEVICE=eth0
+HWADDR=00:0C:29:EC:B0:9F
+TYPE=Ethernet
+UUID=c7aca2a8-3e55-4ca1-b88c-bc050142ef24
+ONBOOT=yes              #开启自动启用网络连接
+NM_CONTROLLED=yes
+BOOTPROTO=static        #启用静态IP地址
+IPADDR=192.168.57.11    #设置IP地址
+NETMASK=255.255.255.0   #设置子网掩码
+GATEWAY=192.168.57.2    #设置网关
+
+2. service network restart
+测试网络是否联通。
+ping网关：输入命令“ping 192.168.57.2”
+pingWindows地址：输入命令“ping 192.168.57.1”
+
+3. 设置DNS服务
+vi /etc/resolv.conf
+nameserver 114.114.114.114
+
+测试外网是否联通
+ping www.baidu.com
 
 # CentOS 7.0默认安装好之后是没有自动开启网络连接的！进入网络配置文件目录
 cd  /etc/sysconfig/network-scripts/
