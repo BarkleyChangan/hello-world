@@ -27,31 +27,34 @@
              New text file line delimiter -> Unix
    Window -> Preferences -> Web -> JSP Files -> ISO 10646/Unicode(UTF-8)
 
-6. 修改eclipse.ini配置运行内存
+6. 关闭悬浮提示
+   Window -> Preferences -> Java -> Editor -> Hovers -> 去掉勾选Combined Hover 
+
+7. 修改eclipse.ini配置运行内存
   -Xms256m
   -Xmx1024m
   -XX:PermSize=512m
   -XX:MaxPermSize=1024m
 
-7. 代码提示
+8. 代码提示
    Window -> Preferences  -> Java  -> Editor  -> Content Assist -> Auto Activation triggers for Java: .abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ
 
-8. 关联jar包以及源文件，doc文件
+9. 关联jar包以及源文件，doc文件
     windows -> preferences -> java -> installed jres 目录选中你的安装jres单击edit在选中所有的jre system libraries 单击source attachment 将location path 指向src.zip的目录位置保存退出即可
 
-9. 格式化代码长度
+10. 格式化代码长度
    a. 修改java类文件行长度:
    Window -> Preferences -> Java-> Code Style -> Formatter -> Edit/Show -> Line Wrapping -> Maximum line width:300
    b. 修改html、jsp、js的代码行长度
    Window -> Preferences -> MyEclipse -> Files and Editors -> Html -> Html Source -> Line width -> 加个0
 
-10. 设置New中显示的菜单
+11. 设置New中显示的菜单
    windows -> Perspective -> Customize Perspective... -> Shortcuts ->
         取消勾选EJB、JavaEE、JPA
         Maven -> 全部勾选
         Java -> Annotation、Class、Enum、Interface、Java Project、Package、Source Folder 
                                   
-11. Maven配置
+12. Maven配置
         6.1 配置Maven
         Window -> Preferences -> Maven -> Installations -> Add:
         Installation home: D:\Program\Green\64\apache-maven-3.5.2
@@ -66,20 +69,20 @@
         Show View->Other->Maven Repositories->在Local Repository上右键点击Rebuild Index
         这样就能在eclipse local Repository中查看我们本地仓库的内容了
         
-12. Maven插件安装
+13. Maven插件安装
     Helper -> Install New Software... -> 点击Work With:字段边上的Add按钮,
         Name: m2e
         Location: http://m2eclipse.sonatype.org/sites/m2e
         Name: m2e-extras
         Location: http://m2eclipse.sonatype.org/sites/m2e-extras
 
-13. Sping插件下载地址
+14. Sping插件下载地址
    http://download.springsource.com/release/TOOLS/update/3.9.0.RELEASE/e4.7/springsource-tool-suite-3.9.0.RELEASE-e4.7.0-updatesite.zip
 
-14. Hibernate插件下载地址(在线安装)
+15. Hibernate插件下载地址(在线安装)
    http://download.jboss.org/jbosstools/updates/stable/
 
-15. SVN插件安装
+16. SVN插件安装
     Help -> Install New Software… -> Add.. --> 输入Name -> 输入地址：http://subclipse.tigris.org/update_1.8.x
     注意: 采用下面两种方法来提升安装更新的速度：
     a. Windows -> Preferences -> Install/Update -> Available Software Sites，将里面不用的信息删除，将本次更新不需要的停用（选中之后然后点右边的Disable按钮）。
