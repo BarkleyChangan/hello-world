@@ -99,3 +99,29 @@
       FragmentOne.onDestroy
       FragmentOne.onDetach
       MainActivity onDestory
+
+12. 配置阿里云镜像
+buildscript {
+   repositories {
+       maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
+       maven { url 'http://maven.aliyun.com/nexus/content/repositories/jcenter' }
+       maven { url 'http://maven.aliyun.com/nexus/content/repositories/google' }
+       maven { url 'http://maven.aliyun.com/nexus/content/repositories/gradle-plugin' }
+       google() 
+       jcenter()
+   }
+   dependencies {
+       classpath 'com.android.tools.build:gradle:3.2.1'
+   }
+}
+
+allprojects {
+   repositories {
+       maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
+       maven { url 'http://maven.aliyun.com/nexus/content/repositories/jcenter' }
+       maven { url 'http://maven.aliyun.com/nexus/content/repositories/google' }
+       maven { url 'http://maven.aliyun.com/nexus/content/repositories/gradle-plugin' }
+       google() 
+       jcenter()
+   }
+}

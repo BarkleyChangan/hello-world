@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8"/>
+	<title>函数去抖与截流</title>
+	<style type="text/css"></style>
+	<script type="text/javascript">
+	window.onload=function(){
+		function ajax(content){
+			console.log('ajax request ' + content);
+		}
+		
+		function debounce(fun, delay){
+			return function(args){
+				let that = this;
+				let _args = args;
+				clearTimeout(fun.id);
+				fun.id = setTimeout(function(){
+					fun.call(that, _args);
+				}, delay);
+			};
+		}
+
+		function throttle(fun, delay){
+			let last, deferTimer;
+			return function(args) {
+				let that = this;
+				let _args = arguments;
+				let now = +new Date();
+
+				if(last && now < last + delay){
+					clearTimeout(deferTimer);
+					deferTimer = setTimeout(function(){
+						last = now;
+						fun.apply(that, _args);
+					}, delay);
+				} else {
+					last = now;
+					fun.apply(that, _args);
+				}
+			};
+		}
+
+		let inputNormal = document.getElementById("normal");
+		//let debounceAjax = debounce(ajax, 500);
+		let throttleAjax = throttle(ajax, 1000);
+		inputNormal.addEventListener("keyup", function(e){
+			//debounceAjax(e.target.value);
+			throttleAjax(e.target.value);
+		});
+
+	};
+	</script>
+</head>
+<body>
+	<div>
+		1.函数防抖是某一段时间内只执行一次；而函数节流是间隔时间执行，不管事件触发有多频繁，都会保证在规定时间内一定会执行一次真正的事件处理函数
+		2.防抖是维护一个计时器，规定在delay时间后触发函数，但是在delay时间内再次触发的话，都会清除当前的timer然后重新设置超时调用，即重新计时。这样一来，只有最后一次操作能被触发。节流是通过判断是否到达一定时间来触发函数，若没到规定时间则使用计时器延后，而下一次事件则会重新设定计时器。
+		<input type="text" name="normal" id="normal"/>
+	</div>
+</body>
+</html>
