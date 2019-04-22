@@ -1,8 +1,8 @@
 1. \bin\idea64.exe.vmoptions
    \bin\idea.exe.vmoptions
-   -Xms500m
+   -Xms512m
    -Xmx1500m
-   -XX:ReservedCodeCacheSize=500m
+   -XX:ReservedCodeCacheSize=480m
 
    -Xms1024m
    -Xmx4096m
@@ -13,35 +13,49 @@
    View->Toolbar
    View->Tool Buttons
 
-3. Settings
+3. 配置默认打开的项目的JDK
+   File -> Other Settings -> Default Project -> Structure -> Project Settings -> Project -> Project SDK
+
+   File -> Other Settings -> Default Project -> Structure -> Platform Settings -> SDKs
+
+4. Settings
    a. 设置鼠标滚轮修改字体大小
    Editor -> General -> 勾选Change font size(Zoom) with Ctrl+Mouse Wheel
+
    b. 设置鼠标悬浮提示
    Editor -> General  > 勾选Show quick documentation on mouse move Delay(ms):1000
+
    c. 设置自动导包功能
    Editor -> General -> Auto Import -> Insert imports on paster: All
                                        勾选Add unambiguous imports on the fly
                                        勾选Optimize imports on the fly(for current project)
+
     d. 设置显示行号和方法间的间隔符
     Editor -> General -> Appearance > Show line numbers
                                       Show method separators
+
     e. 忽略大小写提示
     Editor -> General -> Code Completion -> Case sensitive completion: None
+
     f. 取消单行显示tabs
     Editor -> General -> Editor Tabs -> 取消勾选Show tabs in single row
+
     g. 修改类头的文档注释信息
     Editor -> File and Code Templates -> Includes -> File Header
     /**
      *@author Barkley.Chang
      *@date ${YEAR}-${MONTH}-${DAY} ${HOUR}:${MINUTE}
      */
+
     h. 设置项目文件编码
     Editor -> File Encodings -> Global Encoding: UTF-8
      							              Project Encoding:UTF-8
      							              Default encoding for properties files:UTF-8(勾选Transparent native-to-ascii conversion)
+
     i. 设置自动编译
     Build,Execution,Deployment -> Compiler -> 勾选Build project automatically
     										                      勾选Compile independent modules in parallel
+
     j. 调试优化
     Build,Execution,Deployment -> Debugger -> Transport: Shared memory
 
@@ -54,7 +68,20 @@
        Settings -> Build,Execution,Deployment -> Compiler -> Java Compiler -> 取消勾选User '--release' option for cross-compilation(Java 9 and later)
        Project bytecode version: 8
 
-4. 快捷键
+    m. 自动编译
+       File -> settings -> Build,Execution,Deployment -> Compiler -> 勾选Build project automatically
+
+    n. 显示内容使用量
+       File -> Settings -> Apperance & Behavior -> Appearance -> Window Options -> Show Memory indicator
+
+    o. Ctrl+鼠标滚轴修改字体大小
+       File -> Settings -> Editor -> General -> 勾选Change font size (Zoom) with ctrl+Mouse Wheel
+
+    p. 显示多行Tab
+       File -> Settings -> Editor -> General -> Editor Tabs -> 取消勾选Show tabs in one row
+       Tab limit: 设置最多展示多少个Tab
+
+5. 快捷键
    alt + enter      	   万能纠错
    alt + r 				       执行
    alt + up 			       向上移动行
@@ -95,7 +122,7 @@
    shift + enter		     向下开始新的一行
    shift + shift		     查找文件
 
-5. 代码模板
+6. 代码模板
    psvm                  main方法
    sout/soutm/soutv      System.out.println()
    fori/itar             for循环
@@ -108,25 +135,27 @@
    psfi                  public static final int
    psfs                  public static final String
 
-6. 版本控制
+7. 版本控制
    Settings -> Version Control -> Git -> Path to Git executable: D:\Program\64\Git\bin\git.exe
    Settings -> Version Control -> GitHub -> Host: github.com 
                                             Auth Type: Password
                                             Login: changan25801@163.com
                                             Password: ******
 
-7. Maven配置
-   Build,Execution,Deployment -> Build Tools -> Maven -> 
+8. Maven配置
+   File -> Other Settings ->  Other Settings -> Build,Execution,Deployment -> Build Tools -> Maven -> 
     Maven home directory: D:\Program\Green\64\apache-maven-3.5.2
     User settings file: D:\Program\Green\64\apache-maven-3.5.2\conf\settings.xml
     Local repository: D:\MavenRepository
    Build,Execution,Deployment -> Build Tools -> Maven -> Importing -> 勾选Import Maven projects automatically
 
-8. 缓存和索引清理
+9. 缓存和索引清理
    File -> Invalidate Cache/Restart...
 
-9. 插件
+10. 插件
    https://plugins.jetbrains.com/   Gsonformat
+
+
 
    
     
