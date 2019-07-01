@@ -1,0 +1,573 @@
+一、安装Linux操作系统
+    1. 安装虚拟机
+        a. 文件->新建虚拟机->典型(推荐)->稍后安装操作系统
+        b. 如果物理机支持大于4GB以上的单个文件选择"将虚拟磁盘存储为单个文件"
+        c. 移除声卡、USB控制器、打印机这些设备
+    2. 安装Linux操作系统
+        a. 取消勾选"系统时钟使用UTC时间"
+    3. 查看内存空间(-m表示以MB的数据存储单位进行显示)
+       free -m
+    4. 查看磁盘空间(-lh表示方便阅读的数据存储单位显示本地文件系统)
+       df -lh
+    5. 查看所有网卡
+       ifconfig -a
+    6. 配置静态IP
+       修改/etc/sysconfig/network-scripts/ifcfg-eth0文件
+       a. 备份改配置文件
+          cp ifcfg-eth0 ifcfg-eth0.bak
+       b. 修改文件
+          ONBOOT=yes
+          BOOTPROTO=static
+          IPADDR=192.168.57.5
+          NETMASK=255.255.255.0
+          GATEWAY=192.168.57.2
+          DNS1=192.168.57.2
+       c. 使配置生效
+          service network reload
+          systemctl restart network
+       d. 查看当前系统的默认网关、DNS服务器
+          route | grep default
+    7. 访问测试
+       ping 192.168.57.1 -c4
+
+二、安装jdk
+    1. mkdir /usr/local/java
+    2. 检查jdk安装包
+       rpm -qa | grep java
+    3. 卸载openjdk
+       rpm -e --nodeps tzdata-java-2016g-2.el7.noarch
+       rpm -e --nodeps java-1.7.0-openjdk-1.7.0.111-2.6.7.8.el7.x86_64
+       rpm -e --nodeps java-1.7.0-openjdk-headless-1.7.0.111-2.6.7.8.el7.x86_64
+       rpm -e --nodeps java-1.8.0-openjdk-1.8.0.102-4.b14.el7.x86_64
+       rpm -e --nodeps java-1.8.0-openjdk-headless-1.8.0.102-4.b14.el7.x86_64
+       或者使用: yum remove *openjdk*
+    4. 解压
+       tar -zxvf jdk-8u171-linux-x64.tar.gz
+    5. 设置环境变量
+       vi /etc/profile
+
+       # java environment
+       export JAVA_HOME=/usr/local/java/jdk1.8.0_171  
+       export JRE_HOME=${JAVA_HOME}/jre  
+       export CLASSPATH=.:${JAVA_HOME}/lib:${JRE_HOME}/lib  
+       export PATH=${JAVA_HOME}/bin:$PATH
+    6. 执行profile文件
+       source /etc/profile
+    7. 检查新安装的jdk
+       java -version
+
+三、安装tomcat
+    1. mkdir /usr/local/tomcat
+    2. 解压
+       tar -zxvf apache-tomcat-9.0.10.tar.gz
+    3. 配置防火墙
+       iptables -I INPUT -p tcp --dport 8080 -j ACCEPT
+       # 保存配置 
+       service iptables save
+       # 重启服务
+       /etc/rc.d/init.d/iptables restart
+       # 查看已开放端口
+       /etc/init.d/iptables status
+       # 删除端口（2表示上面的num列）
+       /sbin/iptables  -D INPUT 2
+    4. 查看防火墙状态
+       service iptables status
+    5. 使用特定用户启动tomcat
+       chown -R nobody:nobody /usr/local/tomcat
+       sudo -E -u nobody /usr/local/tomcat/bin/startup.sh
+
+四、安装nginx
+    1. 安装必备软件
+       yum -y install gcc gcc-c++ wget
+    2. 解压
+       tar -zxvf nginx-1.10.3.tar.gz
+    3. 安装Nginx相关依赖包(由于openssl-devel依赖于zlib-devel通过yum安装时会自动解决依赖)
+       yum -y install pcre-devel openssl-devel
+    4. 配置编译选项
+       cd nginx-1.10.3
+       ./configure --prefix=/usr/local/nginx --with-http_ssl_module --with-http_realip_module
+    5. 编译安装
+       make && make install
+    6. 启动、停止Nginx
+       cd /usr/local/nginx/sbin
+       ./nginx
+       ps aux | grep nginx
+       ./nginx -s stop 立即停止
+       ./nginx -s quit 从容停止
+       kill pid
+       killall nginx
+    7. Nginx其他命令
+       nginx -s reload 在Nginx启动的情况下重新加载配置文件
+       nginx -s reopen 重新打开日志文件
+       nginx -c /特定目录/nginx.conf 以特定目录下的配置文件启动Nginx
+       nginx -t 检测当前配置文件是否正确
+       nginx -t -c /特定目录/nginx.conf 检测特定目录下的Nginx配置文件是否正确
+       nginx -v 显示版本信息
+       nginx -V 显示版本信息和编译选项
+    8. 查看端口占用
+       netstat -tlnp
+    9. 配置防火墙
+       iptables -I INPUT -p tcp --dport 80 -j ACCEPT
+       #指定为IP地址为192.168.78.11开通80端口
+       iptables -R INPUT l -s192.168.78.11 -ptcp --dport 80 -j ACCEPT
+       service iptables save
+    10.查看防火墙状态
+       service iptables status
+    11.添加环境变量(推荐将Nginx放入/usr/local/sbin目录中)
+       ln -s /usr/local/nginx/sbin/nginx /usr/local/sbin/nginx
+    12.添加系统服务
+       vi /etc/init.d/nginx
+
+       #! /bin/bash
+       #chkconfig: 35 85 15
+       DAEMON=/usr/local/nginx/sbin/nginx
+       case "$1" in
+         start)
+            echo "Starting nginx daemon..."
+            $DAEMON && echo "SUCCESS"
+         ;;
+         stop)
+            echo "Stopping nginx daemon..."
+            $DAEMON -s quit && echo "SUCCESS"
+         ;;
+         reload)
+            echo "Reloading nginx daemon..."
+            $DAEMON -s reload && echo "SUCCESS"
+         ;;
+         restart)
+            echo "Restarting nginx daemon..."
+            $DAEMON -s quit
+            $DAEMON && echo "SUCCESS"
+         ;;
+         *)
+            echo "Usage:service nginx (start|stop|restart|reload)"
+            exit 2
+         ;;
+       esac
+
+       chmod +x /etc/init.d/nginx
+       查看系统所有服务
+       chkconfig --list
+       设置开机启动Nginx服务
+       chkconfig --add nginx
+       取消开机启动Nginx服务
+       chkconfig --del nginx
+    13. 关闭访问日志
+        access_log off;
+    14. 关闭错误日志
+        error_log /dev/null;
+    15. 查看Nginx版本及其编译选项
+        nginx -V
+    16. 配置HTTPS网站(使用OpenSSL将自己作为CA为自己颁发证书)
+        mkdir /usr/local/nginx/conf/ssl
+        cd /usr/lcoal/nginx/conf/ssl
+        # 生成服务器RSA私钥
+        openssl genrsa -out server.key 2048
+        # 生成服务器CSR证书请求文件
+        openssl req -new -key server.key -out server.csr
+        # CA为服务器认证证书
+        openssl x509 -req -days 360 -in server.csr -signkey server.key -out server.crt
+        # 配置文件
+        upstream web_server {
+          server 192.168.57.11:8080;
+          server 192.168.57.12:8080;
+          # 与后端服务器保持的长连接数
+          keepalive 32;
+        }
+        server {
+          listen 443;
+          server_name test.com www.test.com;
+          client_max_body_size 20m;
+          ssl on;
+          ssl_certificate   /usr/local/nginx/conf/ssl/server.crt;
+          ssl_certificate_key /usr/local/nginx/conf/ssl/server.key;
+          location / {
+            proxy_pass http://web_server;
+            # 后端服务器使用HTTP1.1
+            proxy_http_version 1.1;
+            # 允许跨域请求
+            add_header Access-Control-Allow-Origin *;
+            # 清空客户端Connection消息头
+            proxy_set_header Connection "";
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+          }
+        }
+
+五、 Linux命令
+    # 查询端口是否开放
+      firewall-cmd --query-port=8080/tcp
+    # 开放80端口
+      firewall-cmd --permanent --add-port=80/tcp
+    # 移除端口
+      firewall-cmd --permanent --remove-port=8080/tcp
+    # 重启防火墙(修改配置后要重启防火墙)
+      firewall-cmd --reload
+
+    # 重新读取网卡设备的配置文件
+      start_udev
+
+    # 统计连接数
+      netstat -n | grep :80 | wc -l
+
+六、自动切割日志
+vi autolog.sh
+
+#!/bin/bash
+#当前Nginx日志文件存放的目录
+logs_path="/usr/local/nginx/logs"
+#备份日志文件
+mv $logs_path/access.log $logs_path/`date +"%Y%m%d%H%M"`.log
+#重新打开Nginx日志
+/usr/local/nginx/sbin/nginx -s reopen
+
+chmod +x autolog.sh
+crontab -e 编辑当前用户的定时任务
+0 0 * * * /usr/local/nginx/logs/autolog.sh > /dev/null 2>&1
+
+crontab -l 显示当前用户的crontab文件内容
+crontab -r 删除设置的任务计划
+
+七、nginx.conf配置文件说明
+worker_processes    配置Nginx工作进程数,一般设为CPU总核数或者总核数的两倍
+worker_connections  配置Nginx允许单个进程并发连接的最大请求数
+include             用于引入配置文件
+default_type        设置默认文件类型
+sendfile            默认值为on,表示开启高效文件传输模式
+keepalive_timeout   设置长链接超时时间(单位:秒)
+listen              监听端口,默认监听80端口
+server_name         设置主机域名
+root                设置主机站点根目录地址
+index               指定默认索引文件
+error_page          自定义错误页面
+
+八、nginx配置文件中location前缀含义
+=  根据其后的指定模式进行精确匹配
+~  使用正则表达式完成location的匹配,区分大小写
+~* 使用正则表达式完成location的匹配,不区分大小写
+^~ 不使用正则表达式,完成以指定模式开头的location匹配
+@  用于定义一个location块,且该块不能被外部客户端所访问,只能被Nginx内部配置指令所访问
+
+匹配优先级: = > ^~ > 正则 > 普通最大前缀匹配
+
+九、日志级别
+debug < info < notice < warn < error < crit
+级别越高记录内容越简单
+
+十、关闭错误日志
+error_log /dev/null
+
+十一、手工备份日志文件
+cd /usr/local/nginx/logs
+mv access.log 20190619.log
+/usr/local/nginx/sbin/nginx -s reopen
+
+十二、显示目录列表
+autoindex on;
+
+autoindex_exact_size off; 表示以kB/MB/GB为单位显示文件的大概大小
+autoindex_localtime on;   表示显示的时间为文件的服务器时间
+
+十三、 设置请求的IP地址
+proxy_set_header Host $host;
+proxy_set_header X-Client-IP $remote-addr;
+
+十四、Nginx+Tomcat动静分离配置
+server {
+  listen 80;
+  server_name tomcat.ng.test;
+  root /usr/local/tomcat/webapps/ROOT;
+  index index.html index.htm index.jsp index.do;
+  location ~/(WEB-INF|META-INF){
+    deny all;
+  }
+  locaiton ~\.(jsp|do)${
+    proxy_pass http://127.0.0.1:8080;
+    proxy_set_header X-Client-IP $remote_addr
+  }
+  location ~^/(docs|examples)(/.*)*${
+    root /usr/local/tomcat/webapps;
+  }
+}
+
+十五、配置反向代理
+server {
+  listen:80
+  server_name test.ng.test;
+  # 域名test.ng.test的请求全部转发到web服务器192.168.57.11
+  location / {
+    # proxy_pass指令用于设置后端服务器地址
+    proxy_pass http://192.168.57.11:8080;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+  }
+}
+server {
+  listen 80;
+  server_name test.web.com;
+  # 域名test.web.com的请求全部转发到web服务器192.168.57.12
+  location / {
+    proxy_pass http://192.168.57.12:8080;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+  }
+}
+
+十六、配置负载均衡
+# 配置负载均衡服务器组,upstream指令实现负载均衡
+upstream web_server {
+  server 192.168.57.11:8080;
+  server 192.168.57.12:8080;
+  # 与后端服务器保持的长连接数
+  keepalive 32;
+}
+# 配置域名为www.test.com的虚拟主机
+server {
+  listen 80;
+  server_name test.com www.test.com;
+  client_max_body_size 20m;
+  location / {
+    proxy_pass http://web_server;
+    # 后端服务器使用HTTP1.1
+    proxy_http_version 1.1;
+    # 允许跨域请求
+    add_header Access-Control-Allow-Origin *;
+    # 清空客户端Connection消息头
+    proxy_set_header Connection "";
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+  }
+}
+
+十七、加权轮询负载均衡(weight值越大被分配到的概率越大)
+upstream web_server {
+  server 192.168.57.11:8080 weight=1;
+  server 192.168.57.12:8080 weight=3;
+}
+
+十八、ip_hash负载均衡(不能使用weight和backup设置)
+upstream web_server {
+  ip_hash;
+  server 192.168.57.11:8080;
+  server 192.168.57.12:8080;
+}
+
+十九、永久缓存配置
+server {
+  listen 80;
+  server_name test.ng.test;
+  location / {
+    # 指定缓存文件保存目录
+    root cache;
+    proxy_store on;
+    proxy_store_access user:rw group:rw all:r;
+    proxy_temp_path cache_tmp;
+    if (!-e $request_filename) {
+      proxy_pass http://192.168.57.11;
+    }
+  }
+}
+
+二十、临时缓存配置(在http块下添加如下配置)
+# 代理临时目录
+proxy_temp_path /usr/local/nginx/proxy_temp_dir
+# Web缓存目录和参数设置
+proxy_cache _pach /usr/local/nginx/proxy_cache_dir levels=1:2 keys_zone=cache_one:50m inactive=1m max_size=500m
+
+二十一、开启gzip压缩
+http {
+  gzip on;
+  gzip_types text/plain application/javascript text/css;
+  # 按照原始数据大小以16KB为单位4倍申请内存
+  gzip_buffers 4 16k;
+  # 压缩级别
+  gzip_comp_level 4;
+  # 设置浏览器为IE6时不进行压缩防止出现页面假死
+  gzip_diable "MSIE [1-6].";
+  # 当响应内容大于5KB时进行压缩输出
+  gzip_min_length 5k;
+  # 只有是HTTP/1.0协议的请求时才会进行gzip压缩
+  gzip_http_version 1.0;
+  # Nginx作为反向代理服务器时无条件压缩所有结果数据
+  gzip_proxied any;
+  # 在响应头中添加Vary: Accept-Encoding
+  gzip_vary on;
+}
+
+二十二、rewrite重写
+server {
+  listen 80;
+  server_name test.ng.test;
+  index index.html index.htm;
+  root html;
+  if (!-e $request_filename) {
+    rewrite "^/.*" /default/default.html break;
+  }
+}
+
+二十三、rewrite实现重定向
+server {
+  listen 80;
+  server_name test.ng.test;
+  root html;
+  set $name $1;
+  rewrite ^/img-([0-9]+).jpg$ /img/$name.jpg permanent;
+}
+
+二十四、图片防盗链
+location ~*\.(gif|jpg|png|swf|flv)$ {
+  valid_referers www.ng.test ng.test;
+  if($invalid_referer) {
+    return 403;
+  }
+}
+
+二十五、优化
+# 1. 优化Nginx连接数
+# Nginx根据CPU核心数来工作进程个数
+worker_processes auto;
+# 最多打开的文件数量
+worker_rlimit_nofile 65535;
+events {
+  # 每个工作进程可接收的连接数
+  worker_connections 65535;
+  # 是否允许一个工作进程相应多个请求
+  multi_accept on;
+}
+
+# 2. 限制同一个IP并发数
+以下对同一个IP地址只允许10个并发连接,当超时时返回503错误
+http {
+  # 开辟一个共享内存空间保存客户端IP地址,空间名称为perip,大小为10MB
+  limit_conn_zone $binary_remote_addr zone=perip:10m;
+  # 限制连接数量
+  limit_conn perip 10;
+}
+
+# 3. 限制服务器并发数
+http {
+  limit_conn_zone $server_name zone=perserver:10m;
+  server {
+    listen 80;
+    server_name localhost;
+    limit_conn perserver 20;
+  }
+}
+
+# 4. 限制响应传输速率
+http {
+  # 限制每个连接的传输速率(每秒100KB)
+  limit_rate 100k;
+  # 在已经传输指定大小后再进行限速,实现只针对大文件限制下载速度,如果省略此指令则无论大小为多少都会限速
+  limit_rate_after 10m;
+}
+
+# 5. 静态资源缓存
+server {
+  locationn ~\.(gif|jpg|jpeg|png|bmp|swf)$ {
+    # 30天后过期
+    expires 30d;
+  }
+  location ~\.(css|js)$ {
+    # 12小时后过期
+    expires 12h;
+  }
+}
+
+二十六、与Keepalived整合搭建高可用方案
+# 下载Keepalived
+http://www.keepalived.org
+
+# 解压 & 编译 & 安装
+cd /usr/local
+tar -zxvf keepalived-1.2.24.tar.gz
+cd keepalived-1.2.24
+./configure
+
+# 检查确保如下信息为yes
+Use VRRP Framework      :Yes
+Use VRRP VMAC           :Yes
+Use VRRP authentication :Yes
+
+make && make install
+
+# 添加系统服务,配置开机启动
+cd /usr/local/etc/rc.d/init.d
+cp keepalived /etc/init.d/keepalived
+chmod +x /etc/init.d/keepalived
+chkconfig keepalived on
+
+# 链接配置文件
+cd /usr/local/etc/sysconfig
+ln -s `pwd`/keepalived /etc/sysconfig/keepalived
+
+# 链接程序文件
+cd /usr/local/sbin
+ln -s `pwd`/keepalived /usr/sbin/keepalived
+
+# 创建Keepalived配置文件
+mkdir /etc/keepalived
+vi /etc/keepalived/keepalived.conf
+
+vrrp_script chk_nginx {         # 配置用于检测Nginx运行状态的j脚本
+  script "/chk_nginx.sh"        # 用于检测的脚本文件路径
+  interval 2                    # 每2秒执行一次脚本
+  weight -20                    # 当检测失败时,权重发生的变化
+}
+
+vrrp_instance VI_1 {            # 配置一个虚拟路由名称为VI_1
+  state MASTER                  # 指定Keepalived的角色,MASTER或BACKUP
+  interface eth0                # 指定监测的网卡
+  virtual_router_id 21          # 虚拟路由的标识,同一个VRRP的MASTER和BACKUP应一致
+  mcast_src_ip  192.168.78.21   # 设置Real IP(可省略,默认将自动使用网卡的主IP)
+  priority 100                  # 优先级、权重(权重最高的主机将接管Virtual IP)范围0~254
+  advert_int 1                  # MASTER和BACKUP之间同步检查的时间间隔,单位:秒
+  authentication {              # 设置验证类型和密码
+    auth_type PASS              # 验证类型,PASS表示使用密码验证
+    auth_pass 123456            # 设置密码,用于MASTER和BACKUP之间使用相同的密码通信
+  }
+  virtual_ipaddress {           # 设置一个Virtual IP地址池,每行一个
+    192.168.78.20               # 为MASTER和BACKUP设置相同的Virtual IP
+  }
+  track_script {
+    chk_nginx                   # 检测Nginx
+  }
+}
+
+# 创建监控Nginx的sh脚本
+vi chk_nginx.sh
+
+#! /bin/bash
+if [ `ps -C nginx --no-header | wc -l` -eq 0 ];then
+  service nginx start
+  sleep 2
+  if [ `ps -C nginx --no-header | wc -l` -eq 0 ];then
+    service keppalived stop
+  fi
+fi
+
+chmod +x /chk_nginx.sh
+service keepalived reload
+
+# 启动Keepalived服务
+service keepalived start
+ps aux | grep keepalived
+
+# 配置备用服务器
+vrrp_instance VI_2 {
+  state BACKUP                  # 修改身份为BACKUP
+  priority 90                   # 修改优先级为90(低于MASTER即可)
+  ...
+  ...
+  ...
+}
+
+# 添加防火墙规则
+iptables -I INPUT -s192.168.78.22 -p112 -jACCEPT
+service iptables save
+
+

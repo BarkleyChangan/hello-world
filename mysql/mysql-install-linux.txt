@@ -1,3 +1,4 @@
+一、rpm安装
 # 解决MySQL 5.5.48依赖问题
 yum -y install glibc.i686
 yum -y install libncurses.so.5
@@ -45,6 +46,64 @@ flush privileges;
 use mysql;
 select user,host from user;
 
+二、源码安装
+# 安装依赖包
+yum -y install gcc-c++cmake ncurses-devel
+
+# 解压
+cd /usr/local
+tar -zxvf mysql-5.5.53.tar.gz
+cd mysql-5.5.53
+
+# 设置字符集
+cmake -DDEFAULT_CHARSET=utf8mb4 -DDEFAULT_COLLATION=utf8mb4_general_ci
+
+# 编译 & 安装
+make && make install
+
+# 配置数据保存目录以及工作用户
+vi /etc/my.cnf
+datadir=/data/mysql     # 数据保存目录
+socket=/tmp/mysql.sock  # sock文件保存目录
+user=mysql              # mysql的工作用户
+
+# 创建mysql用户
+useradd -s /sbin/nologin -M mysql
+
+# 执行mysql_install_db程序初始化数据库
+cd /usr/local/mysql
+./scripts/mysql_install_db
+
+# 创建mysql服务
+cp support-files/mysql.server /etc/init.d/mysql
+chkconfig --add mysql
+service mysql start
+
+# 添加mysql端口防火墙
+netstat -tnlp | grep mysql
+iptables -I INPUT -p tcp --dport 3306 -j ACCEPT
+service iptables save
+
+# 修改root密码
+cd /usr/local/mysql/bin
+./mysql
+UPDATE mysql.user SET password=password('Server2008') WHERE user='root';
+DELETE FROM mysql.user WHERE user='';
+FLUSH PRIVILEGES;
+EXIT;
+
+# 登录
+./mysql -uroot -pServer2008
+
+# 创建数据库
+CREATE DATABASE IF NOT EXISTS my_db DEFAULT CHARSET utf8mb4 COLLATE utf8mb4_general_ci;
+
+# 创建mysql独立数据库用户
+USE my_db;
+GRANT USAGE ON *.* TO 'itshop'@'192.168.57.12' IDENTIFIED BY '123456';
+GRANT ALL PRIVILEGES ON my_db.* TO 'itshop'@'192.168.57.12';
+GRANT SELECT,INSERT,UPDATE,DELETE ON my_db.* to itshop@'%' IDENTIFIED BY '123456';
+
 # MySQL相关路径说明
 /var/lib/mysql/		MySQL数据库文件的存放路径		/var/lib/mysql/localhost.localdomain.pid
 /usr/share/mysql    配置文件目录					MySQL.server命令以及配置文件
@@ -66,46 +125,38 @@ collation-server=utf8_general_ci
 [mysql]
 default-character-set=utf8
 
-# 查看表锁
-SHOW OPEN TABLES;
-SHOW STATUS LIKE 'table%';
-
-# 查看行锁
-show status like 'innodb_row_lock%';
-
-# 锁定一行
-begin
-select * fro test_innodb_lock where id=8 for update;
-select * from test_innodb_lock where id=8 lock in share mode;
-
-# 强制指定索引查询
-SELECT * FROM `yrd_pay_flow` FORCE INDEX(`idx_trxn_date`) WHERE trxn_date > '2017-08-12 59:59:59' AND trxn_date<'2016-06-23 00:00:00';
-
 # 主从复制
-主机配置
-log-bin=自己本地路径/mysqlbin
-log-err=自己本地路径/mysqlerr
-basedir=自己本地路径
-tmpdir=自己本地路径
-datadir=自己本地路径/data
-binlog-ignore-db=mysql
-binlog-do-db=test
+a. 主机配置,编辑/etc/my.cnf配置文件
+log-bin=自己本地路径/mysqlbin-log
+server-id=17
 
-主机执行:
-GRANT REPLICATION SLAVE ON *.* TO 'z3'@'从机IP' IDENTIFIED BY '123456';
-flush privileges;
-show master status;
+service mysql restart 
 
-从机执行:
-CHANGE MASTER TO MASTER_HOST='192.168.14.165',
-MASTER_USER='z3',
-MASTER_PASSWORD='123456',
-MASTER_LOG_FILE='mysqlbin.000012',
-MASTER_LOG_POS=4386;
+b. 创建用于主从复制的用户
+/usr/local/mysql/bin/mysql -uroot -pServer2008
+# 执行如下语句创建用户分配权限:用户名:slave,密码:Server2008,仅客户端192.168.57.11可登录,*.*表示可操作所有的数据库和表
+GRANT REPLICATION SLAVE ON *.* TO 'slave'@'192.168.57.11' IDENTIFIED BY 'Server2008';
+FLUSH PRIVILEGES;
+SHOW MASTER STATUS;  # 记录Position一列的值,配置从库时有用
 
-start slave;
-stop slave;
-show slave status\G;
+c. 从机配置,编辑/etc/my.cnf配置文件
+server-id=18
 
-Slave_IO_Running: Yes
-Slave_SQL_Running: Yes
+service mysql restart
+
+d. 同步主数据库
+CHANGE MASTER TO MASTER_HOST='192.168.57.20',
+MASTER_USER='slave',
+MASTER_PASSWORD='Server2008',
+MASTER_LOG_FILE='mysqlbin-log.000001',
+MASTER_LOG_POS=262;
+
+START SLAVE;
+SHOW SLAVE STATUS \G
+...
+...
+Slave_IO_Running: Yes   # 从服务器IO运行中
+Slave_SQL_Running: Yes  # 从服务器SQL运行中
+看到以上两项为yes说明当前已经配置成功
+
+STOP SLAVE;             # 停止从服务器

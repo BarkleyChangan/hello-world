@@ -430,6 +430,7 @@ lsattr 选项 文件名
 # 硬盘管理命令
 df -h 统计磁盘大小
 du -h 统计目录大小
+du -sh * | sort -rh 查看目录下所有文件大小并按从大到小排序
 fsck -y /dev/sdb1  文件系统修复命令
 dumpe2fs /dev/sda3 显示磁盘状态
          -h        只看超级块信息

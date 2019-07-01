@@ -14,6 +14,9 @@ git config --edit
 git config --global user.name "John Doe"
 git config --global user.email "johndoe@example.com"
 git config --global color.ui auto
+           --local  # 只对某个仓库有效
+           --global # 对当前用户所有仓库有效
+           --system # 对系统所有登录用户有效
 
 # Git可以在你提交时自动地把行结束符CRLF转换成LF，而在签出代码时把LF转换成CRLF。
 git config --global core.autocrlf true
@@ -57,6 +60,7 @@ git clone --bare my_project my_project.git
 # 跟踪新文件
 git add README
 git add .
+git add -u 		# 对已经跟踪的文件直接添加暂存区
 
 # 提交更新
 git commit

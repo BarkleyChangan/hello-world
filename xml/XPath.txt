@@ -1,0 +1,79 @@
+# XPath中步的完整语法格式:
+轴::节点测试[限定谓语]
+
+# XPath所支持的轴及其含义
+ancestor            选取当前节点的所有祖先(父、祖父等),祖先节点将包含父节点、父节点的父节点...直到文档的根节点.因此,如果当前节点不是根节点,则ancestor轴代表的节点集总包含根节点
+ancestor-or-self    选取当前节点的所有祖先(父、祖父等),以及当前节点本身.ancestor-or-self轴总比ancestor轴所代表的节点集多一个节点:当前节点本身
+attribute           选取当前节点的所有属性.如果当前节点不是元素,则attribute轴代表的节点集总为空
+child               选取当前节点的所有子节点(默认轴)
+descendant          选取当前节点的所有后代节点(子、孙等).由于descendant轴代表的节点集包含当前节点内部的所有子孙节点,因此它实际上代表该节点内部全部节点
+descendant-or-self  选取当前节点的所有后代节点(子、孙等).descendant-or-self轴总比descendant轴所代表的节点集多一个节点:当前节点本身
+following           选取文档中当前节点的结束标签之后的所有节点.following轴不会包含当前节点的后代节点,也不会包含当前节点的属性节点
+following-sibling   选取文档中当前节点的结束标签之后的所有兄弟节点(具有同一个父节点的节点)
+namespace           选取当前节点的所有命名空间节点.如果当前节点不是元素节点,则namespace轴代表的节点集为空
+parent              选取当前节点的父节点
+preceding           选取文档中当前节点的开始标签之前的所有节点.preceding轴不会包含当前节点的后代节点,也不会包含当前节点的属性节点
+preceding-sibling   选取文档中当前节点的开始标签之前的所有兄弟节点(具有同一个父节点的节点)
+self                选取当前节点本身
+
+# XPath所支持的节点测试语法
+nodename                从指定轴匹配的所有节点中选出具有nodename的节点
+node()                  选择指定轴匹配的所有类型的节点
+text()                  选择指定轴匹配的所有的文本类型的节点
+comment()               选择指定轴匹配的所有注释节点
+processing-instruction  选择指定轴匹配的所有处理指令节点
+*                       星号是节点测试的通配符,用于指定不对指定轴进行任何过滤
+
+# XPath简化写法
+1. 使用@符号代替attribute轴
+2. 使用双斜线(//)代表后代节点:/descendant-or-self::node();(//boook=/descendant-or-self::node()/child::book)
+3. 使用一个点(.)代表当前节点:self::node()
+4. 使用两个点(..)代表上一级节点:parent::node()
+
+# XPath支持的算术运算符
++       加
+-       减
+*       乘
+div     除
+mode    求余
+注意: 如果要在表达式中计算两个元素值之间的差,应该在减号运算符(-)的前后加空格
+
+# XPath支持的逻辑运算符
+or  或
+and 与
+注意: XPath中的and和or都是支持"短路"的逻辑运算符
+
+XPath将各种类型转为boolean的转换规则:
+1. 数值类型,0或非数转为false;否则转为true
+2. 字符类型,空字符串转为false;否则转为true
+3. 节点集表达式,空节点集转为false;否则转为true
+
+# 组合多个路径的运算符
+|
+
+# XPath2.0新增的表达式
+1. for表达式
+   语法: for $var sequence return rtExpression
+2. if表达式
+   语法: if (condition1)
+         then rtVal1
+         [else if (condition2)
+         then rtVal2
+         ...]
+         else
+         otherVal
+3. some/every判断表达式
+   语法: some $var in sequence satisfies condition
+         any  $var in sequence satisfies condition
+
+# XPath节点相关函数
+fn:position()                                返回当前正在被处理的节点在父节点中的index
+fn:last()                                    返回当前正在被处理的节点列表中项的数目
+fn:name()/fn:name(nodeset)                   返回当前节点的名称或指定节点集中第一个节点的名称
+fn:local-name/fn:local-name(nodeset)         返回当前节点的本地名或指定节点集中第一个节点的本地名,即不带m命名空间前缀部分的标签名(也就是标签名中英文冒号后面的部分)
+fn:namespace-uri()/fn:namespace-uri(nodeset) 返回当前节点或指定节点集中第一个节点的命名空间URI
+fn:root()/fn:root(node)                      返回当前节点或指定节点所属的节点树的根节点,通常就是返回文档根
+fn:node-name(node)                           返回node节点的节点名称
+fn:base-uri()/fn:base-uri(node)              返回当前节点或指定节点的base-uri属性的值
+fn:document-uri()/fn:document-uri(node)      返回当前节点或指定节点的document-uri属性的值
+fn:data((item1,item2,...))                   返回item1、item2等各项的值所组成的序列

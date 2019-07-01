@@ -74,13 +74,13 @@ SELECT * FROM information_schema.triggers WHERE TRIGGER_NAME='trig_update';
 SET SQL_SAFE_UPDATES=0;
 
 # 查看当前MySQL进程状态
-show processlist;
+SHOW PROCESSLIST;
 
 # 显式开启表锁
-lock table user read/write; 
+LOCK TABLE user READ/WRITE; 
 
 # 关闭表锁
-unlock tables;
+UNLOCK TABLES;
 
 # 通过查询元数据库innodb事务表，监控到当前运行事务数
 select * from information_schema.INNODB_TRX;
@@ -88,7 +88,7 @@ select * from information_schema.INNODB_TRX;
 # 检查InnoDB的状态
 show engine innodb status;
 
-# 会在 explain  的基础上额外提供一些查询优化的信息。紧随其后通过 show warnings 命令可以 得到优化后的查询语句，从而看出优化器优化了什么。
+# 会在explain的基础上额外提供一些查询优化的信息。紧随其后通过 show warnings 命令可以 得到优化后的查询语句，从而看出优化器优化了什么。
 explain extended select * from film where id = 1;
 show warnings;
 
@@ -458,3 +458,21 @@ ref:         指出关联关系中另一个数据表里的数据列的名字
 rows:        在执行这个查询时预计会从数据表里读出的数据行个数
 extra:       与关联操作有关的信息
 ####################### explain语句解释 #######################
+
+####################### 锁 #######################
+# 全局锁(让整个数据库处于只读状态)
+FLUSH TABLES WITH READ LOCK;
+
+# 导数据之前启动一个事务,来确保拿到一致性快照
+mysqldump --single-transaction
+
+# 表锁
+LOCK TABLES 表名 READ/WRITE;
+UNLOCK TABLES
+
+# 排他锁
+SELECT col FROM table WHERE ID=1 FOR UPDATE;
+
+# 共享锁
+SELECT col FROM table WHERE ID=1 LOCK IN SHARE MODE;
+####################### 锁 #######################
