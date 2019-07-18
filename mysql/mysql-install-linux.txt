@@ -7,7 +7,11 @@ yum -y install libz.so.1
 
 # 查看是否安装过MySQL
 rpm -qa | grep -i mysql
-rpm -e --nodeps  mysql-libs-5.1.73-8.el6_8.x86_64
+rpm -e --nodeps mysql-libs-5.1.73-8.el6_8.x86_64
+
+# 卸载系统自带的Mariadb
+rpm -qa | grep -i mariadb
+rpm -e --nodeps 文件名
 
 # 安装MySQL的Server端
 rpm -ivh MySQL-server-5.5.48-1.el6.x86_64.rpm 
@@ -45,55 +49,159 @@ GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY 'Server2008' WITH GRANT 
 flush privileges;
 use mysql;
 select user,host from user;
-
+*******************************************************************************
 二、源码安装
+# 查看是否安装过MySQL
+rpm -qa | grep -i mysql
+rpm -e --nodeps mysql-libs-5.1.73-8.el6_8.x86_64
+
+# 卸载系统自带的Mariadb
+rpm -qa | grep -i mariadb
+rpm -e --nodeps 文件名
+
 # 安装依赖包
-yum -y install gcc-c++cmake ncurses-devel
+yum install -y cmake make gcc gcc-c++ bison ncurses ncurses-devel
+
+# 上传安装包到/var/local目录下
+mysql-5.7.26.tar.gz
+boost_1_59_0.tar.gz
 
 # 解压
 cd /usr/local
-tar -zxvf mysql-5.5.53.tar.gz
-cd mysql-5.5.53
 
-# 设置字符集
-cmake -DDEFAULT_CHARSET=utf8mb4 -DDEFAULT_COLLATION=utf8mb4_general_ci
+tar -zxvf mysql-5.7.26.tar.gz
+tar -zxvf boost_1_59_0.tar.gz
+
+mv boost_1_59_0 mysql-5.7.26/
+
+# 创建MySQL用户和用户组
+groupadd -r mysql
+useradd -r -g mysql -s /bin/false -M mysql
+
+# 创建安装目录
+mkdir -p /usr/local/mysql/data
+mkdir -p /usr/local/mysql/conf
+
+# 预编译
+cd mysql-5.7.26
+
+cmake \
+-DCMAKE_INSTALL_PREFIX=/usr/local/mysql \
+-DMYSQL_DATADIR=/usr/local/mysql/data \
+-DMYSQL_UNIX_ADDR=/usr/local/mysql/mysql.sock \
+-DWITH_BOOST=/usr/local/mysql-5.7.26/boost/boost_1_59_0 \ #注意此路径是否正确
+-DSYSTEMD_PID_DIR=/usr/local/mysql \
+-DSYSCONFDIR=/usr/local/mysql/conf \
+-DWITH_INNOBASE_STORAGE_ENGINE=1 \
+-DWITH_PARTITION_STORAGE_ENGINE=1 \
+-DWITH_FEDERATED_STORAGE_ENGINE=1 \
+-DWITH_BLACKHOLE_STORAGE_ENGINE=1 \
+-DWITH_MYISAM_STORAGE_ENGINE=1 \
+-DMYSQL_USER=mysql \
+-DWITH_SYSTEMD=1 \
+-DWITH_DEBUG=0 \
+-DWITH_READLINE=1 \
+-DWITH_EMBEDDED_SERVER=1 \
+-DMYSQL_TCP_PORT=3306 \
+-DDEFAULT_CHARSET=utf8mb4 \
+-DDEFAULT_COLLATION=utf8mb4_general_ci \
+-DENABLE_DTRACE=0 \
+-DENABLED_LOCAL_INFILE=1
+
+当出现如下内容时:编译完成
+-- Configuring done
+-- Generating done
+
+echo $? 查看是否编译成功
 
 # 编译 & 安装
-make && make install
+make
+make install
 
-# 配置数据保存目录以及工作用户
-vi /etc/my.cnf
-datadir=/data/mysql     # 数据保存目录
-socket=/tmp/mysql.sock  # sock文件保存目录
-user=mysql              # mysql的工作用户
+# 安装完之后清除临时文件
+make clean
 
-# 创建mysql用户
-useradd -s /sbin/nologin -M mysql
+rm -rf mysql-boost-5.7.26.tar.gz
+rm -rf mysql-boost-5.7.26
 
-# 执行mysql_install_db程序初始化数据库
-cd /usr/local/mysql
-./scripts/mysql_install_db
+# 修改配置文件
+vi /usr/local/mysql/conf/my.cnf
+
+[client]
+port = 3306
+default-character-set=utf8mb4
+socket=/usr/local/mysql/mysql.sock
+[mysql]
+port=3306
+default-character-set=utf8mb4
+socket=/usr/local/mysql/mysql.sock
+[mysqld]
+user=mysql
+basedir=/usr/local/mysql
+datadir=/usr/local/mysql/data
+port=3306
+character_set_server=utf8mb4
+pid-file=/usr/local/mysql/mysqld.pid
+socket=/usr/local/mysql/mysql.sock
+server-id=1
+sql_mode=NO_ENGINE_SUBSTITUTION,STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_AUTO_VALUE_ON_ZERO,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,PIPES_AS_CONCAT,ANSI_QUOTES
+
+chown mysql:mysql /usr/local/mysql/conf/my.cnf   #修改配置文件的权限
+
+# 环境变量
+vi /etc/profile
+在文件末尾加如下:
+################################
+export PATH=/usr/local/mysql/bin:$PATH
+################################
+
+source /etc/profile   #使写入生效
+
+# 修改数据库目录权限
+chown -R mysql:mysql /usr/local/mysql
+cd /usr/local/mysql/
+chmod  755  data/
+
+# 空密码初始化数据库
+rm -rf /usr/local/mysql/data/*
+cd /usr/local/mysql/bin
+./mysqld  \
+--initialize \
+--user=mysql \                    #指定管理用户
+--basedir=/usr/local/mysql \      #指定工作目录
+--datadir=/usr/local/mysql/data \ #指定数据文件目录
+
+记录临时密码: ZXGhA2np:kiG
 
 # 创建mysql服务
-cp support-files/mysql.server /etc/init.d/mysql
-chkconfig --add mysql
-service mysql start
+cp /usr/local/mysql/support-files/mysql.server /etc/init.d/mysqld
+chmod +x /etc/init.d/mysqld
+chkconfig --add mysqld # 加入系统服务
+chkconfig mysqld on    # 开机启动
+
+cp /usr/local/mysql/usr/lib/systemd/system/mysqld.service /usr/lib/systemd/system/
+chmod +x mysqld.service
+systemctl enable mysqld.service
+systemctl daemon-reload    #刷新识别mysqld.service服务
+systemctl start mysqld.service
+systemctl status mysqld.service
+
+netstat -anpt | grep 3306
+
+# 修改密码
+mysql -root -p(使用之前初始化的时候产生的临时密码)
+ALTER USER 'root'@'localhost' identified by 'Server2008';   
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY 'Server2008' WITH GRANT OPTION;         #授权新用户
+flush privileges;     #刷新权限
 
 # 添加mysql端口防火墙
 netstat -tnlp | grep mysql
 iptables -I INPUT -p tcp --dport 3306 -j ACCEPT
 service iptables save
 
-# 修改root密码
-cd /usr/local/mysql/bin
-./mysql
-UPDATE mysql.user SET password=password('Server2008') WHERE user='root';
-DELETE FROM mysql.user WHERE user='';
-FLUSH PRIVILEGES;
-EXIT;
-
-# 登录
-./mysql -uroot -pServer2008
+firewall-cmd --permanent --zone=public --add-port=3306/tcp #启用3306 tcp 协议网络访问
+firewall-cmd --permanent --zone=public --add-port=3306/udp #启用3306 udp 协议网络访问
+firewall-cmd --reload
 
 # 创建数据库
 CREATE DATABASE IF NOT EXISTS my_db DEFAULT CHARSET utf8mb4 COLLATE utf8mb4_general_ci;
@@ -103,27 +211,13 @@ USE my_db;
 GRANT USAGE ON *.* TO 'itshop'@'192.168.57.12' IDENTIFIED BY '123456';
 GRANT ALL PRIVILEGES ON my_db.* TO 'itshop'@'192.168.57.12';
 GRANT SELECT,INSERT,UPDATE,DELETE ON my_db.* to itshop@'%' IDENTIFIED BY '123456';
+*******************************************************************************
 
 # MySQL相关路径说明
 /var/lib/mysql/		MySQL数据库文件的存放路径		/var/lib/mysql/localhost.localdomain.pid
 /usr/share/mysql    配置文件目录					MySQL.server命令以及配置文件
 /usr/bin			相关命令目录					mysqladmin,mysqldump等命令
 /etc/init.d/mysql   MySQL服务相关脚本
-
-# 拷贝MySQL配置文件
-cp /usr/share/mysql/my-huge.cnf /etc/my.cnf
-
-# 修改字符集编码
-[client]
-default-character-set=utf8
-
-[mysqld]
-character_set_server=utf8
-character_set_client=utf8
-collation-server=utf8_general_ci
-
-[mysql]
-default-character-set=utf8
 
 # 主从复制
 a. 主机配置,编辑/etc/my.cnf配置文件

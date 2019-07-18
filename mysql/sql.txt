@@ -13,6 +13,11 @@ mysql -h hostname -u username -p
       -P 端口号
       数据库名
       -e 执行sql语句(如果指定了该参数,将在登录后执行-e后面的命令或者sql语句并退出)
+
+# 查看配置文件位置
+which mysqld
+->/usr/local/mysql/bin/mysqld
+/usr/local/mysql/bin/mysqld --verbose --help | grep -A 1 'Default options'
 ####################### CMD命令 #######################
 
 ####################### 用户管理 #######################
@@ -476,3 +481,36 @@ SELECT col FROM table WHERE ID=1 FOR UPDATE;
 # 共享锁
 SELECT col FROM table WHERE ID=1 LOCK IN SHARE MODE;
 ####################### 锁 #######################
+
+####################### 配置文件 #######################
+[mysqld]
+# GENERAL
+datadir=/usr/local/mysql/data
+socket=/usr/local/mysql/mysql.sock
+pid_file=/usr/local/mysql/mysql.pid
+user=mysql
+port=3306
+default_storage_engine=InnoDB
+# INNODB
+innodb_buffer_pool_size=
+innodb_log_file_size=
+innodb_file_per_table=1
+inno_flush_method=0_DIRECT
+# MYISAM
+key_buffer_size=
+# LOGGING
+log_error=/usr/local/mysql/mysql-error.log
+slow_query_log=/usr/local/mysql/mysql-slow.log
+# OTHER
+tmp_table_size=32M
+max_heap_table_size=32M
+query_cache_type=0
+query_cache_size=0
+max_connections=
+thread_cache=
+table_cache=
+open_files_limit=65535
+[client]
+socket=/usr/local/mysql/mysql.sock
+port=3306
+####################### 配置文件 #######################
