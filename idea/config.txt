@@ -81,6 +81,12 @@
        File -> Settings -> Editor -> General -> Editor Tabs -> 取消勾选Show tabs in one row
        Tab limit: 设置最多展示多少个Tab
 
+    r. 自动生成serialVersionUID
+       File -> Settings -> Editor -> Inspections -> 搜索Serializable -> 勾选"Serializable class without 'serialVersionUID'"
+
+    s. 请求进入到断点后自动激活Debug窗口
+       File -> settings -> Build,Execution,Deployment -> Debugger -> 勾选Show debug window on breakpoint
+
 5. 快捷键
    alt + enter      	   万能纠错
    alt + r 				       执行

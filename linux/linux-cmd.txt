@@ -398,7 +398,7 @@ systemctl [command] [unit]
 查看系统上所有的服务
 systemctl [command] [--type=TYPE] [--all]
            list-units 依据unit列出目前有启动的unit,若加上--all才会列出没启动的
-           list-units-files 依据/usr/lib/systemd/system/内的文件,将所有文件列表说明
+           list-units-files 依据/usr/lib/systemd/system/内的文件,将所有文件列表说明(查看启动项)
            --type=TYPE unit type,主要有service,socket,target等
 
 查看目前的模式
