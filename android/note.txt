@@ -1,4 +1,62 @@
-1. Activity与Fragment生命周期
+/data/app:   存放第三方apk文件
+/system/app: 存放系统apk文件
+/data/data/packagename: 与应用对应的文件,在应用安装时自动生成,应用卸载时自动删除
+/storage/sdcard: sk卡的文件夹
+
+# SharedPrefrence存储:
+/data/data/packagename/shared_prefs/xxx.xml
+
+# 手机内部文件存储:
+/data/data/packagename/files/xxx
+
+# 手机外部文件存储:
+/storage/sdcard/Android/data/packagename/files
+/storage/sdcard/xxx
+
+# Sqlite数据库存储:
+/data/data/packagename/databases/xxx.db
+
+# 远程服务器存储
+
+# Activity运行状态
+运行状态  可见 		可操作
+暂停		 可见  		不可
+停止		 不可见 		对象存在
+死亡		 对象不存在
+
+# Activity的LauchMode
+Standard:		标准模式,每次调用startActivity()方法就会产生一个新的实例
+singleTop:	    如果已经有一个实例位于Activity栈的顶部时,就不产生新的实例;如果不位于栈顶,就会产生一个新的实例
+singleTask:		只有一个实例,默认在当前Task中
+singleInstance:	只有一个实例,创建时会新建一个栈,且此栈中不能有其它对象
+
+# RelativeLayout
+兄弟视图
+	同方向对齐:
+		android:layout_alignLeft
+		android:layout_alignTop
+		android:layout_alignRight
+		android:layout_alignBottom
+	反方向对齐:
+		android:layout_toLeftOf
+		android:layout_toRightOf
+		android:layout_above
+		android:layout_below
+与父视图
+	同方向对齐:
+        android:layout_alignParentLeft
+        android:layout_alignParentRight
+        android:layout_alignParentTop
+        android:layout_alignParentBottom
+	居中:
+        android:layout_centerInParent
+        android:layout_centerVertical
+        android:layout_centerHorizontal
+
+# SQLite
+  主键列名使用_id
+
+# Activity与Fragment生命周期
     启动:
       FragmentOne.onAttach
       FragmentOne.onCreate
@@ -30,7 +88,7 @@
       FragmentOne.onDetach
       MainActivity onDestory
 
-2. 检查权限
+# 检查权限
 /**
  - 检查某个权限。
  *

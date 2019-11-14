@@ -203,3 +203,24 @@ function accDiv(arg1, arg2) {
 Number.prototype.div = function (arg) {
     return accDiv(this, arg);
 };
+
+//n表示需要四舍五入的数，m表示需要保留的小数位数
+function toFixed(n, m){ 
+	var newNum = Math.round(n * Math.pow(10, m)) / Math.pow(10, m) ;
+	//首先将要保留的小数位数的小数部分转成整数部分，利用幂函数将n乘以10的m次方
+	//然后利用Math.round()方法进行四舍五入处理
+	//最后再除以10的m次方还原小数部分
+	//注：此时还未能将所有数字正确转换。例如将1.0001保留3位小数我们想要的结果是1.000，而此时newNum里面的值是1
+	//所以还需要处理此种特殊情况，即保留的小数位上全0
+	var newSNum = newNum.toString();
+	//这一步将刚才进行处理过的数转换成字符串
+	var rs = newSNum.indexOf('.'); //利用indexOf查找字符串中是否有.，它返回某个指定的字符串值在字符串中首次出现的位置，不存在则返回-1
+	if (rs < 0) {
+		rs = newSNum.length;
+		newSNum += '.';
+	}
+	while (newSNum.length <= rs + m) { //在末尾加0
+		newSNum += '0';
+	}
+	return newSNum;
+}

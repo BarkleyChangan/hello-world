@@ -47,7 +47,7 @@
        vi /etc/profile
 
        # java environment
-       export JAVA_HOME=/usr/local/java/jdk1.8.0_171  
+       export JAVA_HOME=/usr/local/jdk1.8.0_171  
        export JRE_HOME=${JAVA_HOME}/jre  
        export CLASSPATH=.:${JAVA_HOME}/lib:${JRE_HOME}/lib  
        export PATH=${JAVA_HOME}/bin:$PATH
@@ -75,20 +75,29 @@
     5. 使用特定用户启动tomcat
        chown -R nobody:nobody /usr/local/tomcat
        sudo -E -u nobody /usr/local/tomcat/bin/startup.sh
+    6.修改server.xml配置文件
+       URIEncoding="UTF-8"
+       useBodyEncodingForURI="true"
 
 四、安装nginx
     1. 安装必备软件
        yum -y install gcc gcc-c++ wget
-    2. 解压
-       tar -zxvf nginx-1.10.3.tar.gz
-    3. 安装Nginx相关依赖包(由于openssl-devel依赖于zlib-devel通过yum安装时会自动解决依赖)
+    2. 安装Nginx相关依赖包(由于openssl-devel依赖于zlib-devel通过yum安装时会自动解决依赖)
        yum -y install pcre-devel openssl-devel
+    3. 解压
+       cd /usr/src
+       tar -zxvf nginx-1.10.3.tar.gz
     4. 配置编译选项
        cd nginx-1.10.3
        ./configure --prefix=/usr/local/nginx --with-http_ssl_module --with-http_realip_module
     5. 编译安装
        make && make install
-    6. 启动、停止Nginx
+
+       重新安装: rm -rf /usr/local/nginx/*
+                       cd /usr/src/nginx-1.10.3
+                       make clean
+                       make && make install
+    6. 启动、停止Nginx命令
        cd /usr/local/nginx/sbin
        ./nginx
        ps aux | grep nginx
@@ -111,8 +120,14 @@
        #指定为IP地址为192.168.78.11开通80端口
        iptables -R INPUT l -s192.168.78.11 -ptcp --dport 80 -j ACCEPT
        service iptables save
+
+       firewall-cmd --zone=public --add-service=http --permanent
+       firewall-cmd --zone=public --add-port=80/tcp --permanent
+       firewall-cmd --reload
     10.查看防火墙状态
        service iptables status
+
+       firewall-cmd --list-all
     11.添加环境变量(推荐将Nginx放入/usr/local/sbin目录中)
        ln -s /usr/local/nginx/sbin/nginx /usr/local/sbin/nginx
     12.添加系统服务
@@ -246,7 +261,7 @@ error_page          自定义错误页面
 =  根据其后的指定模式进行精确匹配
 ~  使用正则表达式完成location的匹配,区分大小写
 ~* 使用正则表达式完成location的匹配,不区分大小写
-^~ 不使用正则表达式,完成以指定模式开头的location匹配
+^~ 不使用正则表达式,完成以指定模式开头的location匹配,会对uri中特殊符号编码处理
 @  用于定义一个location块,且该块不能被外部客户端所访问,只能被Nginx内部配置指令所访问
 
 匹配优先级: = > ^~ > 正则 > 普通最大前缀匹配
@@ -542,12 +557,13 @@ vrrp_instance VI_1 {            # 配置一个虚拟路由名称为VI_1
 vi chk_nginx.sh
 
 #! /bin/bash
-if [ `ps -C nginx --no-header | wc -l` -eq 0 ];then
-  service nginx start
-  sleep 2
-  if [ `ps -C nginx --no-header | wc -l` -eq 0 ];then
-    service keppalived stop
-  fi
+A=`ps -C nginx –no-header |wc -l`
+if [ $A -eq 0 ];then
+    /usr/local/nginx/sbin/nginx
+    sleep 2
+    if [ `ps -C nginx --no-header |wc -l` -eq 0 ];then
+        killall keepalived
+    fi
 fi
 
 chmod +x /chk_nginx.sh
@@ -561,13 +577,36 @@ ps aux | grep keepalived
 vrrp_instance VI_2 {
   state BACKUP                  # 修改身份为BACKUP
   priority 90                   # 修改优先级为90(低于MASTER即可)
-  ...
-  ...
-  ...
 }
 
 # 添加防火墙规则
 iptables -I INPUT -s192.168.78.22 -p112 -jACCEPT
 service iptables save
 
+# 日志格式
+log_format  main  '$remote_addr  - $remote_user [$time_local] "$request" '
+                 '$status $body_bytes_sent "$http_referer" '
+                  '"$http_user_agent" "$http_x_forwarded_for" "$host"  "$cookie_ssl_edition" '
+                 '"$upstream_addr"   "$upstream_status"  "$request_time"  '
+                 '"$upstream_response_time" ';
 
+# 重要的指令
+proxy_pass_header            设置Nginx服务器响应报文头
+proxy_set_header               设置Nginx发送给被代理服务器的请求头
+proxy_connect_timeout     设置Nginx服务器与后端被代理服务器尝试连接的超时时间
+proxy_read_timeout           设置Nginx服务器向后端被代理服务器发出read请求后等待响应超时时间
+proxy_send_timeout           设置Nginx服务器向后端被代理服务器发出write请求后等待响应超时时间
+proxy_http_version 1.0|1.1 设置Nginx服务器提供代理服务的HTTP协议版本
+proxy_ignore_client_abort  设置客户端终端网络请求时Nginx服务器是否中断对被代理服务器的请求(off)
+proxy_redirect                      设置被代理服务器返回的响应头中的Locaiton和Refresh与proxy_pass指令配合使用
+proxy_redirect redirect replacement;
+proxy_redirect default;
+proxy_redirect off;
+proxy_redirect ~^http://192.168.1.154:8080(.*) http://www.boke.com$1;
+proxy_intercept_errors         设置被代理服务器返回400或者大于400状态码时是否使用Nginx自己定义的错误页(使用error_page指令)
+                                                off:Nginx服务器直接将被代理服务器返回的HTTP状态返回给客户端
+proxy_ssl_session_reuse       是否使用基于SSL安全协议连接被代理服务器(off)
+proxy_cache_bypass             设置Nginx向客户端发送响应数据时,不从缓存获取的条件
+proxy_cache_bypass $cookie_nocache $arg_nocache $arg_comment $http_pragma $http_authorization
+proxy_cache_min_uses          设置客户端请求发送的次数,当到达设定次数后对该请求响应数据做缓存
+proxy_cache_use_stale          被代理服务器无法访问时Nginx使用历史缓存响应客户端请求

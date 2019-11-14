@@ -1,57 +1,37 @@
-/data/app:   存放第三方apk文件
-/system/app: 存放系统apk文件
-/data/data/packagename: 与应用对应的文件,在应用安装时自动生成,应用卸载时自动删除
-/storage/sdcard: sk卡的文件夹
+# 版本说明
+ActiveMQ 官网:http://activemq.apache.org
+ActiveMQ5.10.x 以上版本必须使用 JDK1.8 才能正常使用
+ActiveMQ5.9.x 及以下版本使用 JDK1.7 即可正常使用
 
-# SharedPrefrence存储:
-/data/data/packagename/shared_prefs/xxx.xml
+# 安装ActiveMQ
+tar -zxvf apache-activemq-5.15.10-bin.tar.gz
+ls -al apache-activemq-5.15.10/bin	# 检查权限
+chmod 755 apache-activemq-5.15.10	# 修改权限
 
-# 手机内部文件存储:
-/data/data/packagename/files/xxx
+# 命令
+/usr/local/apache-activemq-5.15.10/bin/activemq start	# 启动
+ps aux | grep activemq					# 检查进程
+/usr/local/apache-activemq-5.15.10/bin/activemq restart	# 重启
+/usr/local/apache-activemq-5.15.10/bin/activemq stop	# 关闭
 
-# 手机外部文件存储:
-/storage/sdcard/Android/data/packagename/files
-/storage/sdcard/xxx
+# 管理界面
+http://ip:8161/admin/
+用户名: admin
+密码: admin
+ActiveMQ 使用的是 jetty 提供 HTTP 服务.启动稍慢,建议短暂等待再访问测试
 
-# Sqlite数据库存储:
-/data/data/packagename/databases/xxx.db
+# 修改访问端口
+修改 ActiveMQ 配置文件: /usr/local/apache-activemq-5.15.10/conf/jetty.xml 
 
-# 远程服务器存储
+# 修改用户名和密码
+修改 conf/users.properties 配置文件.内容为: 用户名=密码
+保存并重启 ActiveMQ 服务即可
 
-# Activity运行状态
-运行状态  可见 		可操作
-暂停		 可见  		不可
-停止		 不可见 		对象存在
-死亡		 对象不存在
-
-# Activity的LauchMode
-Standard:		标准模式,每次调用startActivity()方法就会产生一个新的实例
-singleTop:	    如果已经有一个实例位于Activity栈的顶部时,就不产生新的实例;如果不位于栈顶,就会产生一个新的实例
-singleTask:		只有一个实例,默认在当前Task中
-singleInstance:	只有一个实例,创建时会新建一个栈,且此栈中不能有其它对象
-
-# RelativeLayout
-兄弟视图
-	同方向对齐:
-		android:layout_alignLeft
-		android:layout_alignTop
-		android:layout_alignRight
-		android:layout_alignBottom
-	反方向对齐:
-		android:layout_toLeftOf
-		android:layout_toRightOf
-		android:layout_above
-		android:layout_below
-与父视图
-	同方向对齐:
-        android:layout_alignParentLeft
-        android:layout_alignParentRight
-        android:layout_alignParentTop
-        android:layout_alignParentBottom
-	居中:
-        android:layout_centerInParent
-        android:layout_centerVertical
-        android:layout_centerHorizontal
-
-# SQLite
-  主键列名使用_id
+# 目录说明
+bin 存放的是脚本文件
+conf 存放的是基本配置文件
+data 存放的是日志文件
+docs 存放的是说明文档
+examples 存放的是简单的实例
+lib 存放的是 activemq 所需 jar 包
+webapps 用于存放项目的目录

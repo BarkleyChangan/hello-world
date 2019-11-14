@@ -22,7 +22,7 @@
     或者
     /opt/tomcat9/bin/catalina.sh start
 
-3. 配置编码server.xml 
+3. 配置编码server.xml(URIEncoding:针对中文URL处理;useBodyEncodingForURI:针对QueryString使用BodyEncoding解码)
    useBodyEncodingForURI="true" URIEncoding="UTF-8"
 
 4. 更改防火墙规则,不对外开放8080端口.

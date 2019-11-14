@@ -1,21 +1,23 @@
 # redis安装
 1. 安装gcc
-yum install gcc-c++
+yum install gcc -y
 gcc -v
+yum install tcl -y
 
 2. 解压并安装redis
 tar -zxvf redis-4.0.11.tar.gz
 make distclean
 make
-make install
-安装路径: cd /usr/local/bin
+make test
+make install PREFIX=/usr/local/redis
 
 3. 拷贝配置文件
-cp redis.conf /myredis/redis.conf
+cp redis.conf /usr/local/redis/bin/redis.conf
 修改: daemonize yes
 
 4. 启动redis
-redis-server /myredis/redis.conf
+cd /usr/local/redis/bin
+./redis-server redis.conf
 redis-cli -p 6379
 ping
 
@@ -23,7 +25,7 @@ ps -ef | grep redis
 lsof -i :6379
 
 5. 关闭redis
-SHUTDOWN
+./redis-cli -h 127.0.0.1 -p 6379 shutdown
 exit
 
 6. 开放端口和IP地址

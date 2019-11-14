@@ -1,0 +1,20 @@
+# 微信官方文档
+https://developers.weixin.qq.com/doc/
+
+# 微信公众号接口测试账号:
+https://mp.weixin.qq.com/debug/cgi-bin/sandboxinfo?action=showinfo&t=sandbox/index
+
+# WeUI
+https://github.com/weui/weui
+https://github.com/weui/weui/releases
+https://github.com/weui/weui/wiki
+
+# JQuery WEUI
+http://jqweui.com/
+
+# 腾讯地图
+http://lbs.qq.com/javascript_v2/index.html
+
+# 百度地图
+http://lbsyun.baidu.com/index.php?title=jspopular/guide/routeplan
+http://lbsyun.baidu.com/jsdemo.htm#i5_5
