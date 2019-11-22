@@ -277,6 +277,9 @@ pidof [-sx] programname
        -s 仅列出一个PID而不列出所有的PID
        -x 同时列出该program name可能的PPID那个进程的PID
 
+# 查看SELinux服务主配置文件中定义的状态
+cat /etc/selinux/config
+
 # 获取SElinux目前的模式
 getenforce
 
@@ -321,7 +324,7 @@ chcon [-R] --reference=范例文件 文件
        -v 若有变化成功,请将变动的结果列出来
        --reference=范例文件:拿某个文件当范例来修改后的续接的文件的类型
 
-# 让文件恢复正确的SELinux type
+# 让文件恢复正确的SELinux type(将设置好的SELinux安全上下文立即生效)
 restorecon [-Rv] 文件或目录
             -R 连同次目录一起修改
             -v 将过程显示到屏幕上
@@ -329,7 +332,8 @@ restorecon [-Rv] 文件或目录
 # 默认的安全性本文查询与修改
 semanage {login|user|port|interface|fcontext|translation} -l
 semanage fcontext -{a|d|m} [-frst] file_spec
-         fcontext 主要用在安全性本文方面的用途,-l为查询的意思
+         fcontext 主要用在安全性本文方面的用途
+         -l为查询的意思
          -a 增加,你可以增加一些目录的默认安全性本文类型设定
          -m 修改
          -d 删除
@@ -518,6 +522,7 @@ passwd [-l] [-u] [--stdin][-S] [-n 日数] [-x 日数] [-w 日数] [-i 日期] �
         -x 后面接天数,shadow的第5个字段,多久内必须要修改密码
         -w 后面接天数,shadow的第6个字段,密码过期前的警告天数
         -i 后面接日期,shadow的第7个字段,密码失效日期
+echo "newpassword" | passwd -stdin barkley
 
 # 显示密码详细参数
 chage [-ldEImMW] 账号名
@@ -575,6 +580,7 @@ sudo [-b] [-u 用户名]
 
 # 修改/etc/sudoer(在结束离开修改画面时,系统会去检查/etc/sudoers的语法)
 visudo
+visudo 添加NOPASSWD参数执行时不需要输入密码
 
 用户名 来源主机=(可切换的身份) 可下达的指令(使用绝对路径)
 root       ALL=(ALL)                 ALL
@@ -635,9 +641,9 @@ setfacl [-bkRd] [{-m|-x} acl参数] 目标文件名
 [m:[rwx]] 针对有效权限设定
 [d:[ug]:用户列表:[rwx]] 使用默认权限设定目录未来文件的ACL权限继承
 setfacl -m u:vbird1:rx acl_test.txt
-
 setfacl -x u:myuser1 /srv/projecta 取消某个账号的ACL时,不需要加上权限
 setfacl -m u:pro3:- /srv/projecta  设定一个用户或群组没有任何ACL权限的语法中,在权限字段不留空必须用-代替
+针对目录需要使用-R递归参数;阵地普通文件使用-m参数;删除使用-b
 
 # 查看ACL
 getfacl filename
@@ -654,6 +660,7 @@ getfacl filename
   执行者对于该程序需要具有x的可执行权限
   本权限仅在执行该程序的过程中有效
   执行者将具有该程序拥有者的权限
+  可以让二进制程序的执行者拥有属主的权限
 # SGID
    对二进制程序有用
    程序执行者对于该程序来说,需具备x的权限
@@ -661,7 +668,9 @@ getfacl filename
    用户若对于此目录具有r与x的权限时,该用户能够进入此目录
    用户在此目录下的有效群组将会变成该目录的群组
    若用户在此目录下具有w的权限,则使用者所有建立的新文件群组与目录群组相同
-# SBIT 
+   1.可以让二进制程序的执行者拥有属组的权限
+   2.在某个目录中创建文件自动继承该目录的用户组(只可以对目录进行设置)
+# SBIT 确保用户只能删除自己的文件
    只针对目录有效
    当用户对于此目录具有w,x权限,即具有写入权限时
    当用户在该目录下建立文件或目录时,仅有自己与root才有权力删除该文件
@@ -778,6 +787,7 @@ chmod u+x hello
 chmod a-x hello
 chmod ug=rw,o=r hello
 chmod o=u hello
+chmod和chown命令用于修改目录时需要加上大写的-R参数表示递归操作
 
 # 拷贝文件夹
 cp -rf dir1 dir2
@@ -862,6 +872,8 @@ chattr [+-=][ASacdistu] 文件或目录
         u 与s相反,如果该文件被删除,则数据内容其实还在磁盘中,可以使用来救援该文件
         注意1: 属性常见的a与i设定值
         注意2: xfs文件系统仅支持AadiS
+chattr +a test.txt
+chattr -a test.txt
 
 # 显示文件隐藏属性
 lsattr [-adR] 文件或目录
@@ -928,6 +940,19 @@ cmp [-l] file1 file2
 ***************** 文件,目录 *****************
 
 ***************** 软件安装,卸载,更新 *****************
+# 源码安装
+1. 下载以及解压源码包文件
+tar zxvf filename.tar.gz
+2. 编译源码包代码(生成Makefile文件)
+cd FileDirectory
+./configure --prefix=/usr/local/program
+3. 生成二进制安装程序
+make
+4. 运行二进制服务程序安装包
+make install
+5. 清理源码包临时文件
+make clean
+
 # 安装rpm包(软件的相关信息被写入到/var/lib/rpm/目录下的数据库文件中)
 rpm -ivh RPM包全路径名称
     i=install 安装rpm包
@@ -1048,6 +1073,7 @@ apt-cache depends wesnoth
 fdisk -l
     IDE硬盘驱动器标识符为: hdx~  hd表明分区所在设备的类型这是指IDE硬盘。x为盘号  a为基本盘,b为基本丛属盘,c为辅助主盘,d为辅助丛属盘;~代表分区,前4个分区用数字1-4表示,它们是主分区或扩张分区,从5开始就是逻辑分区。
     SCSI硬盘驱动器标识符为: sd
+fdisk /dev/sdb
 
 # 查看文件系统整体磁盘使用量
 df [-ahikHTm] 目录或文件名
@@ -1113,6 +1139,7 @@ mkfs -t minix /dev/sdb1 Linux最早使用的文件系统
         ext4            ext4文件系统
         msdos           FAT文件系统
 mkfs -t ext4 -c /dev/sdb1 -c选项来检查指定设备上损坏的块
+mkfs.xfs /dev/sdb1
 
 # 初始化交换分区
 mkswap /dev/sdb2
@@ -1222,6 +1249,10 @@ netstat -[atunlp]
         -l 列出目前正在网络监听的服务
         -p 列出该网络服务的进程PID
 netstat -tulnp
+
+# 网络管理器
+nmtui
+systemctl restart network
 
 # 查看网卡代号
 nmcli connection show [网卡代号]
@@ -1699,9 +1730,80 @@ sed [-nefr] [动作]
 
 ***************** 防火墙iptables *****************
 # iptables常用选项
-iptables -F 清除链中所有的规则
-         -P 为链设置一条默认策咯
-         -A 为链增加一条规则说明
-         -D 从链中删除一条规则
-         -L 查看当前表中的链和规则
+iptables -F 清空规则链
+               -P 设置默认策略
+               -L 查看规则链
+               -A 在规则链末尾加入新规则
+               -I num 在规则链头部加入新规则
+               -D num 从链中删除一条规则
+               -s 匹配来源地址IP/MASK,加叹号"!"表示除这个IP外
+               -d 匹配目标地址
+               -i 网卡名称 匹配从这块网卡流入的数据
+               -o 网卡名称 匹配从这块网卡流出的数据
+               -p 匹配协议,如TCP、UDP、ICMP
+               --dport num 匹配目标端口号
+               --sport num 匹配来源端口号
+
+查看已有的防火墙规则链: iptables -L
+清空已有的防火墙规则链: iptables -F
+把INPUT规则链的默认策略设置为拒绝: iptables -P INPUT DROP（规则链的默认拒绝动作只能是DROP不能是REJECT）
+向INPUT链中添加允许ICMP流量进入策略规则: iptables -I INPUT -p icmp -j ACCEPT
+删除规则链中的策略: iptables -D INPUT 1
+保存防火墙策略: servier iptables save
+开放8080端口:
+iptables -I INPUT -p tcp --dport 8080 -j ACCEPT
+servier iptables save
+/etc/rc.d/init.d/iptables restart
+/etc/init.d/iptables status
+/sbin/iptables -D INPUT 2 删除端口（2表示上面的num列）
 ***************** 防火墙iptables *****************
+
+***************** 防火墙firewall-cmd *****************
+常用的区域名称以及策略规则:
+trusted 允许所有的数据包
+home    拒绝流入的流量,除非与流出的流量相关;而如果流量与ssh、mdns、ipp-client、amba-client与dhcpv6-client服务相关,则允许流量
+internal 等同于home区域
+work      拒绝流入的流量,除非与流出的流量数相关;而如果流量与ssh、ipp-client与dhcpv6-client服务相关,则允许流量
+public    拒绝流入的流量,除非与流出的流量相关;而如果流量与ssh、dhcpv6-client服务相关,则允许流量
+external 拒绝流入的流量,除非与流出的流量相关;而如果流量与ssh服务相关,则允许流量
+dmz        拒绝流入的流量,除非与流出的流量相关;而如果流量与ssh服务相关,则允许流量
+block      拒绝流入的流量,除非与流出的流量相关;
+drop       拒绝流入的流量,除非与流出的流量相关;
+firewall-cmd命令参数及作用
+--get-default-zone                 查询默认的区域名称
+--set-default-zone=区域名称 设置默认的区域使其永久生效
+--get-zones                              显示可用的区域
+--get-services                          显示预先定义的服务
+--get-active-zones                  显示当前正在使用的区域与网卡名称
+--add-source=                         将源自此IP或子网的流量导向指定的区域
+--remove-source=                   不再将源自此IP或子网的流量导向某个指定区域
+--add-interface=网卡名称       将源自该网卡的所有流量都导向某个指定区域
+--change-interface=网卡名称  将某个网卡与区域进行关联
+--list-all                                     显示当前区域的网卡配置参数、资源、端口以及服务等信息
+--list-all-zones                          显示所有区域的网卡配置参数、资源、端口以及服务等信息
+--add-service=服务名               设置默认区域允许该服务的流量
+--add-port=端口号/协议           设置默认区域允许该端口的流量
+--remove-service=服务名         设置默认区域不再允许该服务的流量
+--remove-port=端口号/协议     设置默认区域不再允许该端口的流量
+--reload                                      让"永久生效"的配置规则立即生效,并覆盖当前的配置规则
+--panic-on                                  开启应急状况模式
+--panic-off                                  关闭应急状况模式
+
+设置Https协议为永久允许
+firewall-cmd --zone=public --add-service=https
+firewall-cmd --permanent --zone=public --add-service=https
+开放8080端口:
+firewall-cmd --permanent --zone=public --add-port=8080/tcp
+firewall-cmd --reload
+***************** 防火墙firewall-cmd *****************
+
+***************** 管理远程会话 *****************
+yum install -y screen
+screen -S 创建会话窗口
+            -d 指定会话离线处理
+            -r 恢复指定会话
+            -x 一次性恢复所有会话
+            -ls 显示当前已有的会话
+            -wipe 删除无法使用的会话
+screen -S backup
+***************** 管理远程会话 *****************

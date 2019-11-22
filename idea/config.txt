@@ -156,15 +156,10 @@
    Build,Execution,Deployment -> Build Tools -> Maven -> Importing -> 勾选Import Maven projects automatically
 
 9. 缓存和索引清理
-   File -> Invalidate Cache/Restart...
+File -> Invalidate Cache/Restart...
 
 10. 插件
-   https://plugins.jetbrains.com/   Gsonformat
-
-
-
-   
-    
-   
-   
-   
+https://plugins.jetbrains.com/   Gsonformat
+VisualVM Launcher
+findbugs
+Alibaba Java Coding Guidelines

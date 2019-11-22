@@ -13,12 +13,12 @@
 
 # 修改默认中央仓库地址
 <mirrors>
-  <mirror>
-    <id>nexus-aliyun</id>  
-    <mirrorOf>*,!jeecg,!jeecg-snapshots</mirrorOf>  
-    <name>Nexus aliyun</name>  
-    <url>http://maven.aliyun.com/nexus/content/groups/public</url>  
-  </mirror>
+    <mirror>
+        <id>mirror-aliyun-releases</id>
+        <mirrorOf>*</mirrorOf>
+        <name>阿里云maven镜像</name>
+        <url>https://maven.aliyun.com/repository/public</url>
+    </mirror>
 </mirrors>
 
 # 设置MAVEN_OPTS环境变量

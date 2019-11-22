@@ -1,0 +1,59 @@
+﻿events
+{
+    use epoll;
+    worker_connections 65535;
+}
+http
+{
+    ##upstream的负载均衡,四种调度算法##
+    #调度算法1:轮询.每个请求按时间顺序逐一分配到不同的后端服务器,如果后端某台服务器宕机,故障系统被自动剔除,使用户访问不受影响
+    upstream webhost {
+        server 192.168.0.5:6666 ;
+        server 192.168.0.7:6666 ;
+    }
+    #调度算法2:weight(权重).可以根据机器配置定义权重.权重越高被分配到的几率越大
+    upstream webhost {
+        server 192.168.0.5:6666 weight=2;
+        server 192.168.0.7:6666 weight=3;
+    }
+    #调度算法3:ip_hash. 每个请求按访问IP的hash结果分配,这样来自同一个IP的访客固定访问一个后端服务器,有效解决了动态网页存在的session共享问题
+    upstream webhost {
+        ip_hash;
+        server 192.168.0.5:6666 ;
+        server 192.168.0.7:6666 ;
+    }
+    #调度算法4:url_hash(需安装第三方插件).此方法按访问url的hash结果来分配请求,使每个url定向到同一个后端服务器,可以进一步提高后端缓存服务器的效率.Nginx本身是不支持url_hash的,如果需要使用这种调度算法,必须安装Nginx 的hash软件包
+    upstream webhost {
+        server 192.168.0.5:6666 ;
+        server 192.168.0.7:6666 ;
+        hash $request_uri;
+    }
+    #调度算法5:fair(需安装第三方插件).这是比上面两个更加智能的负载均衡算法.此种算法可以依据页面大小和加载时间长短智能地进行负载均衡,也就是根据后端服务器的响应时间来分配请求,响应时间短的优先分配.Nginx本身是不支持fair的,如果需要使用这种调度算法,必须下载Nginx的upstream_fair模块
+    #
+    #虚拟主机的配置(采用调度算法3:ip_hash)
+    server
+    {
+        listen 80;
+        server_name mongo.demo.com;
+        #对 "/" 启用反向代理
+        location / {
+            proxy_pass http://webhost;
+            proxy_redirect off;
+            proxy_set_header X-Real-IP $remote_addr;
+            #后端的Web服务器可以通过X-Forwarded-For获取用户真实IP
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            #以下是一些反向代理的配置,可选.
+            proxy_set_header Host $host;
+            client_max_body_size 10m; #允许客户端请求的最大单文件字节数
+            client_body_buffer_size 128k; #缓冲区代理缓冲用户端请求的最大字节数,
+            proxy_connect_timeout 90; #nginx跟后端服务器连接超时时间(代理连接超时)
+            proxy_send_timeout 90; #后端服务器数据回传时间(代理发送超时)
+            proxy_read_timeout 90; #连接成功后,后端服务器响应时间(代理接收超时)
+            proxy_buffer_size 4k; #设置代理服务器（nginx）保存用户头信息的缓冲区大小
+            proxy_buffers 4 32k; #proxy_buffers缓冲区,网页平均在32k以下的设置
+            proxy_busy_buffers_size 64k; #高负荷下缓冲大小（proxy_buffers*2）
+            proxy_temp_file_write_size 64k;
+            #设定缓存文件夹大小,大于这个值,将从upstream服务器传
+        }
+    }
+}

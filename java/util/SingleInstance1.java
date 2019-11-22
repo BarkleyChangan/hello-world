@@ -3,7 +3,7 @@ package singleton;
 import java.io.Serializable;
 
 public class LazySingleton implements Serializable {
-    private static boolean initialized = false;
+    private static volatile boolean initialized = false;
 
     private LazySingleton() {
         synchronized (LazySingleton.class) {
