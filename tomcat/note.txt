@@ -28,3 +28,14 @@
 4. 更改防火墙规则,不对外开放8080端口.
    firewall-cmd  --remove-port=8080/tcp --permanent
    firewall-cmd  --reload
+
+5. 使用/dev/urandom生成随机数
+修改catalina.sh文件:在后面添加-Djava.security.egd=file:/dev/./urandom
+JAVA_OPTS="$JAVA_OPTS -Djava.protocol.handler.pkgs=org.apache.catalina.webresources -Djava.security.egd=file:/dev/./urandom"
+
+6.安装Apache Portable Runtime(APR)
+http://tomcat.apache.org/tomcat-8.5-doc/apr.html
+yum安装:
+sudo yum install -y apr-devel
+源码安装:
+https://apr.apache.org/compiling_unix.html

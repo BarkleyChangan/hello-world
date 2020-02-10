@@ -1,0 +1,168 @@
+﻿####################### Java基础 #######################
+# 除法运算
+整数除法会直接砍掉小数,而不是进位
+
+# 数值类型转换
+从float和double转换为整数值时,小数位将被截断。若你想对结果进行四舍五入,可以使用java.lang.Math的round()方法
+
+# 异或运算
+1 ^ 1->0
+0 ^ 0->0
+0 ^ 1->1
+
+# 按位非~
+由于~是一元运算符,所以不可与=联合使用
+
+# 移位运算
+只能用于处理整数类型
+左移位运算符<<能将其左边的运算对象向左移动右侧指定的位数（在低位补 0）
+右移位运算符有“正”、“负”值:若值为正,则在高位插入0;若值为负,则在高位插入1
+无符号右移>>>,它使用了“零扩展”（zero extension）:无论正负,都在高位插入0
+如果移动 char、byte 或 short,则会在移动发生之前将其提升为 int,结果为 int
+移位可以与等号 <<= 或 >>= 或 >>>= 组合使用。左值被替换为其移位运算后的值。但是,当无符号右移与赋值相结合时,若将其与byte或short一起使用的话,则结果错误。取而代之的是,它们被提升为 int 型并右移,但在重新赋值时被截断结果为 -1
+
+# Integer缓存范围
+[-128, 127]
+
+# Integer.toBinaryString
+若将较小的类型传递给Integer.toBinaryString()时,类型将自动转换为int
+
+# 最大值二进制表示
+char c = 0xffff; //最大char型16进制值
+byte b = 0x7f; //最大byte型16进制值;
+short s = 0x7fff; //最大short型16进制值
+
+# 表达式运行(隐式转型)
+表达式中最大的数据类型是决定表达式结果的数据类型.float型和double型相乘,结果是double型的;int和long相加,结果是long型
+
+# 换行
+%n实现的可以忽略平台间差异而生成适当的换行符,但只有当你使用System.out.printf()或System.out.format()时;对于System.out.println(),我们仍然必须使用\n
+
+# 内部类访问外部类对象
+OuterClass.this;
+
+# 创建内部类对象
+OuterClass.Inner inner = outer.new Inner();
+
+# Function命名规则
+1.如果只处理对象而非基本类型，名称则为 Function，Consumer，Predicate 等
+2.如果接收的参数是基本类型，则由名称的第一部分表示，如 LongConsumer，DoubleFunction，IntPredicate 等，但基本 Supplier 类型例外
+3.如果返回值为基本类型，则用 To 表示，如 ToLongFunction <T> 和 IntToLongFunction
+4.如果返回值类型与参数类型一致，则是一个运算符：单个参数使用 UnaryOperator，两个参数使用 BinaryOperator
+5.如果接收两个参数且返回值为布尔值，则是一个谓词（Predicate）
+6.如果接收的两个参数类型不同，则名称中有一个 Bi
+
+# 死锁发生的四个必要条件
+1.互斥,共享资源X和Y只能被一个线程占用
+2.占有且等待,线程T1已经取得共享资源 X,在等待共享资源 Y 的时候,不释放共享资源 X
+3.不可抢占,其他线程不能强行抢占线程T1占有的资源
+4.循环等待,线程T1等待线程T2占有的资源,线程T2等待线程T1占有的资源,就是循环等待
+
+# instanceof
+null instanceof Object返回false
+
+# 避免使用BigDecimal(double val)构造方法
+BigDecimal bd = new BigDecimal(3.1415926D);
+System.out.println(bd.toPlainString());
+RESULT:3.14159260000000006840537025709636509418487548828125
+
+# 格式化修饰符
+%[argument_index$][flags][width][.precision]conversion
+
+# Integer的Class对象并不是Number的Class 对象的子类
+ERROR:Class<Number> clazz = int.class;
+
+# RandomAccessFile类的模式设置
+r	只支持读，任何有关写的操作将会抛出异常
+rw	支持读和写，如果文件不存在，将尝试创建
+rws	类似于"rw"，需要同步更新文件的内容或者元数据到底层存储设备上
+rwd	类似于"rws"，与"rws"不同的在于没有对元数据的要求
+
+# 序列化
+1.实现Serializable接口
+private static final long serialVersionUID = 1L;
+2.实现Externalizable接口
+public void writeExternal(ObjectOutput out){}
+public void readExternal(ObjectInput out){}
+3.给类添加方法
+private void writeObject(ObjectOutputStream stream) throws IOException{
+    stream.defaultWriteObject();
+}
+private void readObject(ObjectInputStream stream) throws IOException, ClassNotFoundException{
+    stream.defaultReadObject();
+}
+4.序列化静态字段
+public static void serializaStaticState(ObjectOutputStream os) throws IOException {
+    os.writeInt(color);//要想序列化必须加入特定的方法在序列化时调用此方法
+}
+public static void deserializeStaticState(ObjectInputStream os) throws IOException {
+    color = os.readInt();
+}
+
+# 元注解
+@Target	表示注解可以用于哪些地方。可能的 ElementType 参数包括：
+		CONSTRUCTOR：构造器的声明
+		FIELD：字段声明（包括 enum 实例）
+		LOCAL_VARIABLE：局部变量声明
+		METHOD：方法声明
+		PACKAGE：包声明
+		PARAMETER：参数声明
+		TYPE：类、接口（包括注解类型）或者 enum 声明
+@Retention	表示注解信息保存的时长。可选的 RetentionPolicy 参数包括：
+		SOURCE：注解将被编译器丢弃
+		CLASS：注解在 class 文件中可用，但是会被 VM 丢弃
+		RUNTIME：VM 将在运行期也保留注解，因此可以通过反射机制读取注解的信息
+@Documented	将此注解保存在 Javadoc 中
+@Inherited	允许子类继承父类的注解
+@Repeatable	允许一个注解可以被使用一次或者多次（Java 8）
+####################### Java基础 #######################
+
+####################### Web #######################
+# 去掉jsp过于的空格
+web.xml中加入以下配置
+<jsp-config>
+	<jsp-property-group>
+		<url-pattern>*.jsp</url-pattern>
+		<trim-directive-whitespaces>true</trim-directive-whitespaces>
+	</jsp-property-group>
+</jsp-config>
+
+# Content-Type的格式
+type/subtype(;parameter)? type
+以text开头的媒体格式类型：
+text/html:HTML格式
+text/plain:纯文本格式
+text/xml:XML格式
+
+以image开头的媒体格式类型：
+image/gif:gif图片格式
+image/jpeg:jpg图片格式
+image/png:png图片格式
+
+以application开头的媒体格式类型：
+application/xhtml+xml:XHTML格式
+application/xml:XML数据格式
+application/atom+xml:Atom XML聚合格式 
+application/json:JSON数据格式
+application/pdf:pdf格式 
+application/msword:Word文档格式
+application/octet-stream:二进制流数据（如常见的文件下载）
+application/x-www-form-urlencoded:<form encType=””>中默认的encType,form表单数据被编码为key/value格式发送到服务器（表单默认的提交数据的格式）
+
+上传文件之时使用的：
+multipart/form-data:需要在表单中进行文件上传时,就需要使用该格式
+####################### Web #######################
+
+####################### Spring #######################
+# 获取当前的代理
+((LoginDaoImpl)AopContext.currentProxy()).findUser();
+
+# 定时任务
+默认情况下，Spring 将会生成一个单线程ScheduledExecutorService执行定时任务。所以一旦某一个定时任务长时间阻塞这个执行线程，其他定时任务都将被影响，没有机会被执行线程执行。
+<task:annotation-driven  scheduler="myScheduler"/>
+<task:scheduler id="myScheduler" pool-size="10"/>
+
+spring.task.scheduling.pool.size=10
+spring.task.scheduling.thread-name-prefix=task-test
+通过上面的配置，Spring将会使用TaskScheduler子类ThreadPoolTaskScheduler，内部线程数为pool-size数量，这个线程数将会直接设置ScheduledExecutorService线程数量。
+####################### Spring #######################

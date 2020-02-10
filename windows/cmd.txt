@@ -1,12 +1,44 @@
 # 查看8080端口被谁占用,回车后记下最后一位数字即PID
 netstat -aon|findstr "8080"
+
 # 根据PID查看是哪个进程占用了8080端口
 tasklist|findstr "1904"
+
 # 杀掉进程
 taskfill /f /t /im Tencentdl.exe
+
 # 追踪路由
 tracert 目标ip/域名
+
 # 测试两个ip是否畅通
 ping 目标ip
+
 # 查看ip情况
 ipconfig
+
+# 在当前目录下打开cmd
+在资源管理器中的地址栏中直接输入cmd
+
+# 打开cmd路径的资源管理器
+start .
+
+# 启动和停止服务
+net start mysql
+net stop mysql
+
+# 删除和查询服务
+sc delete mysql
+sc query mysql
+####################### Windows10系统清理 #######################
+1.关闭休眠
+管理员运行cmd:powercfg -h off
+2.关闭虚拟内存
+电脑->属性->高级系统设置->高级->性能“设置”->高级->虚拟内存"更改"->
+  a.取消勾选"自动管理所有驱动器的分页文件大小"
+  b.选中自定义大小 初始大小:400 最大值:400
+设置->确定
+3.删除系统更新文件
+C:\Windows\SoftwareDistribution\Download
+4.关闭系统备份还原
+电脑->属性->系统保护->系统保护->配置->"禁用系统保护"->删除->应用
+####################### Windows10系统清理 #######################

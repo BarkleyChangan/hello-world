@@ -1,0 +1,262 @@
+﻿####################### HTML5 #######################
+# 文档类型声明
+<!DOCTYPE html>
+<html lang="zh-cn">
+    <head>
+        <meta charset="utf-8">
+        <title></title>
+    </head>
+    <body>
+    </body>
+</html>
+
+# 渲染模式
+传统名称			HTML5草案名称		document.compatMode返回值
+standards mode(strict mode)	no-quirks mode		CSS1Compat
+almost standards mode		limited-quirks mode	CSS1Compat
+quirks mode			quirks mode		BackCompat
+IE9以上的版本三种模式在渲染方面几乎没有区别
+IE7\8\9理论上存在怪异模式,实际只有标准模式
+IE6标准模式和怪异渲染的区别最大
+IE6以下的浏览器中,只有怪异模式
+
+# 语义化标签
+<hgroup></hgroup>: 网页或section标题,当有多个层级时,该元素可以将h1-h6元素放在其中,可以使得h1降级(通常网页只有一个h1元素)
+<main></main>: 一个网页一般只有一个main标签
+<header></header>: 代表网页或section的页眉,通常包含h1-h6元素或hgroup
+<nav></nav>: 代表页面的导航链接区域,用于定义页面的主要导航部分
+<section></section>:代表文档中的节或段,段可以是指一篇文章里按照主题的分段
+<footer></footer>:
+<article></article>:元素最容易跟section和div容易混淆,其实article代表一个在文档、页面或网站中自成一体的内容
+<aside></aside>:被包含在article元素中作为主要内容的附属信息部分,其中内容可以是与当前文章有关的相关资料、标签、名次解释等
+
+# 电池电量标签
+meter
+
+# 拼音标注标签
+<ruby>澧<rt>(li)</rt></ruby>
+
+# 自定义data-*属性
+document.querySelector("#node");
+node.dataset.name="jack";
+
+# div可编辑 
+contenteditable="true"
+
+# video标签属性
+width 视频显示区域的宽度,单位是css像素
+heigh 视频显示区域的高度,单位是css像素t
+poster 一个海报帧URL,用于在用户播放或者跳帧之前显示
+src 视频URL
+constrols 显示或隐藏用户控制界面
+autoplay 是否自动播放
+loop 是否循环播放
+muted 是否静音
+preload 该属性旨在告诉浏览作者认为达到最佳的用户体验方式是什么
+               none: 提示作者认为用户不需要查看该视频,服务器也想要最小化访问流量;就是说提示浏览器该视频不需要缓存
+               metadata: 提示尽管作者认为用户不需要查看该视频,不过抓取元数据(比如:长度)还是很合理的
+               auto: 用户需要这个视频优先加载;也就是说可以下载整个视频,即使用户并不一定会使用它
+               空字符串: 也就代指auto值
+
+# offsetParent
+如果html和body直接的margin被清掉,则符合以下规则:
+    本身定位为fixed
+       Firefox->offsetParent:body
+       IE7以上->offsetParent:null
+    本身定位不为fixed
+        父级没有定位->offsetParent:body
+        父级有定位->offsetParent:定位父级
+
+IE7以下(如果html和body直接的margin没有被清掉):
+    父级没有定位:
+        本身没有定位->offsetParent:body
+        本身定位为absolute|relative->offsetParent:html
+        本身定位为fixed->offsetParent:null
+    父级有定位:
+        本身没有定位->offsetParent:定位父级
+        本身定位为absolute|relative->offsetParent:定位父级
+        本身定位为fixed->offsetParent:null
+NOTE: IE7以下,如果当前元素的某个父级触发了hasLayout,那么offsetParent就会被指向到这个触发了hasLayout特性的父节点上
+offsetParent很有用,因为offsetTop和offsetLeft都是相对于其内边距边界的
+
+# 获取元素在页面中的位置
+绝对位置:到body的距离
+相对位置:到视口的距离
+无滚动条时绝对位置和相对位置一直
+有滚动条时绝对位置与无滚动条时一直,相对位置=原相对位置-滚动位置
+
+Element.getBoundingClientRect()方法返回元素的大小及其相对于视口的位置: 
+    width|height: 代表元素border-box的尺寸
+    left|top: 元素左上角的相对位置
+    right|bottom: 元素右下角的相对位置
+
+# 获取滚动距离
+var scrollLeft = document.documentElement.scrollLeft || document.body.scrollLeft;
+var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+
+# 尺寸
+clientWidth | clientHeight: padding box(可视区域)
+docuemnt.documentElement.clientWidth | docuemnt.documentElement.clientHeight: 并不是根标签的可视区域,就是视口大小
+offsetWidth | offsetHeight: border box
+docuemnt.documentElement.offsetWidth | docuemnt.documentElement.offsetHeight: 根标签border box
+NOTE: 在IE10以及IE10以下,根标签的clientWidth和offsetWidth统一被指定为视口宽度
+####################### HTML5 #######################
+
+####################### 事件 #######################
+# 鼠标滚轮事件
+IE/Chrome: elem.onmousewheel = function(){};
+    wheelDelta: 向下为负|向上为正
+Firefox: elem.addEventListener("DOMMouseScroll, function(){});
+    detail: 向下为正|向上为负
+####################### 事件 #######################
+
+####################### 表单 #######################
+# 新增表单类型
+type:email 邮箱地址类型:当格式不符合email格式时,提交不成功并提示;在移动端获取焦点时会切换到英文键盘
+type:tel 电话类型:在移动端获取焦点时会切换到数字键盘
+type:url 地址类型:当格式不符合url格式时,提交不会成功并提示
+type:search 搜索类型:有清空文本的按钮
+type:range 特定范围内的数值选择器;属性:min、max、step
+type:number 只能包含数字的输入框
+type:color 颜色选择器
+type:datetime 显示完整日期(移动端浏览器支持)
+type:datetime-local 显示完整日期(不包含时区)
+type:time 显示时间(不含时区)
+type:date 显示日期
+type:week 显示周
+type:month 显示月
+
+# 新增表单属性
+placeholder: 输入提示信息;适用于form以及type为text、search、url、tel、email、password类型的input
+autofocus: 指定表单获取输入焦点
+required: 此项必填,不能为空
+pattern: 正则验证表达式
+formaction: 在submit里定义提交地址
+list|datalist: 为输入框构造一个选择列表(list值为datalist标签的id)
+
+# 表单验证
+验证失败的invalid事件:
+iptElem.addEventListener("invalid", function(){
+    // validity对象属性如下:
+    // valueMissing: 输入值为空时返回true
+    // typeMismatch: 控件值与预期类型不匹配返回true
+    // patternMismatch: 输入值不满足pattern正则返回true
+
+    // tooLong: 超过maxLength最大限制返回true
+    // rangeUnderflow: 验证range最小值返回true
+    // rangeOverflow: 验证range最大值返回true
+    // stepMismatch: 验证range的当前值是否符合min、max以及step规则返回true
+
+    // customError: 不符合自定义验证返回true
+    //     inputEl.setCustomValidity("请不要输入敏感词");
+    console.log(this.validity);
+}, false);
+formnovalidate: 关闭表单验证
+####################### 表单 #######################
+
+####################### Canvas #######################
+默认宽高:
+width: 300px
+height: 150px
+不要用css指定canvas高宽
+var canvasNode = document.querySelector("#canvas");
+if(canvasNode.getContext){
+    var ctx = canvasNode.getContext("2d");
+    // 将样式容器中的状态压入样式栈
+    ctx.save();
+    // 关于样式的设置
+    // save restore成对出现
+    ctx.fillStyle="pink";
+    // 清空整个路径容器
+    ctx.beginPath();
+    // 关于路径
+    ctx.fillRect(50,50,100,100);
+    // 将样式栈的栈顶状态弹出到样式容器里进行覆盖
+    ctx.restore();
+}
+
+# 角度转弧度
+角度*Math.PI/180
+
+# save方法
+save()方法是Canvas 2D API通过将当前状态压入栈中,保存Canvas全部状态的方法
+保存到栈中的绘制状态有如下部分组成:
+    当前的变换矩阵
+    当前的剪切区域
+    当前的虚线列表
+    以下属性的当前值:strokeStyle,fillStyle,lineWidth,lineCap,lineJoin...
+
+# restore方法
+restore()方法是Canvas 2D API通过在绘图状态栈中弹出顶端的状态,将Canvas恢复到最近的保存状态,如果没有保存状态此方法不做任何改变
+
+# beginPath方法
+清除路径容器
+
+# closePath方法
+闭合路径
+fill自动闭合;stroke需要手动闭合
+
+# translate(x,y)方法
+用来移动Canvas原点到一个不同的位置
+在Canvas中translate方法是累加的
+
+# rotate(弧度)方法:顺时针方向旋转
+此方法只接受一个参数:旋转的角度,它是顺时针方向的,以弧度为单位的值。
+旋转的中心点始终是Canvas的原点,如果要改变它,我们需要用到translate方法
+在Canvas中rotate方法是累加的
+
+# scale(x,y)
+scale方法接受两个参数。x、y分别是横轴和纵轴的缩放因子,它们必须都是正值。
+值比1.0小表示缩小,比1.0大表示方法,值为1.0时什么效果也没有。缩放一般我们用它来增减图形在Canvas中的像素数目,对形状、位图进行缩小或放大
+在Canvas中scale方法是累加的
+
+# clearRect(0,0,canvas.width,canvas.height)
+清除整个画布,注意原点位置
+
+# 像素操作
+function getPXInfo(imgData,x,y){
+	var color = [];
+	if(imgData){
+		var data = imgData.data;
+		var w = imgData.width;
+		var h =imgData.height;
+		// r
+		color[0]= data[(y*w+x)*4];
+		// g
+		color[1]= data[(y*w+x)*4+1];
+		// b
+		color[2]= data[(y*w+x)*4+2];
+		// a
+		color[3]= data[(y*w+x)*4+3];
+	}
+	
+	return color;
+}
+
+function setPXInfo(imgData, x, y, color){
+	if(imgData){
+		var data = imgData.data;
+		var w = imgData.width;
+		var h =imgData.height;
+		// r
+		data[(y*w+x)*4]=color[0];
+		// g
+		data[(y*w+x)*4+1]=color[1];
+		// b
+		data[(y*w+x)*4+2]=color[2];
+		// a
+		data[(y*w+x)*4+3]=color[3];
+	}
+}
+
+# 将画布导出为图像
+toDataURL(注意是canvas元素接口上的方法)
+
+# 事件isPointInPath
+e=e||window.event;
+var x=e.clientX-canvas.offsetLeft;
+var y=e.clientY-canvas.offsetTop;
+if(ctx.isPointInPath(x,y)){
+    alert(123);
+}
+####################### Canvas #######################

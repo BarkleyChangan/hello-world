@@ -1,0 +1,8 @@
+# Google搜索技巧
+搜索目的		使用方法
+精确搜索		"Search Content"
+过滤搜索		Search Content -keyword
+限定范围搜索	Search Content site:url
+特定搜索		Search Content filetype:keyword
+书籍或电影	《Book Name》
+模糊搜索		Word*Word

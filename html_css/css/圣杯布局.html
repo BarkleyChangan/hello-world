@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>圣杯布局+伪等高布局</title>
+		<style>
+			*{
+				margin:0;
+				padding:0;
+			}
+			
+			body {
+				min-width: 600px;
+			}
+			
+			.header,.footer {
+				height: 20px;
+				text-align: center;
+				border: 1px solid deeppink;
+				background: gray;
+			}
+			
+			.content {
+				overflow: hidden;
+				padding: 0 200px;
+			}
+			
+			.content .middle {
+				float: left;
+				width: 100%;
+				background: pink;
+			}
+			
+			.content .middle,.content .left,.content .right {
+				padding-bottom: 10000px;
+				margin-bottom: -10000px;
+			}
+			
+			.content .left,.content .right {
+				position: relative;
+				float: left;
+				width: 200px;
+				background: yellow;
+			}
+			
+			.content .left {
+				left: -200px;
+				margin-left: -100%;
+			}
+			
+			.content .right {
+				right: -200px;
+				margin-left: -200px;
+			}
+			
+			.clearfix {
+				*zoom: 1;
+			}
+			
+			.clearfix:before,.clearfix:after {
+				content:"";
+				display: table;
+				clear: both;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="header">header</div>
+		<div class="content clearfix">
+			<!-- 当中列优先加载 -->
+			<div class="middle">
+				middle<br/>
+				middle<br/>
+				middle<br/>
+				middle<br/>
+				middle<br/>
+				middle<br/>
+				middle<br/>
+				middle<br/>
+				middle<br/>
+				middle<br/>
+				middle<br/>
+				middle<br/>
+				middle<br/>
+				middle<br/>
+				middle<br/>
+				middle<br/>
+				middle<br/>
+				middle<br/>
+				middle<br/>
+				middle<br/>
+				middle<br/>
+			</div>
+			<div class="left">left</div>
+			<div class="right">right</div>
+		</div>
+		<div class="footer">footer</div>
+	</body>
+</html>

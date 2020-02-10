@@ -80,9 +80,14 @@
        useBodyEncodingForURI="true"
 
 四、安装nginx
-    1. 安装必备软件
-       yum -y install gcc gcc-c++ wget
-    2. 安装Nginx相关依赖包(由于openssl-devel依赖于zlib-devel通过yum安装时会自动解决依赖)
+    1. 下载Nginx
+       wget http://nginx.org/download/nginx-1.16.1.tar.gz
+    2. 安装需要编译的插件
+       yum install gcc c++ // 用于编译 C、C++ 代码的 GCC
+       yum install -y pcre pcre-devel // 用 C 语言编写的正则表达式函数库 Pcre(使用 Rewrite 模块)
+       yum install -y zlib zlib-devel // 用于数据压缩的函式库的 Zlib
+       yum install -y openssl openssl-devel // 安全套接字层密码库 OpenSSL（启用 SSL 支持）
+       NOTE:由于openssl-devel依赖于zlib-devel通过yum安装时会自动解决依赖
        yum -y install pcre-devel openssl-devel
     3. 解压
        cd /usr/src
@@ -91,7 +96,7 @@
        cd nginx-1.10.3
        ./configure --prefix=/usr/local/nginx --with-http_ssl_module --with-http_realip_module
     5. 编译安装
-       make && make install
+       make && sudo make install
 
        重新安装: rm -rf /usr/local/nginx/*
                        cd /usr/src/nginx-1.10.3
@@ -258,10 +263,10 @@ index               指定默认索引文件
 error_page          自定义错误页面
 
 八、nginx配置文件中location前缀含义
-=  根据其后的指定模式进行精确匹配
-~  使用正则表达式完成location的匹配,区分大小写
-~* 使用正则表达式完成location的匹配,不区分大小写
-^~ 不使用正则表达式,完成以指定模式开头的location匹配,会对uri中特殊符号编码处理
+=  该修饰符使用精确匹配并且终止搜索
+~  该修饰符使用区分大小写的正则表达式匹配
+~* 该修饰符使用不区分大小写的正则表达式匹配
+^~ 用于不含正则表达式的URI前,要求Nginx服务器找到标识URI和请求字符串匹配度最高的Location后,立即使用此Location处理请求,而不再使用Location块中的正则URI和请求字符串做匹配
 @  用于定义一个location块,且该块不能被外部客户端所访问,只能被Nginx内部配置指令所访问
 
 匹配优先级: = > ^~ > 正则 > 普通最大前缀匹配

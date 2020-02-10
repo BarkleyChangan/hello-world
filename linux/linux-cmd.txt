@@ -1,4 +1,7 @@
 ﻿***************** 系统 *****************
+# Linux命令在线查询网站
+https://man.linuxde.net
+
 # 桌面和命令行模式互相切换
 ctrl + alt + F(1~6)
 
@@ -1457,6 +1460,11 @@ ctrl+u 删除光标前的指令串
 ctrl+k 删除光标后的指令串
 ctrl+a 将光标移动到指令串最前面
 ctrl+e 将光标移动到指令串最后面
+ctrl+w 删除光标前的单词
+ctrl+y 粘贴使用ctrl+w,ctrl+u,ctrl+k快捷键擦除的文本
+ctrl+p 查看上一个命令
+ctrl+n 显示下一个命令
+ctrl+r 搜索历史命令
 
 #! /bin/bash
 

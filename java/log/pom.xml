@@ -1,0 +1,74 @@
+﻿<!-- log日志  -->
+<!-- slf4j + logback -->
+<!-- logback-classic-1.0.13.jar 会自动将 slf4j-api-1.7.21.jar 和 logback-core-1.0.13.jar 也添加到项目中 -->
+<!-- https://mvnrepository.com/artifact/ch.qos.logback/logback-classic -->
+<dependency>
+    <groupId>ch.qos.logback</groupId>
+    <artifactId>logback-classic</artifactId>
+    <version>1.2.3</version>
+    <!-- Scope设置为runtime,是为了防止开发人员在项目中直接使用Log Implementation中的类,而不使用Log Facade中的类 -->
+    <scope>compile</scope>
+    <!-- 设为optional,依赖不会传递,这样如果你是个lib项目,然后别的项目使用了你这个lib,不会被引入不想要的Log Implementation依赖 -->
+    <optional>true</optional>
+</dependency>
+<!-- slf4j 兼容 common-logging -->
+<!-- https://mvnrepository.com/artifact/org.slf4j/jcl-over-slf4j -->
+<dependency>
+    <groupId>org.slf4j</groupId>
+    <artifactId>jcl-over-slf4j</artifactId>
+    <version>1.7.30</version>
+    <optional>true</optional>
+</dependency>
+<!-- slf4j 兼容 log4j -->
+<!-- https://mvnrepository.com/artifact/org.slf4j/log4j-over-slf4j -->
+<dependency>
+    <groupId>org.slf4j</groupId>
+    <artifactId>log4j-over-slf4j</artifactId>
+    <version>1.7.30</version>
+    <optional>true</optional>
+</dependency>
+<!-- slf4j 兼容 java.util.logging -->
+<!-- https://mvnrepository.com/artifact/org.slf4j/jul-to-slf4j -->
+<dependency>
+    <groupId>org.slf4j</groupId>
+    <artifactId>jul-to-slf4j</artifactId>
+    <version>1.7.30</version>
+    <optional>true</optional>
+</dependency>
+<!-- slf4j 兼容 Spring日志 -->
+<!-- Spring使用的日志解决方案是common-logging+log4j -->
+<!-- https://mvnrepository.com/artifact/org.logback-extensions/logback-ext-spring -->
+<dependency>
+    <groupId>org.logback-extensions</groupId>
+    <artifactId>logback-ext-spring</artifactId>
+    <version>0.1.5</version>
+    <optional>true</optional>
+</dependency>
+<!-- 启动报SLF4J:Failed to load class “org.slf4j.impl.StaticLoggerBinder” -->
+<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-simple -->
+<dependency>
+    <groupId>org.slf4j</groupId>
+    <artifactId>slf4j-simple</artifactId>
+    <version>1.7.30</version>
+</dependency>
+
+
+
+<!-- log日志  -->
+<!-- common-logging + log4j -->
+<!-- https://mvnrepository.com/artifact/commons-logging/commons-logging -->
+<dependency>
+    <groupId>commons-logging</groupId>
+    <artifactId>commons-logging</artifactId>
+    <version>1.2</version>
+    <scope>runtime</scope>
+    <optional>true</optional>
+</dependency>
+<!-- https://mvnrepository.com/artifact/log4j/log4j -->
+<dependency>
+    <groupId>log4j</groupId>
+    <artifactId>log4j</artifactId>
+    <version>1.2.17</version>
+    <scope>runtime</scope>
+    <optional>true</optional>
+</dependency>

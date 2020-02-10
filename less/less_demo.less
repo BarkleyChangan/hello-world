@@ -1,0 +1,406 @@
+//1.Sass 诞生于2007年，Ruby编写，其语法功能都十分全面，可以说它完全把 CSS 变成了一门编程语言。另外 在国内外都很受欢迎，并且它的项目团队很是强大 ，是一款十分优秀的预处理语言。
+//2.Stylus 诞生于2010年，来自Node.js社区，语法功能也和Sass不相伯仲，是一门十分独特的创新型语言。
+//3.Less 诞生于2009年，受Sass的影响创建的一个开源项目。它扩充了CSS语言，增加了诸如变量、混合（mixin）、函数等功能，让 CSS 更易维护、方便制作主题、扩充（引用于官网）
+
+/* 1.值变量 */
+// 以@开头定义变量，使用时直接键入@名称
+@color:#999;
+@bgColor:skyblue;//不要加引号
+@width:50%;
+#wrap{
+	color: @color;
+	background: @bgColor;
+	width: @width;
+}
+
+/* 2.选择器变量 */
+@mySelector:#wrap;
+@Wrap:wrap;
+@{mySelector}{//变量名必须使用大括号包裹
+	color:#999;
+	width:50%;
+}
+.@{Wrap}{
+	color:#ccc;
+}
+#@{Wrap}{
+	color:#666;
+}
+
+/* 3.属性变量 */
+@borderStyle:border-style;
+@Solid:solid;
+#wrap{
+	@{borderStyle}:@Solid;//变量名必须使用大括号包裹
+}
+
+/* 4.url变量 */
+@images:"../img";//需要加引号
+body{
+	background: url("@{images}/dog.png");//变量名必须使用大括号包裹
+}
+
+/* 5.声明变量 */
+/* 声明:@name: {属性:值;}; */
+/* 使用:@name(); */
+@background:{background: red;};//注意分号
+#main{
+	@background();
+}
+@Rules:{
+	width: 200px;
+	height: 200px;
+	border: solid 1px red;
+};//注意分号
+#con{
+	@Rules();
+}
+
+/* 6.变量运算 */
+/* 加减法时 以第一个数据的单位为基准 */
+/* 乘除法时 注意单位一定要统一 */
+@width:300px;
+@color:#222;
+#wrap{
+	width: @width - 20;
+	height: @width - 20*5;
+	margin: (@width - 20)*5;
+	color: @color*2;
+	background-color: @color+#111;
+}
+
+/* 7.变量作用域(就近原则) */
+@var:@a;
+@a:100%;
+#wrap{
+	width:@var;
+	@a:9%;
+}
+ 
+/* 8.用变量去定义变量 */
+@fnord:"I am fnord.";
+@var:"fnord";
+#wrap::after{
+	content:@@var;//将@var替换为其值content:@fnord;
+}
+
+/* 9.1嵌套-&的妙用 */
+#header{
+	&:after{
+		content:"Less is more!";
+	}
+	.title{//嵌套了
+		font-weight: bold;
+	}
+	&_content{//没有嵌套!理解方式:直接把 & 替换成 #header
+		margin:20px;
+	}
+}
+
+/* 9.2嵌套-媒体查询 */
+#main{
+	@media screen{
+		@media (max-width:768px){
+			width:100px;
+		}
+	}
+	@media tv {
+		width:2000px;
+	}
+}
+
+/* 10.1混合-无参数方法 */
+// .与#皆可作为方法前缀
+// 方法后写不写()看个人习惯
+.card() {//等价于.card()
+	background: #f6f6f6;
+	-webkit-box-shadow: 0 1px 2px rgba(151, 151, 151, .58);
+	box-shadow: 0 1px 2px rgba(151, 151, 151, .58);
+}
+#wrap{
+	.card();//等价于.card();
+}
+
+/* 10.2混合-默认参数方法 */
+//Less可以使用默认参数，如果没有传参数，那么将使用默认参数
+//@arguments犹如JS中的arguments指代的是全部参数
+//传的参数中必须带单位
+.border(@a:10px,@b:50px,@c:30px,@color:#000){
+	border: solid 1px @color;
+	box-shadow: @arguments;//指代的是全部参数
+}
+#main{
+	.border(0px,5px,30px,red);//必须带着单位
+}
+#wrap{
+	.border(0px);
+}
+#content{
+	.border;//等价于.border()
+}
+
+/* 10.3混合-方法匹配模式 */
+.triangle(top,@width:20px,@color:#000){
+	border-color: transparent transparent @color transparent;
+}
+.triangle(right,@width:20px,@color:#000){
+	border-color: transparent @color transparent transparent;
+}
+.triangle(bottom,@width:20px,@color:#000){
+	border-color: @color transparent transparent transparent;
+}
+.triangle(left,@width:20px,@color:#000){
+	border-color: transparent transparent transparent @color;
+}
+.triangle(@_,@width:20px,@color:#000){
+	border-style: solid;
+	border-width: @width;
+}
+#main{
+	.triangle(left,50px,#999);
+}
+
+/* 10.4混合-方法的命名空间 */
+//在引入命令空间时,如使用>选择器,父元素不能加括号
+//不得单独使用命名空间的方法,必须先引入命名空间,才能使用其中方法
+//子方法可以使用上一层传进来的方法
+#card(){
+	background: #723232;
+	.d(@w:300px){
+		width:@w;
+		#a(@h:300px){
+			height: @h;//可以使用上一层传进来的方法
+		}
+	}
+}
+#wrap{
+	#card > .d > #a(100px);	//父元素不能加括号
+}
+#main{
+	#card .d();
+}
+#con{
+	//不得单独使用命名空间的方法
+	//.d()如果前面没有引入命名空间#card,将会报错
+	#card;//等价于#card();
+	.d(20px);//必须先引入#card
+}
+
+/* 10.5混合-方法的条件筛选 */
+#card{
+	// and运算符,相当于与运算&&,必须条件全部符合才会执行
+	.border(@width,@color,@style) when (@width>100px) and (@color=#999){
+		border:@style @color @width;
+	}
+	// not运算符,相当于非运算!,条件为不符合才会执行
+	.background(@color) when not (@color>=#222){
+		background: @color;
+	}
+	// 逗号分隔符:相当于或运算||,只要有一个符合条件就会执行
+	.font(@size:20px) when (@size>50px) , (@size<100px){
+		font-size: @size;
+	}
+}
+#main{
+	#card > .border(200px,#999,solid);
+	#card .background(#111);
+	#card > .font(40px);
+}
+
+/* 10.6混合-数量不定的参数 */
+.boxShadow(...){
+	box-shadow: @arguments;
+}
+.textShadow(@a,...){
+	text-shadow: @arguments;
+}
+#main{
+	.boxShadow(1px,4px,30px,red);
+	.textShadow(1px,4px,30px,red);
+}
+
+/* 10.7混合-方法使用important! */
+.border107() {
+	border:solid 1px red;
+	margin:50px;
+}
+#main{
+	.border107() !important;
+}
+
+/* 10.8混合-循环方法 */
+.generate-columns(4);
+.generate-columns(@n,@i:1) when (@i=<@n){
+	.column-@{i}{
+		width:(@i*100%/@n);
+	}
+	.generate-columns(@n,(@i+1));
+}
+
+/* 10.8混合-属性拼接方法 */
+//+_代表的是空格；+代表的是逗号
+.boxShadow108(){
+	box-shadow+:inset 0 0 10px #555;
+}
+.main{
+	.boxShadow108();
+	box-shadow+:0 0 20px black;
+}
+
+.Animation(){
+	transform+_:scale(2);
+}
+.main{
+	.Animation();
+	transform+_:rotate(15deg);
+}
+
+/* 10.9混合-官网实战 */
+.average(@x,@y){
+	@average:((@x+@y)/2);
+}
+div{
+	.average(16px,50px);//调用方法
+	padding:@average;	//使用返回值
+}
+
+/* 11.1继承-extend关键字的使用 */
+.animation111{
+	transition:all .3s ease-out;
+	.hide{
+		transform:scale(0);
+	}
+}
+#main{
+	&:extend(.animation111);
+}
+#con{
+	&:extend(.animation111 .hide);
+}
+
+/* 11.2继承-all全局搜索替换 */
+#main{
+	width:200px;
+}
+#main{
+	&:afer{
+		content:"Less is good!";
+	}
+}
+#wrap:extend(#main all){}
+
+/* 11.3继承-减少代码重复性 */
+.Method113 {
+	width:200px;
+	&:after{
+		content:"Less is good!";
+	}
+}
+#main{
+	.Method113;
+}
+#wrap{
+	.Method113;
+}
+
+/* 11.4继承-要点 */
+//选择器和扩展之间是允许有空格的:pre:hover :extend(div pre)
+//可以有多个扩展:pre:hover:extend(div pre):extend(.bucket tr)-注意这与 pre:hover:extend(div pre, .bucket tr)一样。
+//pre:hover:extend(div pre).nth-child(odd)这是不可以的，扩展必须在最后
+//如果一个规则集包含多个选择器，所有选择器都可以使用extend关键字
+
+/* 12.1导入-导入less文件可省略后缀 */
+@import "main"; //等价于:@import "main.less";
+
+/* 12.2导入-@import的位置可随意放置 */
+#main{
+	font-size: 15px;
+}
+@import "main";
+
+/* 12.3导入-reference */
+//使用@import (reference)导入外部文件，但不会添加把导入的文件编译到最终输出中，只引用
+@import (reference) "main.less";
+#wrap:extend(.navbar all){}
+
+/* 12.4导入-once */
+//@import语句的默认行为。这表明相同的文件只会被导入一次，而随后的导入文件的重复代码都不会解析
+@import (once) "main.less";
+@import (once) "main.less"; // this statement will be ignored
+
+/* 12.5导入-multiple */
+//使用@import (multiple)允许导入多个同名文件
+.a {
+  color: green;
+}
+// file: main.less
+@import (multiple) "main.less";
+@import (multiple) "main.less";
+
+/* 13.1函数-判断类型 */
+//isnumber:判断给定的值是否是一个数字
+//iscolor:判断给定的值是否是一个颜色
+//isurl:判断给定的值是否是一个url
+
+/* 13.2函数-颜色操作 */
+//saturate:增加一定数值的颜色饱和度
+//lighten:增加一定数值的颜色亮度
+//darken:降低一定数值的颜色亮度
+//fade:给颜色设定一定数值的透明度
+//mix:根据比例混合两种颜色
+
+/* 13.4函数-数学函数 */
+//ceil:向上取整
+//floor:向下取整
+//percentage:将浮点数转换为百分比字符串
+//round:四舍五入
+//sqrt:计算一个数的平方根
+//abs:计算数字的绝对值，原样保持单位
+//pow:计算一个数的乘方
+
+/* 14.1其他-注释 */
+/* CSS原生注释，会被编译在 CSS 文件中 */
+// Less提供的一种注释，不会被编译在CSS文件中
+
+/* 14.2其他-避免编译 */
+//结构:~'值'
+#main {
+	width:~'calc(300px-30px)';
+}
+
+/* 14.2其他-变量拼接 */
+//结构:~"字符@{变量}字符";
+.judge(@i) when (@i=1){
+	@size:15px;
+}
+.judge(@i) when (@i>1){
+	@size:16px;
+}
+.loopAnimation(@i) when (@i<16){
+	.circle:nth-child(@{i}){
+		.judge(@i);
+		border-radius: @size @size 0 0;
+		animation:~"circle-@{i}" @duration infinite @ease;
+		transition-delay:~"@{i}ms";
+	}
+	@keyframes ~"circle-@{i}"{
+		// do something
+	}
+	.loopAnimation(@i+1);
+}
+
+/* 14.2其他-使用JS */
+@content:`"aaa".toUpperCase()`;
+#randomColor{
+	@randomColor: ~"rgb(`Math.round(Math.random() * 256)`,`Math.round(Math.random() * 256)`,`Math.round(Math.random() * 256)`)";
+}
+#wrap{
+	width:~"`Math.round(Math.random()*100)`px";
+	&:after{
+		content:@content;
+	}
+	height:~"`window.innerHeight`px";
+	alert:~"`alert(1)`";
+	#randomColor();
+	background-color: @randomColor;
+}

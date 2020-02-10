@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no" />
+		<title>Canvas_刮刮卡</title>
+		<style type="text/css">
+			* {
+				margin: 0;
+				padding: 0;
+			}
+
+			html,
+			body {
+				height: 100%;
+				overflow: hidden;
+			}
+
+			#wrap,
+			ul,
+			ul>li {
+				height: 100%;
+			}
+
+			canvas {
+				position: absolute;
+				left: 0;
+				top: 0;
+				transition: 1s;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="wrap">
+			<canvas id="canvas" width="300" height="300">
+				<span>您的浏览器不支持画布元素 请您换成Chrome</span>
+			</canvas>
+			<ul>
+				<li></li>
+			</ul>
+		</div>
+	</body>
+	<script type="text/javascript">
+		window.onload = function() {
+			// 拿到画布
+			var canvasNode = document.querySelector("#canvas");
+			canvasNode.width = document.docuemtnElement.clientWidth;
+			canvasNode.height = document.docuemtnElement.clientHeight;
+			if (canvasNode.getContext) {
+				var ctx = canvasNode.getContext("2d");
+				var img = new Image();
+				img.src="img/a.png";
+				img.onload=function(){
+					draw();
+				};
+				function draw(){
+					var flag = 0;
+					ctx.drawImage(img,0,0,canvasNode.width,canvasNode.height);
+					canvasNode.addEventListener("touchstart", function(e){
+						e = e || window.event;
+						var touchC = e.changedTouchs[0];
+						var x = touchC.clientX - canvasNode.offsetLeft;
+						var y = touchC.clientY - canvasNode.offsetTop;
+						
+						ctx.globalCompositeOperation = "destination-out";
+						ctx.lineWidth=40;
+						ctx.lineCap="round";
+						ctx.lineJoin="round";
+						ctx.save();
+						ctx.beginPath();
+						//ctx.arc(x,y,20,360*Math.PI/180);
+						ctx.moveTo(x,y);
+						ctx.lineTo(x+1,y+1);
+						// ctx.fill();
+						ctx.stroke();
+						ctx.restore();
+					});
+					canvasNode.addEventListener("touchmove", function(e){
+						e = e || window.event;
+						var touchC = e.changedTouchs[0];
+						var x = touchC.clientX - canvasNode.offsetLeft;
+						var y = touchC.clientY - canvasNode.offsetTop;
+						
+						ctx.save();
+						//ctx.arc(x,y,20,360*Math.PI/180);
+						ctx.lineTo(x,y);
+						ctx.stroke();
+						ctx.restore();
+					});
+					canvasNode.addEventListener("touchend", function(e){
+						var imgData = ctx.getImageData(0,0,canvasNode.width,canvasNode.height);
+						var allPx = imgData.width * imgData.height;
+						for(var i=0;i < allPx;i++){
+							if(imgData.data[4*i+3] === 0){
+								flag++;
+							}
+						}
+						
+						if(flag >= allPx/2){
+							canvasNode.style.opacity=0;
+						}
+					});
+					canvasNode.addEventListener("transitionend", function(e){
+						this.remove();
+					});
+				}
+			}
+		};
+	</script>
+</html>

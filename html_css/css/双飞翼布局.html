@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<style type="text/css">
+			* {
+				margin: 0;
+				padding: 0;
+			}
+			
+			body {
+				min-width: 600px;
+			}
+			
+			.header,.footer{
+				border: 1px solid;
+				background: gray;
+				text-align: center;
+			}
+			
+			/* 等高布局 */
+			.content .middle,.content .left,.content .right{
+				float: left;
+				padding-bottom: 10000px;
+				margin-bottom: -10000px;
+				height: 50px;
+				line-height: 50px;
+			}
+			
+			.content {
+				overflow: hidden;
+				/* padding: 0 200px; */
+			}
+			
+			/* 双飞翼布局 */
+			.content .middle{
+				background: deeppink;
+				width: 100%;
+			}
+			
+			.content .m_inner {
+				padding: 0 200px;
+			}
+			
+			.content .left,.content .right{
+				background: pink;
+				width: 200px;
+				text-align: center;
+			}
+			
+			.content .left{
+				margin-left: -100%;
+			}
+			
+			.content .right {
+				margin-left: -200px;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="header">
+			<h4>header</h4>
+		</div>
+		<div class="content">
+			<div class="middle">
+				<div class="m_inner">
+					middle
+				</div>
+			</div>
+			<div class="left">left</div>
+			<div class="right">right</div>
+		</div>
+		<div class="footer">
+			<h4>footer</h4>
+		</div>
+	</body>
+</html>

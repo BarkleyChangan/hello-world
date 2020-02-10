@@ -163,3 +163,30 @@ https://plugins.jetbrains.com/   Gsonformat
 VisualVM Launcher
 findbugs
 Alibaba Java Coding Guidelines
+Maven Helper
+lombok:
+IDEA:Settings->Build,Execution,Deployment->Compiler->Annotation Processors->springmvcdemo->选中Enable annotation processing
+开启该项是为了让Lombok注解在编译阶段起到作用
+Eclipse:Eclipse内置的编译器不是Oracle javac，而是eclipse自己实现的Eclipse Compiler for Java (ECJ).要让ECJ支持Lombok，需要在eclipse.ini配置文件中添加如下两项内容:
+-Xbootclasspath/a:[lombok.jar所在路径]
+
+11.自定义注释模板
+File->Settings->Editor->File and Code Templates->Incudes->File Header下添加注释模板
+/**
+ *@className:${NAME}
+ *@description: TODO
+ *@author Barkley.Chang
+ *@date ${YEAR}-${MONTH}-${DAY} ${HOUR}:${MINUTE}
+ */
+
+12.断点
+断点四种类型：
+行断点（Line Breakpoints）:最经常用的方式, 可以设置在任何可执行的代码行上
+方法断点（Method Breakpoints）:在进入或退出指定的方法或其实现之一时挂起程序,允许您检查方法的进入/退出条件
+字段断点（Field Watchpoints）:当指定的字段被读取或写入时,挂起程序。需要注意的是,默认只有写才会停下,想要让读取时也停下,需要右击断点,在Watch的Field access上打勾才行
+异常断点（Exception Breakpoints）:当抛出Throwable或其子类时挂起程序 。可以在 Run — View Breakpoints 中的 Java Exception Breakpoints 里添加异常的具体类型。这样的话,程序中一旦发生了这种异常马上就会停下来
+
+13.热部署
+需要一个Facebook或Twitter的账号(最好Twitter)
+进入这个网址：https://my.jrebel.com/，并登录
+然后在Install and Acticate里可以得到你的永久激活码

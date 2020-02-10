@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no" />
+		<title>Canvas_变换</title>
+		<style type="text/css">
+			*{
+				margin:0;
+				padding:0;
+			}
+			html,body{
+				height: 100%;
+				overflow: hidden;
+			}
+			body{
+				background: pink;
+			}
+			#canvas{
+				background: gray;
+				position: absolute;
+				left: 0;
+				top: 0;
+				right: 0;
+				bottom: 0;
+				margin: auto;
+			}
+		</style>
+	</head>
+	<body>
+		<canvas id="canvas" width="300" height="300">
+			<span>您的浏览器不支持画布元素 请您换成Chrome</span>
+		</canvas>
+	</body>
+	<script type="text/javascript">
+		window.onload=function(){
+			var flag = 0;
+			var scale = 0;
+			var flagScale = 0;
+			// 拿到画布
+			var canvasNode = document.querySelector("#canvas");
+			if(canvasNode.getContext){
+				var ctx = canvasNode.getContext("2d");
+				
+				ctx.save();
+				ctx.translate(150,150);
+				ctx.beginPath();
+				ctx.fillRect(-50,-50,100,100);
+				ctx.restore();
+				
+				setInterval(function(){
+					flag++;
+					ctx.clearRect(0,0,canvasNode.width,canvasNode.height);
+					ctx.save();
+					ctx.translate(150,150);
+					ctx.rotate(flag*Math.PI/180);
+					if(scale == 100){
+						flagScale = -1;
+					}else if(scale == 0){
+						flagScale = 1;
+					}
+					scale+=flagScale;
+					ctx.scale(scale/50,scale/50);
+					
+					ctx.beginPath();
+					ctx.fillRect(-50,-50,100,100);
+					ctx.restore();
+				},1000/60);
+			}
+		};
+	</script>
+</html>

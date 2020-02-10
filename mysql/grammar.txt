@@ -1,3 +1,6 @@
+# SQL语句执行顺序
+FROM+JOIN->WHERE->GROUP BY->HAVING->SELECT(Window functions happen here!)->ORDER BY->LIMIT
+
 # 用户变量
 	SET @用户变量名=值;
 	SET @用户变量名:=值;
@@ -58,3 +61,10 @@ BEGIN
 	SET b:=b*3;
 END$$
 DELIMITER ;
+
+# 跨表更新
+UPDATE employees INNER JOIN merits ON employees.`performance`=merits.`performance`
+SET salary=salary+salary*percentage
+
+UPDATE employees LEFT JOIN merits ON employees.`performance`=merits.`performance`
+SET salary=salary+salary*0.015 WHERE merits.`percentage` IS NULL

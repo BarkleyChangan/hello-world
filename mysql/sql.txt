@@ -76,7 +76,8 @@ SHOW TRIGGERS;
 SELECT * FROM information_schema.triggers WHERE TRIGGER_NAME='trig_update';
 
 # 关闭保护模式
-SET SQL_SAFE_UPDATES=0;
+SET SQL_SAFE_UPDATES=ON;
+如果我们忘记在DELETE或者UPDATE语句中写WHERE条件,或者WHERE条件里面没有包含索引字段的话,这条语句的执行就会报错
 
 # 查看当前MySQL进程状态
 SHOW PROCESSLIST;
@@ -87,8 +88,22 @@ LOCK TABLE user READ/WRITE;
 # 关闭表锁
 UNLOCK TABLES;
 
-# 通过查询元数据库innodb事务表，监控到当前运行事务数
+# 查看事务
 select * from information_schema.INNODB_TRX;
+
+# 查看锁
+select * from information_schema.INNODB_LOCKS;
+
+# 查看锁等待
+select * from information_schema.INNODB_LOCK_WAITS;
+
+# 查看正在使用中的表
+SHOW OPEN TABLES WHERE In_use > 0;
+
+# 查看表锁、行锁
+SHOW STATUS LIKE '%lock%'
+SHOW GLOBAL STATUS LIKE "table_locks%";
+SHOW STATUS LIKE 'innodb_row_lock%';
 
 # 检查InnoDB的状态
 show engine innodb status;
@@ -159,10 +174,13 @@ SHOW VARIABLES LIKE '%log_bin%';
 
 ####################### 数据库基本操作 #######################
 # 创建数据库
-CREATE DATABASE test_db;
+CREATE DATABASE test_db CHARACTER SET utf8mb4;
 
 # 删除数据库
 DROP DATABASE test_db;
+
+# 修改库的默认编码
+ALTER DATABASE test CHARACTER SET utf8mb4;
 
 # 查看数据库定义
 SHOW CREATE DATABASE test_db;
@@ -207,9 +225,20 @@ ALTER TABLE 表名 CHANGE 旧字段名 新字段名 新数据类型;
 
 # 添加字段
 ALTER TABLE 表名 ADD 新字段名 数据类型 约束条件 (FIRST|AFTER 已存在字段名)；
+ALTER TABLE USERS ADD ALIAS VARCHAR(20) COMMENT '别名';
 
 # 删除字段
 ALTER TABLE 表名 DROP 字段名;
+删除多个字段
+ALTER TABLE users DROP COLUMN alias,DROP COLUMN age;
+
+不修改名称 使用modify
+
+# 修改字段
+1.不修改名称使用modify
+ALTER TABLE users MODIFY name VARCHAR(20) NOT NULL COMMENT '用户名';
+2.修改名称使用change,格式是change要修改的名称 新名称
+ALTER TABLE users CHANGE name username VARCHAR(20) NOT NULL COMMENT '用户名';
 
 # 修改字段排列位置
 ALTER TABLE 表名 MODIFY 字段名 数据类型 FIRST|AFTER 字段名;
@@ -223,6 +252,20 @@ ALTER TABLE 表名 DROP FOREIGN KEY 外键约束名;
 # 删除表
 DROP TABLE [IF EXISTS] 表1,表2...;
 
+# 添加索引
+1.添加主键
+ALTER TABLE users ADD PRIMARY KEY pk_id (`id`);
+2.添加唯一索引
+ALTER TABLE users ADD UNIQUE idx_name (`name`);
+3.添加普通索引
+ALTER TABLE users ADD INDEX idx_name (`age`);
+4.添加全文索引
+ALTER TABLE users ADD FULLTEXT (`列名`);
+5.添加多列索引
+ALTER TABLE users ADD INDEX idx_列名1_列名2_列名3 (`列名1`,`列名2`,`列名3`);
+6.添加外键
+ALTER TABLE 表名 ADD CONSTRAINT fk_引用id FOREIGN KEY(引用id) REFERENCES 被引用表名 (被引用id);
+ALTER TABLE 表名 DROP FOREIGN KEY fk_引用id;
 # 查看指定表中的创建的索引
 SHOW INDEX FROM book;
 ####################### 数据表基本操作 #######################
@@ -379,6 +422,10 @@ GROUP_CONCAT(name)
 
 # 分组查询后显示所有记录的总和
 WITH ROLLUP
+
+# 时间戳与时间相互转换
+SELECT UNIX_TIMESTAMP('2020-01-11 09:53:32');
+SELECT FROM_UNIXTIME(1578707612);
 ####################### 函数 #######################
 
 ####################### 备份还原 #######################
@@ -514,3 +561,35 @@ open_files_limit=65535
 socket=/usr/local/mysql/mysql.sock
 port=3306
 ####################### 配置文件 #######################
+
+####################### 用户权限 #######################
+特别需要注意,在MySQL中账号由两部分组成:
+1.user
+2.host
+即使user相同,只要host不同,也会被认为是不同账号
+默认情况下,创建的用户host为'%',这是一个匹配符,跟模糊查询里的意思一样,表示匹配所有
+
+# 创建用户
+CREATE USER [用户名] IDENTIFIED BY '[密码]';
+
+# 删除用户
+DROP USER 用户名;
+DELETE FROM mysql.user WHERE user='用户名' AND host='%';
+
+# 修改密码
+SET PASSWORD FROM '用户名' @host=password('新密码');
+UPDATE mysql.user SET password=password('新密码') WHERE user='用户名' AND host='%';
+
+# 设置用户权限
+将所有数据库上的所有权利都授予通过本机连接的VIP用户
+GRANT ALL ON *.* TO vip@'127.0.0.1';
+将数据库books上的所有权利都授予所有连接的vip用户
+GRANT ALL PRIVILEGES ON books.* TO vip@'%';
+将books数据库上的users表的访问权限开发给vip用户;
+GRANT select ON books.users TO vip@'%';
+WITH GRANT POTIONS的意思是可以给vip给予权限给别的用户
+GRANT ALL ON *.* TO vip@'%' WITH GRANT POTIONS;
+
+# 设置权限后要刷新权限
+FLUSH PRIVILEGES;
+####################### 用户权限 #######################

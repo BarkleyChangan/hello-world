@@ -49,6 +49,20 @@ GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY 'Server2008' WITH GRANT 
 flush privileges;
 use mysql;
 select user,host from user;
+
+# CentOS7操作MySQL
+# 查看状态
+systemctl status mysqld
+# 启用服务
+systemctl enable mysqld
+# 禁用服务
+systemctl disable mysqld
+# 启动服务
+systemctl start mysqld
+# 重启服务
+systemctl restart mysqld
+# 停止服务
+systemctl stop mysqld
 *******************************************************************************
 二、源码安装
 # 查看是否安装过MySQL

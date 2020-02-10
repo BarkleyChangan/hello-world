@@ -1,0 +1,380 @@
+####################### CSS2 #######################
+# BFC的特性
+1.内部的Box会在垂直方向一个接一个放置
+2.BFC的区域不会与float的元素区域重叠
+3.内部的Box垂直方向由margin决定。属于同一个BFC的两个相邻Box的margin会发生重叠，与方向无关
+4.每个元素的左外边距与包含块的左边界相接触（从左向右），即使浮动元素也是如此。（这说明BFC中子元素不会超出他的包含块，而position为absolute的元素可以超出他的包含块边界）
+5.计算BFC的高度时，浮动元素也要参与计算(清除浮动 hasLayout)
+6.BFC就是页面上的一个隔离的独立容器，容器里面的子元素不会影响到外面的元素，反之也如此。
+7.开启BFC的元素可以包含浮动的子元素
+8.父元素的垂直外边距不会和子元素重叠
+
+# 形成BFC的条件
+根元素
+float不为none
+position为absolute或fixed
+overlow不为visible
+display为inline-block,table-cell,table-capiton,flex,inline-flex
+
+# 如何开启BFC
+1.float的值不是none:使用这种方式虽然可以撑开父元素,但是会导致父元素宽度丢失并且下面的元素上移
+2.position的值不是static或者relative
+3.display的值是inline-block、table-cell、flex、table-caption或者inline-flex
+4.overflow的值不是visible(设置为hidden是副作用最小的开启BFC方式)
+
+# 解决高度塌陷
+1.开启BFC
+2.在高度塌陷父元素最后添加一个空白div,由于这个div没有浮动,所以是可以撑开父元素的,对其清除浮动可以撑开父元素
+3.通过after伪类向父元素最后添加一个空白的块元素,然后对其清除浮动
+4.兼容IE6 zoom:1
+在IE6中如果为元素指定了宽度则会默认开启HasLayout
+IE6、IE7没有BFC概念
+
+# IE6开启HasLayout
+float:left|right
+display:inline-block
+position:absolute
+width:除auto外任何值
+height:除auto外任何值
+zoom:除normal外任何值
+overflow:hidden;
+
+# 清除浮动
+clear可以清除其他浮动元素对当前元素的影响
+.clearfix {
+    zoom: 1;
+}
+.clearfix:before,.clearfix:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+# 透明度
+opcity:0.5;
+filter:alpha(opcity=50); /* IE6 */
+
+# 框架集frameset
+使用frameset框架集页面中不可以使用body标签
+
+# 条件hack
+<!--[if lte IE 6]>
+
+<![endif]-->
+
+# 属性hack
+_background-color:red; /* IE6 */
+*background-color:red; /* IE7以下 */
+\9:IE6+
+\0:IE8+和Opera15以下
+
+# IE6双倍边距
+在IE6中,当为一个左浮动的元素设置左外边距或者为一个右浮动的元素设置右外边距时,这个外边距将会是设置的值的2倍
+display: inline;
+
+# Chrome浏览器默认字体最小为12px
+
+# 初始包含块
+初始包含块是一个视窗大小的矩形,但不等于视窗
+
+# 定位参照于谁来定位
+没有定位:包含块
+相对:       元素本来的位置
+绝对:       包含块
+               如果最近的祖先元素存在定位元素,则这个定位元素就是包含块
+               如果没有,包含块为初始包含块
+固定:       视口
+
+# 默认值
+left top right bottom width height 默认值:auto
+margin padding 默认值:0
+border-width 如果不存在border-style则没有border-width
+
+# 百分比参照与谁
+width:     包含块的width
+margin:   包含块的width
+padding: 包含块的width
+height:    包含块的height
+left:         包含块的width
+top:         包含块的height
+
+# 浮动
+浮动提升半层
+
+# 省略号样式
+display: block;
+white-space: nowrap;
+overflow: hidden;
+text-overflow: ellipsis;
+
+# 字体族
+serif:衬线字体(笔画结尾有衬线)
+sans-serif:非衬线字体(笔画结尾平滑)
+monospace:等宽字体
+cursive:草书字体
+fantasy:艺术字体
+
+# font-size
+px:
+em:em值大小是动态的。当定义font-size时，1em=父元素字体大小
+%: 参照父元素的字体大小
+
+# font推荐形式
+font: font-style font-weight font-size/line-height font-family;
+
+# 行高
+上下文本行基线之间的垂直距离
+行距=行高-字体大小
+内容区:顶线和底线包裹的区域，有字体大小决定
+行内框:
+行框:
+
+# vertical-align(img和input元素使用)
+参照与整个行内框中行框最高的元素
+只对inline-block元素有效
+
+# 百分比
+top,height                           百分比参照包含块的高度
+left,margin,padding,width 百分比参照包含块的宽度
+tranlate(-50%,-50%)           百分比参照自身的宽高
+background-position         百分比参照(图片区域-图片的位图像素值)
+####################### CSS2 #######################
+
+####################### CSS3 #######################
+# CSS规范地址
+https://www.w3.org/TR/selectors
+https://developer.mozilla.org/zh-CN/
+
+# 属性选择器
+div[attr]
+div[attr=val]
+div[attr~=val]:以空格分隔,并且包含指定val的元素
+
+div[attr|=val]:以val-开头或者等于val的元素
+div[attr^=val]:以val(包括val)开头的元素
+div[attr$=val]:以val(包括val)结尾的元素
+div[attr*=val]:包含val的元素
+
+# 伪类和为元素选择器
+a标签伪类顺序(lvha): link -> visited -> hover -> active
+:target: 代表一个特殊的元素,它的id必须的是URL中的hash
+:visited: 只有color、background-color、border-color才能被应用到已访问的链接
+
+# 表单伪类
+:enabled 匹配编辑的表单元素
+:disable 匹配被禁用的表单元素
+:checked 匹配被选中的表单元素
+:focus   匹配获取焦点的表单元素
+
+# 结构性伪类(index从1开始计数)
+:nth-child(index) index可以为n(0-正无穷)、odd(奇数)、even(偶数)
+    :first-child
+	:last-child
+	:nth-last-child(index) 倒序
+	:only-child            独生子
+:nth-of-type(index)       NOTE:以元素为标准
+    :first-of-type
+	:last-of-type
+	:nth-last-type(index) 倒序
+	:only-of-type         独生子
+:not
+:empty
+
+# 伪元素
+::before
+::after
+::firstLetter
+::firstLine
+::selection
+
+# 重要声明和非重要声明
+选择器的特殊性表述为4个部分    0,0,0,0
+1.ID属性                       0,1,0,0
+2.类属性,属性选择器,伪类         0,0,1,0
+3.元素和伪元素选择器             0,0,0,1
+4.通配符选择器                  0,0,0,0
+5.结合(,)对选择器特殊性没有贡献
+6.内联声明的特殊性              1,0,0,0
+7.继承没有特殊性
+
+重要声明: 在分号之前插入!important;
+
+# 自定义字体
+@font-face{font-family:"Damu";src:url(font/BAUHS93.TTF);}
+div{font:50px "Damu";}
+
+# 新增UI样式
+1.文本
+透明度: opacity:0.1; 0:透明;1:不透明(不继承,但是对子元素有影响)
+颜色: rgba(0,0,0,0.8);
+文字阴影: text-shadow:color offset-x offset-y blur-radius; (不可继承)
+         text-shadow:#000 5px 5px 10px,pink 20px 20px 20px;
+元素模糊: filter:blur(10px);
+文字排版: direction:rtl;unicode-bidi:bidi-override;
+多余文字省略: (display:block;)white-space:nowrap;overflow:hidden;text-overflow: ellipsis;
+2.盒模型
+box-shadow:inset 10px 10px 10px 10px #00BFFF;
+box-sizing:border-box; 高度和宽度包括padding
+允许调整大小: resize:auto;overflow:hidden;
+3.样式
+圆角: border-radius:60% 0;
+边框图片:
+border-image-source
+border-image-slice
+border-image-repeat
+border-image-width
+border-image-outset
+4.背景
+background-color
+background-image 支持多背景,逗号分隔,前一个覆盖后一个
+background-repeat
+background-position
+background-attachment
+
+默认情况从padding+box开始绘制,从border+box裁剪
+background-origin border-box|padding-box|content-box设置背景渲染的起始位置
+background-clip
+background-size:auto auto;
+background 简写属性
+5.渐变
+线性渐变
+background-image:linear-gradient(to right,red,green);
+                 repeating-linear-gradient 
+径向渐变
+background-image:radial-gradient(closest-corner circle at 10px 10px,red blue);
+
+# 过渡
+NOTE(坑): 
+1. transition元素在首次渲染还没有结束的情况下是不会触发的
+2. 在大部分变换样式切换时,如果变换函数的位置、个数不相同也不触发过渡
+transition-property 默认all;并不是所有属性都可以动画
+transition-duration 0需带上单位ms|s
+transition-timing-function ease(默认值)|linear(匀速)|ease-in|ease-out
+transition-delay
+检查过度是否完成事件: transitionend|webkitTransitionend,当设置了多个属性过度会触发多次,如果设置了display="none"则不会触发事件
+testNode.addEventListener("transitionend",function(){ });
+
+# 2D变形transform(只对块级元素有效,变换在组合时是从右往左的)
+旋转rotate 单位:deg
+平移translate|translateX|translateY 单位:px
+倾斜skew|skewX|skewY 单位:deg
+缩放scale|scaleX|scaleY
+基点的变换transform-origin
+矩阵matrix
+
+# 3D变换
+景深perspective: 我们肉眼离显示器的距离,景深越大离我们越远,效果就不好
+尽量避免景深叠加
+perspective-origin: 默认值50% 50%
+rotateX|rotateY|rotateZ
+rotate3d(x,y,z,deg);
+translateZ 注意不能给百分比
+transform-style:preserve-3d 营造有层级3D舞台,不可继承属性作用域子元素
+backface-visibility
+
+# 动画
+animation-name 指定应用一系列动画,每个名称代表一个由@keyframes定义的动画序列;none:代表无关键帧
+animation-duration 动画周期时长;负值无效
+animation-timing-function linear(匀速)
+animation-delay 动画外属性
+animation-iteration-count 动画次数(只作用于动画内属性,重复的是关键帧)
+animation-direction reverse(反转的是关键帧)|alternate
+animation-fill-mode: 控制元素在动画外的状态
+                                    forwards to之后的状态与to状态保持一致
+                                    backwards from之前的状态与from状态保持一致
+                                    both forwards+backwards
+animation-play-state 动画执行的运行和暂停
+@
+示例:
+#test{animation-name: move;animation-duration: 3s;}
+@keyframes move{from{transform: rotate(0deg);}to{transform: rotate(360deg);}}
+
+# Flex
+旧版本display:-webkit-box;
+新版本display:flex;
+flex容器
+flex项目:永远在主轴"正"方向排列
+主轴
+侧轴
+旧版本属性:
+容器上的属性->
+1. -webkit-box-orient:horizontal|vertical; 主轴和侧轴分别是哪一根
+2. -webkit-box-direction:normal|reverse; 控制主轴方向
+3. -webkit-box-pack: 主轴
+                                     start    富余空间在右边(x)或下边(y)
+                                     center 富余空间在两边
+                                     end     富余空间在左边(x)或上边(y)
+                                     justify 富余空间在项目之间
+4. -webkit-box-align: 侧轴
+                                     start    富余空间在右边(x)或下边(y)
+                                     center 富余空间在两边
+                                     end     富余空间在左边(x)或上边(y)
+项目上的属性->
+-webkit-box-flex:1; 弹性空间管理将主轴上的富于空间按比例分配到项目上
+新版本属性:
+容器上的属性->
+1. flex-direction:row|column;
+2. flex-direction:row-reverse|column-reverse;
+3. justify-content: 主轴
+                              flex-start           富余空间在主轴正方向
+                              center                富余空间在两边
+                              flex-end             富余空间在主轴反方向
+                              space-between 富余空间在项目之间
+                              space-around   富余空间在项目两边,旧版没有此属性
+4. align-items:      侧轴
+                              flex-start           富余空间在侧轴正方向
+                              center                富余空间在两边
+                              flex-end             富余空间在侧轴反方向
+                              baseline             按基线对齐(旧版没有)
+                              stretch                等高布局(旧版没有)
+项目上的属性->
+flex-grow:1; 弹性空间管理将主轴上的富于空间按比例分配到项目上
+
+新版本新增属性:
+容器上的属性->
+flex-wrap:nowrap|wrap|wrap-reverse; 控制了容器为单行/列还是多行/列,并定义了侧轴的方向
+align-content:flex-start|flex-end|center|space-between; 定义弹性容器的侧轴方向上有额外空间时,如何排布每一行/列
+flex-flow 是flex-direction和flex-wrap的简写
+项目上的属性->
+order 值越大越往后排
+align-self
+flex-grow 可用空间=容器大小-所有相邻项目flex-basis的总和
+                  可扩展空间=可用空间/所有相邻项目flex-grow的总和
+                  每项伸缩大小=伸缩基准值+(可扩展空间*flex-grow值)
+flex-shrink 前提条件flex-wrap:nowrap;默认值1
+                   每项flex收缩大小=伸展基准值-(收缩比例/收缩比例总和*溢出空间)
+                   1. 计算收缩因子与基准值乘的总合
+                   2. 计算收缩因数 (收缩因数=项目的收缩因子*项目基准值)/第一步计算总和
+                   3. 移除空间的计算 移除空间=项目的收缩因数*负溢出的空间
+flex-basis
+flex
+
+# 响应式布局
+媒体类型: all|screen|print
+媒体属性: width 可加min-min-、max-、max-前缀
+                height  min-、max-max-前缀
+                device-width  可加min-、max-前缀
+                device-pixel-ratio  可加min-、max-前缀,需要加webkit前缀
+                orientation portrait(竖屏)|landscape(横屏)
+操作符,关键字 only|and|,|not
+####################### CSS3 #######################
+
+####################### 垂直水平居中 #######################
+# 文本水平居中
+text-align:center;
+
+# 文本垂直居中
+line-height:height;
+
+# 图片垂直水平居中
+html,body{height:100%;}
+body{text-align:center;}
+body:after{content:"";display:inline-block;height:100%;vertical-align: middle;}
+img{vertical-align:middle;}
+
+# 未知元素宽高的垂直水平居中
+a{position:absolute;left:50%;top:50%;transform:translate3d(-50%,-50%,0);}
+
+# 绝对定位垂直水平居中
+.test{position:absolute;left:0;right:0;top:0;bottom:0;margin:auto;width:200pxheight:300px;background:pink;}
+####################### 垂直水平居中 #######################

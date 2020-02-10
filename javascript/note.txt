@@ -1,0 +1,46 @@
+# window.onerror
+1.无法捕获语法错误
+2.只有在返回true的时候,异常才不会向上抛出（浏览器接收后报红）,否则即使是知道异常的发生控制台还是会显示Uncaught Error:xxxxx
+3.最好写在所有JS脚本的前面,否则有可能捕获不到错误
+
+// message：错误信息（字符串）。
+// source：发生错误的脚本URL（字符串）
+// lineno：发生错误的行号（数字）
+// colno：发生错误的列号（数字）
+// error：Error对象（对象）
+window.onerror = function(message, source, lineno, colno, error) {
+    console.log('捕获到异常：',{message, source, lineno, colno, error});
+};
+// iframe异常
+window.frames[0].onerror = function (message, source, lineno, colno, error) {
+    console.log('捕获到 iframe 异常：', {message, source, lineno, colno, error});
+};
+
+# window.addEventListener
+由于网络请求异常不会事件冒泡,因此必须在捕获阶段将其捕捉到才行,但是这种方式虽然可以捕捉到网络请求的异常,但是无法判断HTTP的状态是404还是其他比如500等
+window.addEventListener("error", (error)=>{
+    console.log('addEventListener捕获到异常：', error);
+}, true);
+// 全局捕获Promise的异常
+window.addEventListener("unhandledrejection", (error)=>{
+    console.log('addEventListener捕获到异常：', error);
+}, true);
+
+# 崩溃和卡顿
+window.addEventListener('load', function () {
+    sessionStorage.setItem('good_exit', 'pending');
+    setInterval(function () {
+        sessionStorage.setItem('time_before_crash', new Date().toString());
+    }, 1000);
+});
+
+window.addEventListener('beforeunload', function () {
+    sessionStorage.setItem('good_exit', 'true');
+});
+
+if(sessionStorage.getItem('good_exit') && sessionStorage.getItem('good_exit') !== 'true') {
+    /*
+        insert crash logging code here
+    */
+    alert('Hey, welcome back from your crash, looks like you crashed on: ' + sessionStorage.getItem('time_before_crash'));
+}

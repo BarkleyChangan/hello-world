@@ -61,6 +61,10 @@ save     备份rdb
 bgsave   Redis会在后台异步进行快照操作
 lastsave 获取最一次save的时间
 
+# 查看Redis内部正在做什么
+INFO commandstats
+执行CONFIG RESETSTAT命令就可以重置,这样你就可以得到一个全新的统计结果
+
 事务:
 discard 取消事务
 exec    执行事务

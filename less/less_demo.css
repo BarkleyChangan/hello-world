@@ -1,0 +1,234 @@
+/* 1.值变量 */
+#wrap {
+  color: #222222;
+  background: #87ceeb;
+  width: 300px;
+}
+/* 2.选择器变量 */
+#wrap {
+  color: #999;
+  width: 50%;
+}
+.wrap {
+  color: #ccc;
+}
+#wrap {
+  color: #666;
+}
+/* 3.属性变量 */
+#wrap {
+  border-style: solid;
+}
+/* 4.url变量 */
+body {
+  background: url("../img/dog.png");
+}
+/* 5.声明变量 */
+/* 声明:@name: {属性:值;}; */
+/* 使用:@name(); */
+#main,
+#wrap {
+  background: red;
+}
+#con {
+  width: 200px;
+  height: 200px;
+  border: solid 1px red;
+}
+/* 6.变量运算 */
+/* 加减法时 以第一个数据的单位为基准 */
+/* 乘除法时 注意单位一定要统一 */
+#wrap {
+  width: 280px;
+  height: 200px;
+  margin: 1400px;
+  color: #444444;
+  background-color: #333333;
+}
+/* 7.变量作用域(就近原则) */
+#wrap {
+  width: "fnord";
+}
+/* 8.用变量去定义变量 */
+#wrap::after {
+  content: "I am fnord.";
+}
+/* 9.1嵌套-&的妙用 */
+#header:after {
+  content: "Less is more!";
+}
+#header .title {
+  font-weight: bold;
+}
+#header_content {
+  margin: 20px;
+}
+/* 9.2嵌套-媒体查询 */
+@media screen and (max-width: 768px) {
+  #main,
+  #wrap {
+    width: 100px;
+  }
+}
+@media tv {
+  #main,
+  #wrap {
+    width: 2000px;
+  }
+}
+/* 10.1混合-无参数方法 */
+#wrap {
+  background: #f6f6f6;
+  -webkit-box-shadow: 0 1px 2px rgba(151, 151, 151, 0.58);
+  box-shadow: 0 1px 2px rgba(151, 151, 151, 0.58);
+}
+/* 10.2混合-默认参数方法 */
+#main,
+#wrap {
+  border: solid 1px #ff0000;
+  box-shadow: 0px 5px 30px #ff0000;
+}
+#wrap {
+  border: solid 1px #000000;
+  box-shadow: 0px 50px 30px #000000;
+}
+#content {
+  border: solid 1px #000000;
+  box-shadow: 10px 50px 30px #000000;
+}
+/* 10.3混合-方法匹配模式 */
+#main,
+#wrap {
+  border-color: transparent transparent transparent #999999;
+  border-style: solid;
+  border-width: 50px;
+}
+/* 10.4混合-方法的命名空间 */
+#wrap {
+  height: 100px;
+}
+#main,
+#wrap {
+  width: 300px;
+}
+#con {
+  background: #723232;
+  width: 20px;
+}
+/* 10.5混合-方法的条件筛选 */
+#main,
+#wrap {
+  border: solid #999999 200px;
+  background: #111111;
+  font-size: 40px;
+}
+/* 10.6混合-数量不定的参数 */
+#main,
+#wrap {
+  box-shadow: 1px 4px 30px #ff0000;
+  text-shadow: 1px 4px 30px #ff0000;
+}
+/* 10.7混合-方法使用important! */
+#main,
+#wrap {
+  border: solid 1px red !important;
+  margin: 50px !important;
+}
+/* 10.8混合-循环方法 */
+.column-1 {
+  width: 25%;
+}
+.column-2 {
+  width: 50%;
+}
+.column-3 {
+  width: 75%;
+}
+.column-4 {
+  width: 100%;
+}
+/* 10.8混合-属性拼接方法 */
+.main {
+  box-shadow: inset 0 0 10px #555, 0 0 20px black;
+}
+.main {
+  transform: scale(2) rotate(15deg);
+}
+/* 10.9混合-官网实战 */
+div {
+  padding: 33px;
+}
+/* 11.1继承-extend关键字的使用 */
+.animation111,
+#main,
+#wrap {
+  transition: all 0.3s ease-out;
+}
+.animation111 .hide,
+#con {
+  transform: scale(0);
+}
+/* 11.2继承-all全局搜索替换 */
+#main,
+#wrap {
+  width: 200px;
+}
+#main:afer,
+#wrap:afer {
+  content: "Less is good!";
+}
+/* 11.3继承-减少代码重复性 */
+.Method113 {
+  width: 200px;
+}
+.Method113:after {
+  content: "Less is good!";
+}
+#main,
+#wrap {
+  width: 200px;
+}
+#main:after,
+#wrap:after {
+  content: "Less is good!";
+}
+#wrap {
+  width: 200px;
+}
+#wrap:after {
+  content: "Less is good!";
+}
+/* 11.4继承-要点 */
+/* 12.1导入-导入less文件可省略后缀 */
+/* 12.2导入-@import的位置可随意放置 */
+#main,
+#wrap {
+  font-size: 15px;
+}
+/* 12.3导入-reference */
+/* 12.4导入-once */
+/* 12.5导入-multiple */
+.a {
+  color: green;
+}
+/* 13.1函数-判断类型 */
+/* 13.2函数-颜色操作 */
+/* 13.4函数-数学函数 */
+/* 14.1其他-注释 */
+/* CSS原生注释，会被编译在 CSS 文件中 */
+/* 14.2其他-避免编译 */
+#main,
+#wrap {
+  width: calc(300px-30px);
+}
+/* 14.2其他-变量拼接 */
+/* 14.2其他-使用JS */
+#wrap {
+  width: 50px;
+  height: 0px;
+  alert: undefined;
+  background-color: rgb(60,250,254);
+}
+#wrap:after {
+  content: "AAA";
+}

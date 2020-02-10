@@ -22,5 +22,5 @@ MySql:
     NULL = NULL  返回结果为NULL
     NULL <> 1    返回结果为NULL
 14. IN 后面的集合元素数量控制在1000个之内
-15. SELECT LENGTH('轻松工作');				返回12
-	SELECT CHARACTER_LENGTH('轻松工作');	返回4
+15. SELECT LENGTH('轻松工作');			返回12
+     SELECT CHARACTER_LENGTH('轻松工作');	返回4
