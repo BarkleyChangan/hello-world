@@ -1,4 +1,63 @@
-﻿####################### Java基础 #######################
+﻿####################### env #######################
+1. jdk环境变量设置
+	JAVA_HOME: E:\ServerSoftware\Java\jdk1.8.0_141
+	CLASSPATH: .;%JAVA_HOME%\lib\tools.jar;%JAVA_HOME%\jre\lib\dt.jar
+	Path:      在末尾加入 ;%JAVA_HOME%\bin;%JAVA_HOME%\jre\bin
+开始运行输入cmd打开命令行窗口，输入java -version，显示版本1.7.0_51，输入javac -version，也显示1.7.0_51，说明JDK安装及环境变量配置成功。
+2. tomcat环境变量设置
+	CATALINA_HOME: E:\ServerSoftware\Java\apache-tomcat-9.0.0.M26
+
+3. Spring框架下载地址: 
+	https://repo.spring.io/libs-release-local/org/springframework/spring/
+
+4. Maven环境变量设置
+    MAVEN_HOME: D:\ProgramFile\Green\apache-maven-3.5.0
+    Path:       在末尾加入 ;%MAVEN_HOME%\bin
+    MAVEN_OPTS: -Xms512m -Xmx1024m
+    中央仓库:   ping repo1.maven.org
+	
+	4.1 设置本地仓库路径: conf/settings.xml文件中找到<localRepository>标签
+	4.2 在eclipse中配置Maven
+		Window->Preferences->Maven->Installations->Add:
+		Installation home: D:\Program\Green\64\apache-maven-3.5.2
+		Installation name: apache-maven-3.5.2
+		然后别忘了勾选我们自己的Maven。
+	4.3 制定我们Maven仓库位置，也就是让eclipse知道我们的仓库在哪
+		Window->Preferences->Maven->User Settings
+		User Settings: D:\Program\Green\64\apache-maven-3.5.2\conf\settings.xml
+	4.4 重构索引，即将仓库中的内容让eclipse加载一下
+		Show View->Other->Maven Repositories->在Local Repository上右键点击Rebuild Index
+		这样就能在eclipse local Repository中查看我们本地仓库的内容了
+	4.5 设置全局的jdk，在setting.xml文件中的profiles元素下添加如下profile元素：
+		<profile>  
+			<id>jdk18</id>  
+			<activation>  
+				<activeByDefault>true</activeByDefault>  
+				<jdk>1.8</jdk>  
+			</activation>  
+			<properties>  
+				<maven.compiler.source>1.8</maven.compiler.source>  
+				<maven.compiler.target>1.8</maven.compiler.target>  
+				<maven.compiler.compilerVersion>1.8</maven.compiler.compilerVersion>  
+			</properties>   
+		</profile>
+	4.6 设置局部的jdk，在项目的pom,xml文件中添加如下build元素：
+		<build>  
+			<plugins>  
+				<plugin>  
+					<groupId>org.apache.maven.plugins</groupId>  
+					<artifactId>maven-compiler-plugin</artifactId>  
+					<configuration>  
+						<source>1.8</source>  
+						<target>1.8</target>
+						<encoding>UTF-8</encoding>  
+					</configuration>  
+				</plugin>  
+			</plugins>  
+		</build> 
+####################### env #######################
+
+####################### Java基础 #######################
 # 除法运算
 整数除法会直接砍掉小数,而不是进位
 
@@ -115,7 +174,112 @@ public static void deserializeStaticState(ObjectInputStream os) throws IOExcepti
 @Documented	将此注解保存在 Javadoc 中
 @Inherited	允许子类继承父类的注解
 @Repeatable	允许一个注解可以被使用一次或者多次（Java 8）
+
+# happens-before的规则
+程序次序规则（Program Order Rule）：在一个线程内，按照程序代码顺序，书写在前面的操作先行发生于书写在后面的操作。
+监视器锁规则（Monitor Lock Rule）：一个unLock操作在时间上先行发生于后面对同一个锁的lock操作。
+volatile变量规则（Volatile Variable Rule）：对一个volatile变量的写操作在时间上先行发生于后面对这个量的读操作。
+线程启动规则（Thread Start Rule）：Thread对象的start()先行发生于此线程的每一个动作。
+线程终止规则（Thread Termination Rule）：线程中的所有操作都先行发生于对此线程的终止检测。
+线程中断规则（Thread Interruption Rule）：对线程interrupt()方法的调用先行发生于被中断线程的代码检测到中断事件的发生。
+对象终结规则（Finalizer Rule）：一个对象的初始化完成先行发生于它的finalize()方法的开始。
+传递性（Transitivity）：A在B之前发生，B在C之前发生，那么A在C之前发生。
+
+# 泛型
+在JDK1.5之后,数据类型得到了扩充,出历史原始类型扩充了四种泛型类型:参数化类型(ParameterizedType)、类型变量类型(TypeVariable)、限定符类型(WildcardType)、泛型数组类型(GenericArrayType)
+
+# HashMap初始化容量大小计算
+(int)((float)expectedSize/0.75F + 1.0F)
 ####################### Java基础 #######################
+
+####################### JVM #######################
+# 虚拟机进程状况工具
+jps [ options ] [hostid]
+       -q 只输出LVMID,省略主类的名称
+       -m 输出虚拟机进程 启动时传递给主类main()函数的参数
+       -l   输出主类的全名,如果进程执行的是jar包,输出jar路径
+       -v  输出虚拟机进程启动时JVM参数
+
+# Java进程内线程堆栈信息
+jstack [option] vmid
+jstack [option] executable core
+jstack [option] [server-id@]remote-hostname-or-ip
+            -F 当正常输出的请求不被响应时,强制输出线程堆栈
+            -l long listings,显示额外的锁信息;在发生死锁时用jstack -l pid来观察锁持有情况
+            -m mixed mode,如果调用本地方法,可以显示C/C++堆栈信息(比如Native方法)
+
+# 虚拟机统计信息监视工具
+堆内存 = 年轻代 + 年老代 + 永久代
+年轻代 = Eden区 + 两个Survivor区（From和To）
+jstat [ option vmid [interval [s|ms] [count]] ]
+vmid: 本地虚拟机进程VMID与LVMID一直;远程虚拟机进程VMID格式为:[protocol:][//]lvmid[@hostname[:port]/servername]
+           -class                 监视类装载、卸载数量、总空间及类装载所耗费的时间
+           -gc                      监视Java堆状况,包括Eden区、2个Survivor区、老年代、永久代等容量、已用空间、GC时间合计等信息
+           -gccapacity        监视内容与-gc基本相同,但输出主要关注Java堆各个区域使用到的最大和最小空间
+           -gcutil                 监视内容与-gc基本相同,单输出主要关注已使用空间占总空间的百分比
+           -gccause             与-gcutil功能一样,但是会额外输出导致上一次GC产生的原因
+           -gcnew                监视新生代GC的状况
+           -gcnewcapacity  监视内容与-gcnew基本相同,输出主要关注使用到的最大和最小空间
+           -gcold                  监视老年代GC的状况
+           -gcoldcapacity    监视内容与-gcold基本相同,输出主要关注使用到的最大和最小空间
+           -gcpermcapacity 输出永久代使用到的最大和最小空间
+           -compiler              输出JIT编译器编译过的方法、耗时等信息
+           -printcompilation 输出已经被JIT编译的方法
+各个列含义:
+S0C、S1C、S0U、S1U：Survivor 0/1区容量（Capacity）和使用量（Used）
+EC、EU：Eden区容量和使用量
+OC、OU：年老代容量和使用量
+PC、PU：永久代容量和使用量
+YGC、YGT：年轻代GC次数和GC耗时
+FGC、FGCT：Full GC次数和Full GC耗时
+GCT：GC总耗时
+
+# Java配置信息工具
+jinfo [ option ] pid
+           -flag 显示指定参数的值
+           -sysprops 把虚拟机进程的System.getProperties()内容打印
+jinfo -flag CMSInitiatingOccupancyFraction 49912
+
+# Java内存映像工具(-XX:+HeapDumpOnOutOfMemoryError让虚拟机在OOM异常出现后自动生成dump文件)
+jmap [option] pid
+jmap [option] executable core
+jmap [option] [server-id@]remote-hostname-or-ip
+如果运行在64位JVM上,可能需要指定-J-d64命令选项参数
+           -dump 生成Java堆转储快照;格式为:-dump:[live,]format=b,file=filename,其中live子参数说明是否只dump出存活的对象
+           -finalizerinfo 显示在F-Queue中等待Finalizer线程执行finalize方法的对象,只在Linux/Solaris平台下有效
+           -heap 显示Java堆详细信息,如使用哪种回收器、参数配置、分代状况等.只在Linux/Solaris平台下有效
+           -histo 显示堆中对象统计信息,包括类、实例数量和合计容量
+           -permstat 以ClassLoader为统计口径显示永久代内存状态,只在Linux/Solaris平台下有效
+           -F 当虚拟机进程对-dump选项没有响应时,可使用这个选项强制生成dump快照.只在Linux/Solaris平台下有效
+jmap -permstat pid
+jmap -heap pid 查看进程堆内存使用情况
+jmap -histo[:live] pid 查看堆内存中的对象数目、大小统计直方图
+jmap -dump:format=b,file=dumpFileName pid把进程内存使用情况dump到文件中
+
+# Java Heap Analysis Tool虚拟机堆转储快照分析工具(内置微型HTTP/HTML服务器)
+jhat
+示例:
+jmap -dump:format=b,file=/tmp/dump.dat 21711
+jhat -port 9998 /tmp/dump.dat 注意:如果dump文件太大,可能需要加上-J-Xmx512m参数指定最大堆内存
+jhat -J-Xmx512m -port 9998 /tmp/dump.dat 然后就可以在浏览器中输入主机地址:9998查看了
+
+# hprof(Heap/CPU Profiling Tool)展现CPU使用率,统计堆内存使用情况
+java -agentlib:hprof[=options] ToBeProfiledClass
+java -Xrunprof[:options] ToBeProfiledClass
+javac -J-agentlib:hprof[=options] ToBeProfiledClass
+
+# DEMO:找出某个Java进程中最耗费CPU的Java线程并定位堆栈信息
+1. 找出Java进程ID,部署应用名为mrf-center:
+ps -ef | grep mrf-center | grep -v grep
+2. 找出该进程内最耗费CPU的线程
+ps -Lfp pid
+ps -mp pid -o THREAD,tid,time
+top -Hp pid TIME列就是各个Java线程耗费的CPU时间
+3. 将线程ID转为十六进制
+printf '%x\n' 21742
+4. 堆栈信息中找出线程信息
+jstack pid | grep 54ee
+####################### JVM #######################
 
 ####################### Web #######################
 # 去掉jsp过于的空格

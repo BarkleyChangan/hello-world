@@ -1767,6 +1767,10 @@ servier iptables save
 ***************** 防火墙iptables *****************
 
 ***************** 防火墙firewall-cmd *****************
+使用firewall配置策略有两种模式:运行时模式（runtime）、永久模式（permanent）。运行时模式又称为当前生效模式,而且随着系统的重启会失效,它是默认的模式。而如果需要配置永久生效,就需要添加--permanent参数
+注意的是永久模式配置的策略只有重启之后才能自动生效,如果想让配置的策略立即生效,需要手动执行firewall-cmd --reload 命令
+配置文件说明:firewalld存放配置文件有两个目录,/usr/lib/firewalld/和/etc/firewalld/。前者存放了一些默认的文件,后者主要是存放用户自定义的数据
+
 常用的区域名称以及策略规则:
 trusted 允许所有的数据包
 home    拒绝流入的流量,除非与流出的流量相关;而如果流量与ssh、mdns、ipp-client、amba-client与dhcpv6-client服务相关,则允许流量
@@ -1796,6 +1800,20 @@ firewall-cmd命令参数及作用
 --reload                                      让"永久生效"的配置规则立即生效,并覆盖当前的配置规则
 --panic-on                                  开启应急状况模式
 --panic-off                                  关闭应急状况模式
+
+# 查看防火墙状态
+firewall-cmd --state
+systemctl status firewalld
+
+# 启动|停止|重启防火墙
+systemctl start firewalld
+systemctl stop firewalld
+systemctl restart firewalld.service
+
+# 查看当前使用的区域
+firewall-cmd --get-default-zone
+firewall-cmd --zone=public --query-service=ssh
+firewall-cmd --zone=public --query-service=https
 
 设置Https协议为永久允许
 firewall-cmd --zone=public --add-service=https

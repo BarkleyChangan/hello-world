@@ -105,6 +105,8 @@
     6. 启动、停止Nginx命令
        cd /usr/local/nginx/sbin
        ./nginx
+       // -c指定加载的nginx配置文件
+       ./nginx -c /usr/local/nginx/conf/nginx.conf 
        ps aux | grep nginx
        ./nginx -s stop 立即停止
        ./nginx -s quit 从容停止

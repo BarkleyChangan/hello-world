@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>轮播图</title>
+    <style type="text/css">
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        #outer {
+            position: relative;
+            width: 520px;
+            height: 333px;
+            margin: 10px auto;
+            background: pink;
+            padding: 10px 0;
+            overflow: hidden;
+        }
+
+        #outer>#imgList {
+            position: absolute;
+            /* left: -520px; */
+            top: 10px;
+            list-style: none;
+            transition: 2s;
+        }
+
+        #outer>#imgList>li {
+            float: left;
+            padding: 0 10px;
+            vertical-align: middle;
+        }
+
+        #outer>#navDiv {
+            position: absolute;
+            bottom: 15px;
+        }
+
+        #outer>#navDiv>a {
+            display: block;
+            float: left;
+            width: 15px;
+            height: 15px;
+            background: red;
+            margin:0 5px;
+            opacity: 0.5;
+            filter: alpha(opacity=50);
+        }
+
+        #outer>#navDiv>a:hover{
+            background: black;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="outer">
+        <ul id="imgList">
+            <li>
+                <img src="img/1.jpg" alt="" />
+            </li>
+            <li>
+                <img src="img/2.jpg" alt="" />
+            </li>
+            <li>
+                <img src="img/3.jpg" alt="" />
+            </li>
+            <li>
+                <img src="img/4.jpg" alt="" />
+            </li>
+            <li>
+                <img src="img/5.jpg" alt="" />
+            </li>
+        </ul>
+        <div id="navDiv">
+            <a href="javascript:;"></a>
+            <a href="javascript:;"></a>
+            <a href="javascript:;"></a>
+            <a href="javascript:;"></a>
+            <a href="javascript:;"></a>
+        </div>
+    </div>
+</body>
+<script type="text/javascript">
+    window.onload = function () {
+        var outer = document.getElementById("outer");
+        var imgList = document.getElementById("imgList");
+        var imgArr = document.getElementsByTagName("img");
+        var navDiv = document.getElementById("navDiv");
+        var allA = navDiv.getElementsByTagName("a");
+        var index = 0;
+        var timerId = 0;
+        // 设置imgList元素的宽度
+        imgList.style.width = 520 * imgArr.length + "px";
+        navDiv.style.left = Math.round((outer.offsetWidth - navDiv.offsetWidth)/2) + "px";
+        allA[index].style.backgroundColor = "black";
+        imgList.style.transition = "all 2s";
+
+        for(var i=0,len=allA.length;i<len;i++){
+            (function(i){
+                allA[i].onclick = function(){
+                    imgList.style.left = (-520*i) + "px";
+                    // 给空字符串防止内联样式覆盖hover样式
+                    allA[index].style.backgroundColor = "";
+                    allA[i].style.backgroundColor = "black";
+                    index = i;
+                };
+                allA[i].onmouseenter = function(){
+                    window.clearInterval(timerId);
+                };
+                allA[i].onmouseleave = function(){
+                    autoChange();
+                };
+            }(i))
+        }
+
+        function autoChange(){
+            timerId = window.setInterval(function(){
+                var oldIndex = index;
+                index++;
+                if(index >= imgArr.length){
+                    index = 0;
+                }
+                console.log(index);
+                imgList.style.left = (-520*index) + "px";
+                // 给空字符串防止内联样式覆盖hover样式
+                allA[oldIndex].style.backgroundColor = "";
+                allA[index].style.backgroundColor = "black";
+            }, 3000);
+        }
+
+        autoChange();
+    };
+</script>
+
+</html>

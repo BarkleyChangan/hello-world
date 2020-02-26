@@ -9,7 +9,7 @@ koala:www.koala-app.com
 用@来声明一个变量:@pink:pink;
 1.作为普通属性值只来使用:直接使用@pink
 2.作为选择器和属性名:#@{selector的值}的形式
-3.作为URL:@{url}
+3.作为URL:@{url}或background:url("@{url}/1.png");
 4.变量的延迟加载
 
 # 嵌套规则

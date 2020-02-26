@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>拖拽效果</title>
+    <style type="text/css">
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            height: 3000px;
+        }
+
+        #elem {
+            width: 100px;
+            height: 100px;
+            background: red;
+            position: absolute;
+        }
+
+        #dvBox2 {
+            width: 100px;
+            height: 100px;
+            background: yellow;
+            position: absolute;
+            left: 200px;
+            top: 200px;
+        }
+    </style>
+</head>
+
+<body>
+    我是一段文字
+    <div id="elem">elem</div>
+    <div id="dvBox2">dvBox2</div>
+</body>
+<script type="text/javascript">
+    window.onload = function () {
+        var elem = document.getElementById("elem");
+        drag(elem);
+    };
+
+    function drag(elem){
+        elem.onmousedown = function (event) {
+            // 兼容IE8,获取所有鼠标按下的事件
+            elem.setCapture && elem.setCapture();
+            // 处理鼠标相对于点击元素的偏移量
+            event = event || window.event;
+            var offsetLeft = event.clientX - elem.offsetLeft;
+            var offsetTop = event.clientY - elem.offsetTop;
+
+            document.onmousemove = function (e) {
+                e = e || window.event;
+                var left = e.clientX;
+                var top = e.clientY;
+                // 处理有滚动条的情况
+                var scrollLeft = Math.max(document.body.scrollLeft, document.documentElement.scrollLeft);
+                var scrollTop = Math.max(document.body.scrollTop, document.documentElement.scrollTop);
+                
+                elem.style.left = left + scrollLeft - offsetLeft + "px";
+                elem.style.top = top + scrollTop - offsetTop + "px";
+            };
+            document.onmouseup = function () {
+                document.onmouseup = document.onmousemove = null;
+                // 兼容IE8,当鼠标松开时,取消对事件的捕获
+                elem.releaseCapture && elem.releaseCapture();
+            };
+
+            /**
+             * 当我们拖拽一个网页中的内容时,浏览器会默认去搜索引擎搜索内容
+             * 此时导致拖拽功能异常,这个是浏览器提供的默认行为
+             * 如果不希望发生这个行为,则可以通过return false来取消默认行为
+             * 
+             * 但是对IE8不起作用
+             **/
+             event.returnValue=false;
+             return false;
+        };
+    }
+</script>
+
+</html>

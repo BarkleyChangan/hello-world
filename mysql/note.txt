@@ -88,6 +88,11 @@ LOCK TABLE user READ/WRITE;
 # 关闭表锁
 UNLOCK TABLES;
 
+# 开启事务
+所以事务开始时间点，分为两种情况：
+1）START TRANSACTION时,是第一条语句的执行时间点,就是事务开始的时间点,第一条select语句建立一致性读的snapshot
+2）START TRANSACTION WITH CONSISTENT SNAPSHOT时,则是立即建立本事务的一致性读snapshot,当然也开始事务了
+
 # 查看事务
 select * from information_schema.INNODB_TRX;
 
@@ -266,8 +271,28 @@ ALTER TABLE users ADD INDEX idx_列名1_列名2_列名3 (`列名1`,`列名2`,`�
 6.添加外键
 ALTER TABLE 表名 ADD CONSTRAINT fk_引用id FOREIGN KEY(引用id) REFERENCES 被引用表名 (被引用id);
 ALTER TABLE 表名 DROP FOREIGN KEY fk_引用id;
+
 # 查看指定表中的创建的索引
 SHOW INDEX FROM book;
+
+# 查看索引使用情况
+1. SHOW STATUS LIKE 'Handler_read%';
+handler_read_key:这个值越高越好，越高表示使用索引查询到的次数
+handler_read_rnd_next:这个值越高，说明查询低效
+
+Handler_read_first：索引中第一条被读的次数。如果较高，它表示服务器正执行大量全索引扫描；例如，SELECT col1 FROM foo，假定col1有索引（这个值越低越好）
+Handler_read_key：如果索引正在工作，这个值代表一个行被索引值读的次数，如果值越低，表示索引得到的性能改善不高，因为索引不经常使用（这个值越高越好）
+Handler_read_next：按照键顺序读下一行的请求数。如果你用范围约束或如果执行索引扫描来查询索引列，该值增加
+Handler_read_prev：按照键顺序读前一行的请求数。该读方法主要用于优化ORDER BY ... DESC
+Handler_read_rnd：根据固定位置读一行的请求数。如果你正执行大量查询并需要对结果进行排序该值较高。你可能使用了大量需要MySQL扫描整个表的查询或你的连接没有正确使用键。这个值较高，意味着运行效率低，应该建立索引来补救
+Handler_read_rnd_next：在数据文件中读下一行的请求数。如果你正进行大量的表扫描，该值较高。通常说明你的表索引不正确或写入的查询没有利用索引
+2. SELECT * FROM sys.schema_unused_indexes;
+
+# 开启优化器跟踪
+SET SESSION optimizer_trace='enabled=on';
+SELECT * FROM user WHERE phone = '15627231000' ORDER BY id LIMIT 1;
+-- 查看优化器追踪
+SELECT * FROM information_schema.optimizer_trace;
 ####################### 数据表基本操作 #######################
 
 ####################### 函数 #######################
@@ -443,6 +468,9 @@ mysql -u root -p [--vertical] [-html|-xml] --execute="SELECT * FROM person;" dbn
 # 导入表
 LOAD DATA INFILE 'filename' INTO TABLE tablename
 mysqlimport -u root -p dbname filename.txt
+
+# xtraBackup备份与还原工具
+https://www.cnblogs.com/lijiaman/p/12291509.html
 ####################### 备份还原 #######################
 
 ####################### 日志 #######################
@@ -480,8 +508,20 @@ FLUSH LOGS
 mysqladmin -u root -p flush-logs
 mysqladmin refresh
 
-# 查看日志设置
+# 查看是否开启binlog日志
 SHOW VARIABLES LIKE 'log_%';
+log_bin                         ON
+log_bin_basename      /data/mysql/mysql-bin
+log_bin_index              /data/mysql/mysql-bin.index
+
+开启binlog日志(在my.ini|my.cnf文件中添加如下内容):
+# Binary Logging
+server-id=1
+# 日志文件的名字以及存储路径(NOTE:日志路径在根目录否则服务启动失败)
+log-bin=D:\program\green\64\mysql-5.7.19-winx64\mysql-bin.log
+# 设置日志格式
+binlog-format=mixed
+
 SHOW BINARY LOGS;
 mysqlbinlog filename
 
@@ -514,8 +554,10 @@ extra:       与关联操作有关的信息
 ####################### 锁 #######################
 # 全局锁(让整个数据库处于只读状态)
 FLUSH TABLES WITH READ LOCK;
+FLUSH TABLES t WITH READ LOCK;
 
 # 导数据之前启动一个事务,来确保拿到一致性快照
+设置事务为RR模式,然后利用事务的特性,来获得一致性的数据,但是:在mysqldump运行期间,不能执行alter table,drop table,rename table,truncate table等等的DDL语句,因为一致性读和这些语句时无法隔离的
 mysqldump --single-transaction
 
 # 表锁
@@ -593,3 +635,29 @@ GRANT ALL ON *.* TO vip@'%' WITH GRANT POTIONS;
 # 设置权限后要刷新权限
 FLUSH PRIVILEGES;
 ####################### 用户权限 #######################
+
+####################### 恢复数据 #######################
+1. 确认数据库是否开启binlog日志
+SHOW VARIABLES LIKE 'log_%';
+查看以下几行的内容:
+log_bin                         ON
+log_bin_basename      /data/mysql/mysql-bin
+log_bin_index              /data/mysql/mysql-bin.index
+2. 开启binlog日志
+在my.ini文件中添加如下内容
+# Binary Logging
+server-id=1
+# 日志文件的名字以及存储路径(NOTE:日志路径在根目录否则服务启动失败)
+log-bin=D:\program\green\64\mysql-5.7.19-winx64\mysql-bin.log
+# 设置日志格式
+binlog-format=mixed
+3. 查看最新的binlog日志文件
+SHOW MASTER STATUS;
+4. 查看 binlog 日志文件
+SHOW BINLOG EVENTS IN 'mysql-bin.000001';
+5. 使用mysqlbinlog恢复二进制日志文件
+NOTE:如果是恢复数据库,则不需要带上数据库名称
+mysqlbinlog binlog日志文件 --start-position 初始偏移量的位置 --stop-position 结束偏移量的位置 | mysql -u root -p 数据库名称;
+例:
+mysqlbinlog d:\Mysql-binlog\mysql-bin.000043 --start-position 710 --stop-position 996 | mysql -u root -p pingtouge;
+####################### 恢复数据 #######################

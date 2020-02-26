@@ -30,6 +30,15 @@ display为inline-block,table-cell,table-capiton,flex,inline-flex
 在IE6中如果为元素指定了宽度则会默认开启HasLayout
 IE6、IE7没有BFC概念
 
+# BFC简单理解
+1. 开启BFC的元素不会被浮动元素所覆盖
+2. 开启BFC的元素子元素和父元素外边距不会重叠
+3. 开启BFC的元素可以包含的浮动的子元素
+
+a. 设置元素浮动
+b. 设置元素为行内块元素
+c. 将元素的overflow设置为一个非visible的值
+
 # IE6开启HasLayout
 float:left|right
 display:inline-block
@@ -41,14 +50,8 @@ overflow:hidden;
 
 # 清除浮动
 clear可以清除其他浮动元素对当前元素的影响
-.clearfix {
-    zoom: 1;
-}
-.clearfix:before,.clearfix:after {
-    content: "";
-    display: table;
-    clear: both;
-}
+.clearfix{zoom:1;}
+.clearfix::before,.clearfix::after{content:"";display:table;clear:both;}
 
 # 透明度
 opcity:0.5;
@@ -76,6 +79,11 @@ display: inline;
 
 # 初始包含块
 初始包含块是一个视窗大小的矩形,但不等于视窗
+
+# 包含块(绝对定位是相对于其包含块进行定位的)
+正常情况: 包含块就是离当前元素最近的块级祖先元素
+绝对定位情况: 包含块就是离它最近的开启了定位的祖先元素,如果所有的祖先元素都没有开启定位则根元素就是它的包含块
+html: 根元素,初始包含块
 
 # 定位参照于谁来定位
 没有定位:包含块
@@ -138,6 +146,111 @@ top,height                           百分比参照包含块的高度
 left,margin,padding,width 百分比参照包含块的宽度
 tranlate(-50%,-50%)           百分比参照自身的宽高
 background-position         百分比参照(图片区域-图片的位图像素值)
+
+# 块元素盒模型
+垂直外边距重叠
+兄弟元素:
+兄弟元素间的垂直外边距取两者较大值(两者都是正值)
+如果相邻垂直外边距一正一负,则取两者的和
+如果相邻垂直外边距都是负值,取绝对值较大者
+父子元素:
+父子元素间相邻外边距,子元素会传递给父元素(上边距)
+
+# 行内元素盒模型
+1. 不支持设置宽度和高度
+2. 可以设置padding,但是垂直方向padding不会影响页面布局
+3. 可以设置border,但是垂直方向border不会影响页面布局
+4. 可以设置margin,但是垂直方向margin不会影响页面布局
+
+# 盒模型
+box-sizing: content-box 默认值,宽度和告诉用来设置内容区大小
+                    border-box width和height等于border+padding+content
+
+# 定位元素水平布局
+left + margin-left + border-left + padding-left + width + padding-right + border-right + margin-right + right = 包含块宽度
+当开启了绝对定位后: 水平方向需要添加left和right
+当发生过度约束: 1. 如果9个值中没有auto则自动调整right值以满足等式成立
+                           2. 如果有auto,则自动调整auto的值使等式成立
+可设置auto的值: margin|width|left|right
+                           left|right默认值是auto,如果没有设置等式不满足时,则会自动调整这两个值
+NOTE: 祖先元素永远盖不住子元素
+
+# 定位元素垂直布局
+top + margin-top + border-top + padding-top + height + padding-bottom + border-bottom + margin-bottom + bottom = 包含块高度
+
+# font-family
+serif             衬线字体
+sans-serif    非衬线字体
+monospace 等宽字体
+cursive         草书字体
+fantasy         虚幻字体
+下载服务器上的字体: 
+@font-face {
+    font-family:"myfont"; 自定义字体名称
+    src:url('./font/123.ttf');
+}
+为解决兼容性问题,Paul Irish写了称为Bulletproof的一个独特的@font-face语法:
+@font-face {
+    font-family: ‘myfont’;
+    src: url(‘myfont.eot’);                                                                    /* IE9 Compat Modes */
+    src: url(‘myfont.eot?#iefix’) format(‘embedded-opentype’),    /* IE6-IE8 */
+           url(‘myfont.woff’) format(‘woff’),                                         /* Modern Browsers */
+           url(‘myfont.ttf’) format(‘truetype’),                                      /* Safari, Android, iOS */
+           url(‘myfont.svg#YourWebFontName’) format(‘svg’);         /* Legacy iOS */
+}
+
+# line-height
+文字实际占有的高度,如果设置为整数表示字体的倍数,默认1.333
+字体框就是字体存在的格子,设置font-size实际就是在设置字体框高度
+行高会在字体框上下平均分配
+行间距 = 行高 - 字体大小
+
+# font
+font: 字体大小/行高 字体族
+
+# 去除图片在div中的下间距
+img{vertical-align:middle;}
+
+# white-space处理空白
+normal  正常
+nowrap 不换行
+pre        保留空白
+溢出内容设置省略号
+white-space:nowrap;
+overflow:hidden;
+text-overflow:ellipsis;
+
+# background-origin背景图片偏移量计算的原点
+padding-box 默认值,background-position从内边距开始计算
+content-box  背景图片的偏移量从内容区处计算
+border-box   背景图片的偏移量从边框处计算
+
+# background-clip背景裁剪
+boder-box     默认值,背景会出现在边框的下边
+padding-box 背景不会出现在边框,只出现在内边距和内容区
+content-box  背景只会出现在内容区
+
+# background-size背景图片尺寸
+第一个值表示宽度
+第二个值表示高度
+如果只写一个值,则第二个值默认是auto
+cover:    图片比例不变,将元素铺满
+contain: 图片比例不变,将图片在元素中完整显示
+
+# background-attachment背景图片是否跟随元素移动
+scroll
+fixed
+
+# 渐变是图片,通过backgroun-img设置
+background-img:linear-gradient(to left|top|right|bottom,red,yellow); 线性渐变
+
+# 自定义变量
+html{--color:yellow;}
+.box1{background:var(--color);}
+
+# 透明度
+opacity:0.5;
+filter:alpha(opacity=50);
 ####################### CSS2 #######################
 
 ####################### CSS3 #######################
@@ -290,12 +403,14 @@ animation-play-state 动画执行的运行和暂停
 @keyframes move{from{transform: rotate(0deg);}to{transform: rotate(360deg);}}
 
 # Flex
-旧版本display:-webkit-box;
-新版本display:flex;
+注意:设为Flex布局以后,子元素的float、clear和vertical-align属性都将是失效
+旧版本 display:-webkit-box;
+Safari  display:-webkit-flex;
+新版本 display:flex;
 flex容器
 flex项目:永远在主轴"正"方向排列
-主轴
-侧轴
+主轴main axis
+侧轴cross axis
 旧版本属性:
 容器上的属性->
 1. -webkit-box-orient:horizontal|vertical; 主轴和侧轴分别是哪一根
@@ -357,6 +472,46 @@ flex
                 device-pixel-ratio  可加min-、max-前缀,需要加webkit前缀
                 orientation portrait(竖屏)|landscape(横屏)
 操作符,关键字 only|and|,|not
+
+# Flex布局
+要使用弹性盒,必须先将一个元素设置为弹性容器
+display:flex;            设置为块级弹性容器
+display:inline-flex; 设置为行内弹性容器
+
+容器上的属性
+flex-direction:row|row-reverse|column|column-reverse;                                    决定主轴的方向（即项目的排列方向）
+flex-wrap:nowrap(默认)|wrap|wrap-reverse;                                                         设置弹性元素是否在弹性容器中自动换行
+flex-flow:<flex-direction>||<flex-wrap>;                                                              flex-direction属性和flex-wrap属性的简写形式,默认值为row nowrap
+justify-content:flex-start|flex-end|center|space-between|space-around;           项目在主轴上的对齐方式
+align-items:flex-start|flex-end|center|baseline|stretch(默认值);                            项目在侧轴上的对齐方式
+align-content:flex-start|flex-end|center|space-between|space-around|stretch; 多根轴线的对齐方式。如果项目只有一根轴线,该属性不起作用。
+
+元素上的属性:
+order:<integer>;                                                                     定义项目的排列顺序.数值越小,排列越靠前,默认为0
+flex-grow:<number>;                                                             定义项目的放大比例,默认为0,即如果存在剩余空间,也不放大
+flex-shrink:<number>;                                                            定义了项目的缩小比例,默认为1,即如果空间不足,该项目将缩小
+flex-basis:<length>|auto(默认值);                                          定义了在分配多余空间之前,项目占据的主轴空间(main size)浏览器根据这个属性,计算主轴是否有多余空间.它的默认值为auto,即项目的本来大小
+flex:none|[<'flex-grow'> <'flex-shrink'>?||<'flex-basis'>]; flex-grow,flex-shrink和flex-basis的简写,默认值为0 1 auto.后两个属性可选.该属性有两个快捷值:auto(1 1 auto)和none(0 0 auto)
+align-self:auto|flex-start|flex-end|center|baseline|stretch;  允许单个项目有与其他项目不一样的对齐方式，可覆盖align-items属性.默认值为auto,表示继承父元素的align-items属性,如果没有父元素,则等同于stretch
+
+# 视口单位
+100vw = 一个视口宽度
+vw永远相对于
+1 rem = 1 html的字体大小
+html{font-size:5.3333vw;} // 1 rem = 40px(设计图)
+html{font-size:100*40/750vw;}
+
+# 媒体查询
+@media only 查询规则{}
+                        媒体类型: all|print|screen|speech
+                        width: 视口宽度
+                        height: 视口高度
+                        ,: 或
+                        and: 与
+@media only screen and (max-width:768px){}
+@media only screen and (min-width:768px) and (max-width:992px){}
+@media only screen and (min-width:992px) and (max-width:1200px){}
+@media only screen and (min-width:1200px){}
 ####################### CSS3 #######################
 
 ####################### 垂直水平居中 #######################
@@ -372,9 +527,9 @@ body{text-align:center;}
 body:after{content:"";display:inline-block;height:100%;vertical-align: middle;}
 img{vertical-align:middle;}
 
-# 未知元素宽高的垂直水平居中
+# 未知元素宽高绝对定位的垂直水平居中
 a{position:absolute;left:50%;top:50%;transform:translate3d(-50%,-50%,0);}
 
-# 绝对定位垂直水平居中
+# 已知元素宽高绝对定位垂直水平居中
 .test{position:absolute;left:0;right:0;top:0;bottom:0;margin:auto;width:200pxheight:300px;background:pink;}
 ####################### 垂直水平居中 #######################

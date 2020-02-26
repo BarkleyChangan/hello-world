@@ -25,10 +25,10 @@ IE6以下的浏览器中,只有怪异模式
 <main></main>: 一个网页一般只有一个main标签
 <header></header>: 代表网页或section的页眉,通常包含h1-h6元素或hgroup
 <nav></nav>: 代表页面的导航链接区域,用于定义页面的主要导航部分
-<section></section>:代表文档中的节或段,段可以是指一篇文章里按照主题的分段
+<section></section>: 代表文档中的节或段,段可以是指一篇文章里按照主题的分段
 <footer></footer>:
-<article></article>:元素最容易跟section和div容易混淆,其实article代表一个在文档、页面或网站中自成一体的内容
-<aside></aside>:被包含在article元素中作为主要内容的附属信息部分,其中内容可以是与当前文章有关的相关资料、标签、名次解释等
+<article></article>: 元素最容易跟section和div容易混淆,其实article代表一个在文档、页面或网站中自成一体的内容
+<aside></aside>: 被包含在article元素中作为主要内容的附属信息部分,其中内容可以是与当前文章有关的相关资料、标签、名次解释等
 
 # 电池电量标签
 meter
