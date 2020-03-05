@@ -514,6 +514,13 @@ html{font-size:100*40/750vw;}
 @media only screen and (min-width:1200px){}
 ####################### CSS3 #######################
 
+####################### Mobile #######################
+
+####################### Mobile #######################
+# touch-action
+设置触摸屏用户如何操纵元素的区域(例如，浏览器内置的缩放功能)
+auto: 当触控事件发生在元素上时,由浏览器来决定进行哪些操作,比如对viewport进行平滑、缩放等
+none: 当触控事件发生在元素上时,不进行任何操作
 ####################### 垂直水平居中 #######################
 # 文本水平居中
 text-align:center;
@@ -532,4 +539,20 @@ a{position:absolute;left:50%;top:50%;transform:translate3d(-50%,-50%,0);}
 
 # 已知元素宽高绝对定位垂直水平居中
 .test{position:absolute;left:0;right:0;top:0;bottom:0;margin:auto;width:200pxheight:300px;background:pink;}
+
+# 利用text-align和vertical-align垂直水平居中
+1.给它的父元素写text-align属性
+2.要居中的元素将其类型转为inline-block
+3.要居中的元素加vertical-align属性
+4.添加一个“标尺”,既同级元素(span等),要居中的元素与其互相垂直居中
+NOTE:在编辑时标尺与需要居中的元素之间不能有空格回车
+标尺须加:
+display:inline-block;
+width:0;(目的是隐藏标尺)
+height:100%(与父元素等高，中线位置既是居中位置);
+vertical-align:middle;
+
+.div1{width:200px;height:200px;background:blue;margin:20px 20px;text-align:center;}
+.div2{width:100px;height:100px;background:red;display:inline-block;vertical-align:middle;}
+.div1 span{width:0px;height:100%;background:pink;display:inline-block;vertical-align:middle;}
 ####################### 垂直水平居中 #######################

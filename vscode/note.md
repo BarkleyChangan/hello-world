@@ -7,15 +7,15 @@
     
 - 安装插件
   
-    Chinese 中文插件
+    1. Chinese 中文插件
     
-    Live Server 在页面上右键 -> Open with Live Server
+    2. Live Server 在页面上右键 -> Open with Live Server
     
     ​    设置自动保存: 文件 -> 首选项 -> 设置 -> Files:Auto Save: afterDelay 1000  
     
-    Beautify  格式化html、css、js文件
+    3. Beautify  格式化html、css、js文件
     
-    Easy LESS  
+    4. Easy LESS  
     
     ​    设置less与css文件映射: 管理 -> 设置 -> 扩展 -> Easy LESS configuration -> 在settings.json中编辑 -> 加入如下配置(会生成xxx.css.map文件):  
     
@@ -27,7 +27,9 @@
     }
     ```
     
-    JavaScript (ES6) code snippets 代码提示
+    5. JavaScript (ES6) code snippets 代码提示
+    6. Code Runner (运行NodeJS)
+    7. Node Snippets
     
 - 设置
 

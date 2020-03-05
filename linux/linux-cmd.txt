@@ -1757,10 +1757,10 @@ iptables -F 清空规则链
 把INPUT规则链的默认策略设置为拒绝: iptables -P INPUT DROP（规则链的默认拒绝动作只能是DROP不能是REJECT）
 向INPUT链中添加允许ICMP流量进入策略规则: iptables -I INPUT -p icmp -j ACCEPT
 删除规则链中的策略: iptables -D INPUT 1
-保存防火墙策略: servier iptables save
+保存防火墙策略: service iptables save
 开放8080端口:
 iptables -I INPUT -p tcp --dport 8080 -j ACCEPT
-servier iptables save
+service iptables save
 /etc/rc.d/init.d/iptables restart
 /etc/init.d/iptables status
 /sbin/iptables -D INPUT 2 删除端口（2表示上面的num列）
@@ -1833,3 +1833,19 @@ screen -S 创建会话窗口
             -wipe 删除无法使用的会话
 screen -S backup
 ***************** 管理远程会话 *****************
+
+***************** SFTP *****************
+# 连接sftp利用私钥登录命令
+sftp -oIdentityFile=私钥地址 -oPort=端口 用户名@ip
+sftp -oIdentityFile=/weblogic/id_rsa -oPort=57000 gaoxinfu@131.87.56.43
+
+# sftp常用命令
+ls 查看当前目录下文件
+help 查看sftp支持哪些命令
+cd 指定目录
+pwd 查看当前目录
+get xxx.txt 下载xxx文件
+put xxx.txt 上传xxx文件
+quit/bye/exit 退出sftp
+
+***************** SFTP *****************

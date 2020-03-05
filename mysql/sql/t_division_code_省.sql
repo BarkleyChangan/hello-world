@@ -1,0 +1,50 @@
+/* Table structure for table `t_division_code` */
+DROP TABLE IF EXISTS `t_division_code`;
+CREATE TABLE `t_division_code` (
+	`id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+	`prov_code` VARCHAR(2) NOT NULL DEFAULT '' COMMENT '省区划代码',
+	`prov_name` VARCHAR(20) NOT NULL DEFAULT '' COMMENT '省名称',
+	`city_code` VARCHAR(2) NOT NULL DEFAULT '' COMMENT '市区划代码',
+	`city_name` VARCHAR(20) NOT NULL DEFAULT '' COMMENT '市名称',
+	`area_code` VARCHAR(2) NOT NULL DEFAULT '' COMMENT '区县区划代码',
+	`area_name` VARCHAR(20) NOT NULL DEFAULT '' COMMENT '区县名称',
+	`street_code` VARCHAR(3) NOT NULL DEFAULT '' COMMENT '街道区划代码',
+	`street_name` VARCHAR(20) NOT NULL DEFAULT '' COMMENT '街道名称',
+	`address` VARCHAR(255) NOT NULL DEFAULT '' COMMENT '详细地址',
+	`status_delete` INT(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '状态(0:未删除;1:已删除)',
+	PRIMARY KEY (`id`)
+)ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COMMENT='全国省市区县街道区划代码';
+
+/* Table data for table `t_division_code` 省 */
+INSERT INTO `t_division_code` (`prov_code`,`prov_name`,`address`) VALUES 
+	('11','北京市','北京市'),
+	('12','天津市','天津市'),
+	('13','河北省','河北省'),
+	('14','山西省','山西省'),
+	('15','内蒙古自治区','内蒙古自治区'),
+	('21','辽宁省','辽宁省'),
+	('22','吉林省','吉林省'),
+	('23','黑龙江省','黑龙江省'),
+	('31','上海市','上海市'),
+	('32','江苏省','江苏省'),
+	('33','浙江省','浙江省'),
+	('34','安徽省','安徽省'),
+	('35','福建省','福建省'),
+	('36','江西省','江西省'),
+	('37','山东省','山东省'),
+	('41','河南省','河南省'),
+	('42','湖北省','湖北省'),
+	('43','湖南省','湖南省'),
+	('44','广东省','广东省'),
+	('45','广西壮族自治区','广西壮族自治区'),
+	('46','海南省','海南省'),
+	('50','重庆市','重庆市'),
+	('51','四川省','四川省'),
+	('52','贵州省','贵州省'),
+	('53','云南省','云南省'),
+	('54','西藏自治区','西藏自治区'),
+	('61','陕西省','陕西省'),
+	('62','甘肃省','甘肃省'),
+	('63','青海省','青海省'),
+	('64','宁夏回族自治区','宁夏回族自治区'),
+	('65','新疆维吾尔自治区','新疆维吾尔自治区');

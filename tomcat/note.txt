@@ -39,3 +39,13 @@ yum安装:
 sudo yum install -y apr-devel
 源码安装:
 https://apr.apache.org/compiling_unix.html
+
+7.解决linux下./shutdown.sh命令不能杀死Tomcat进程的问题
+a. 修改bin/catalina.sh文件
+    在PRGDIR=`dirname "$PRG"`这一行的下方添加如下内容:
+    if [ -z "$CATALINA_PID" ]; then
+        CATALINA_PID=$PRGDIR/CATALINA_PID
+    fi
+b. 修改bin/shutdown.sh文件
+    最后一行修改为如下形式(其实就是增加了-force):
+    exec "$PRGDIR"/"$EXECUTABLE" stop -force "$@"
