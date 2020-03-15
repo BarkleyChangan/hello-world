@@ -204,9 +204,18 @@ netstat -anpt | grep 3306
 
 # 修改密码
 mysql -root -p(使用之前初始化的时候产生的临时密码)
-ALTER USER 'root'@'localhost' identified by 'Server2008';   
-GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY 'Server2008' WITH GRANT OPTION;         #授权新用户
-flush privileges;     #刷新权限
+修改root用户的密码: ALTER USER 'root'@'localhost' identified by 'Server2008';
+更新root的host:       UPDATE USER SET HOST = '%' WHERE USER = 'root';
+赋予'root'@'%'用户所有权限: GRANT ALL PRIVILEGES ON *.* TO 'root'@'%';
+授权新用户:                            GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY 'Server2008' WITH GRANT OPTION;
+改变root'@'%用户的密码校验规则以便可以使用Navicat等工具访问：ALTER USER 'root'@'%' IDENTIFIED WITH mysql_native_password BY 'Server2008';
+刷新权限:                  FLULSH PRIVILEGES;
+
+# 新增用户
+CREATE USER test IDENTIFIED BY '111111';
+GRANT SELECT, REPLICATION SLAVE, REPLICATION CLIENT ON *.* TO 'test'@'%';
+FLUSH PRIVILEGES;
+ALTER USER 'test'@'%' IDENTIFIED WITH mysql_native_password BY '111111';
 
 # 添加mysql端口防火墙
 netstat -tnlp | grep mysql

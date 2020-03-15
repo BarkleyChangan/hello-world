@@ -70,8 +70,11 @@ IE:           e.cancelBubble=true;
 
 Chrome: e.preventDefault();
 IE:            e.returnValue=false;
-javascript的return false只会阻止默认行为，而是用jQuery的话则既阻止默认行为又防止对象冒泡。
-
+javascript的return false只会阻止默认行为，而是用jQuery的话则既阻止默认行为又防止对象冒泡
+btn.onclick = function (e) {
+    var e = e || window.event                  //event兼容写法
+    var target = e.target || e.srcElement //target兼容写法
+}
 ####################### prototype #######################
 1. 函数的显示原型指向的对象:默认是空Object对象{}(但Object不满足)
 Fn.prototype instanceof Object           true

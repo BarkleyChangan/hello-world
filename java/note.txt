@@ -1,4 +1,4 @@
-﻿####################### env #######################
+####################### env #######################
 1. jdk环境变量设置
 	JAVA_HOME: E:\ServerSoftware\Java\jdk1.8.0_141
 	CLASSPATH: .;%JAVA_HOME%\lib\tools.jar;%JAVA_HOME%\jre\lib\dt.jar
@@ -56,6 +56,14 @@
 			</plugins>  
 		</build> 
 ####################### env #######################
+
+####################### cmd #######################
+# 编译Java程序(有依赖jar包)
+javac -encoding UTF-8 -Djava.ext.dirs=./ -d . /root/.ssh/download/SFTPClientUtil.java
+
+# 执行Java程序(有依赖jar包)
+java -Djava.ext.dirs=./ SFTPClientUtil
+####################### cmd #######################
 
 ####################### Java基础 #######################
 # 除法运算
@@ -167,6 +175,8 @@ public static void deserializeStaticState(ObjectInputStream os) throws IOExcepti
 		PACKAGE：包声明
 		PARAMETER：参数声明
 		TYPE：类、接口（包括注解类型）或者 enum 声明
+		TYPE_PARAMETER: 表示该注解能写在类型变量的声明语句中（如：泛型声明）
+		TYPE_USE: 表示该注解能写在使用类型的任何语句中
 @Retention	表示注解信息保存的时长。可选的 RetentionPolicy 参数包括：
 		SOURCE：注解将被编译器丢弃
 		CLASS：注解在 class 文件中可用，但是会被 VM 丢弃
@@ -190,7 +200,64 @@ volatile变量规则（Volatile Variable Rule）：对一个volatile变量的写
 
 # HashMap初始化容量大小计算
 (int)((float)expectedSize/0.75F + 1.0F)
+
+# BigDecimal
+1. 使用new BigDecimal("19.98")字符串构造函数初始化,不要使用double类型的构造函数
+2. 比较相等不要使用equal,因为这个equals方法不仅要比较数值是否相同,还要比较精度是否相同
+3. setScale(2,RoundingMode.HALF_UP)四舍五入
+
+# show-busy-java-threads
+https://github.com/oldratlee/useful-scripts/tree/master
+
+# Java8获取UTC
+LocalDateTime.now(ZoneId.of("Europe/London"));
+LocalDateTime.now(ZoneOffset.of("Z"));
+
+# 北京时间转美国时间
+ZoneOffsetTransition zot = ZoneOffsetTransition.of(LocalDateTime.now().withNano(0),ZoneOffset.of("+8"),ZoneOffset.of("-6"));
+System.out.println(zot.getDateTimeBefore());
+System.out.println(zot.getDateTimeAfter());
+
+1. 先用中国变换规则和中国时间计算出那一瞬间
+ZoneRules chinaRules = ZoneId.of("Asia/Shanghai").getRules();
+ZoneOffset chinaOffset = chinaRules.getOffset(chinaTime);
+Instant instant = chinaTime.toInstant(chinaOffset);
+2. 算出的这个瞬间instant是世界通用的，然后用它去计算芝加哥在这一瞬间的时间偏移量
+ZoneRules usaRules = ZoneId.of("America/Chicago").getRules();
+ZoneOffset usaOffset = usaRules.getOffset(instant);
+3. 待转换的时间，转换前时间偏移量，转换后时间偏移量这三者都有了，就变成一个确定的情况了
+ZoneOffsetTransition china2usa = ZoneOffsetTransition.of(chinaTime, chinaOffset, usaOffset);
+china2usa.getDateTimeBefore();
+china2usa.getDateTimeAfter();
 ####################### Java基础 #######################
+
+####################### 阻塞队列 #######################
+# BlockingQueue
+是一个支持两个附加操作的队列。这两个附加的操作是：
+1. 在队列为空时,获取元素的线程会等待队列变为非空
+2. 当队列满时,存储元素的线程会等待队列可用
+
+ArrayBlockingQueue	由数组结构组成的有界阻塞队列（最常用）
+LinkedBlockingQueue	由链表结构组成的有界阻塞队列（最常用）注意：一定要指定大小
+PriorityBlockingQueue	支持优先级排序的无界阻塞队列。默认自然升序排列
+DelayQueue		支持延时获取元素的无界阻塞队列。
+SynchronousQueue	不存储元素的阻塞队列（可以看成是一个传球手，负责把生产者线程处理的数据直接传递给消费者线程）
+LinkedTransferQueue	由链表结构组成的无界阻塞队列
+LinkedBlockingDeque	由链表结构组成的双向阻塞队列（双向队列指的是可以从队列的两端插入和移出元素）
+
+# 核心方法
+方法\处理方式	抛出异常	返回特殊值	一直阻塞	超时退出
+插入方法	add(e)		offer(e)		put(e)		offer(e,time,unit)
+移除方法	remove()	poll()		take()		poll(time,unit)
+检查方法	element()	peek()		不可用		不可用
+####################### 阻塞队列 #######################
+
+####################### 定时器 #######################
+# Timer
+1. Timer底层是使用单线程来处理多个Timer任务,这意味着所有任务实际上都是串行执行,前一个任务的延迟会影响到之后的任务的执行
+2. 由于单线程的缘故,一旦某个定时任务在运行时,产生未处理的异常,那么不仅当前这个线程会停止,所有的定时任务都会停止
+3. Timer任务执行是依赖于系统绝对时间,系统时间变化会导致执行计划的变更
+####################### 定时器 #######################
 
 ####################### JVM #######################
 # 虚拟机进程状况工具

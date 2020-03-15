@@ -1,4 +1,4 @@
-﻿***************** 系统 *****************
+***************** 系统 *****************
 # Linux命令在线查询网站
 https://man.linuxde.net
 
@@ -380,6 +380,17 @@ tar -zpcf /tmp/etc.tar.gz /etc &
 # 使用16进制打开class文件
 vim test.class
 然后在交互模式下,输入:%!xxd即可
+
+# 实时读取日志文件
+tail -F linuxidc_log
+
+# 读取压缩日志而不解压缩
+使用zless，zcat，zgrep等命令查看压缩包的内容，甚至不必显式提取压缩文件
+zcat linuxidc_log.zip | more
+
+# 使用!$重新使用上一个命令中的结果
+ls m.linuxidc.com
+cd !$
 ***************** 开发 *****************
 
 ***************** Daemon Service *****************
@@ -1021,6 +1032,7 @@ yum remove  移除软件
 yum clean packages 将已下载的软件文件删除
 yum clean headers  将下载的软件文件头删除
 yum clean all      将所有软件数据都删除
+yum whatprovides /usr/bin/sftp 查看sftp这个命令属于哪个软件包
 
 # yum软件群组功能
 yum 
@@ -1098,6 +1110,7 @@ du [-ahskm] 文件或目录名称
     -S 不包括子目录下的总计,与-s有点差别
     -k 以KBytes列出容量显示
     -m 以MBytes列出容量显示
+du -ah --max-depth=1 /usr/local 显示文件夹、文件的大小
 
 # 列出系统上所有的磁盘列表
 lsblk [-dfimpt] [device]
@@ -1202,7 +1215,9 @@ mdadm --create /dev/md[0-9] --auto=yes --level=[015] --chunk=NK --raid-device=N 
 # /etc/hosts Linux中hosts文件位置
 
 # 显示当前系统上所有网络接口配置
-ifconfig
+ifconfig -a
+ifconfig eth0 up      启动网络接口
+ifconfig eth0 down 停止网络接口
 
 # 增加一条路由
 route add default gw 10.71.84.2
@@ -1465,6 +1480,8 @@ ctrl+y 粘贴使用ctrl+w,ctrl+u,ctrl+k快捷键擦除的文本
 ctrl+p 查看上一个命令
 ctrl+n 显示下一个命令
 ctrl+r 搜索历史命令
+ctrl+s 冻结终端
+ctrl+q 解冻终端
 
 #! /bin/bash
 
@@ -1835,9 +1852,24 @@ screen -S backup
 ***************** 管理远程会话 *****************
 
 ***************** SFTP *****************
+# 安装sftp命令
+yum install openssh-clients
+
+# 查看sftp这个命令属于哪个软件包
+yum whatprovides /usr/bin/sftp
+
+# 查看自己的公网出口IP地址
+curl icanhazip.com
+curl ifconfig.me
+curl curlmyip.com
+curl ip.appspot.com
+curl ipinfo.io/ip
+curl ipecho.net/plain
+curl www.trackip.net/i
+
 # 连接sftp利用私钥登录命令
 sftp -oIdentityFile=私钥地址 -oPort=端口 用户名@ip
-sftp -oIdentityFile=/weblogic/id_rsa -oPort=57000 gaoxinfu@131.87.56.43
+sftp -oIdentityFile=/root/.ssh/id_rsa -oPort=8001 ems@114.255.225.37
 
 # sftp常用命令
 ls 查看当前目录下文件
@@ -1847,5 +1879,4 @@ pwd 查看当前目录
 get xxx.txt 下载xxx文件
 put xxx.txt 上传xxx文件
 quit/bye/exit 退出sftp
-
 ***************** SFTP *****************

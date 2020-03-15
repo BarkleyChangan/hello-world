@@ -1,4 +1,4 @@
-﻿ECMAScript 6 入门: http://es6.ruanyifeng.com/
+ECMAScript 6 入门: http://es6.ruanyifeng.com/
 Git Pro: https://git-scm.com/book/zh/v2/
 Node.js 新手入门: https://cnodejs.org/getstart
 Effective Java 第三版: http://www.cnblogs.com/IcanFixIt/p/8082510.html

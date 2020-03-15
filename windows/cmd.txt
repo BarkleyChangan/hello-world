@@ -29,6 +29,73 @@ net stop mysql
 # 删除和查询服务
 sc delete mysql
 sc query mysql
+
+# 帮助命令
+-help
+/?
+
+# 列出所有任务及进程号
+tasklist
+tasklist /? //获取使用帮助
+
+# 杀进程
+taskkill
+taskkill /? //获取使用帮助
+
+# cd切换目录
+cd /d e:\software //跳转到其他硬盘的其他文件夹（此处必须加/d参数，否则无法跳转）
+
+# 路由跟踪
+tracert www.baidu.com
+
+# 远程桌面连接
+mstsc
+
+####################### 常用工具快捷命令 #######################
+calc 启动计算器
+charmap 启动字符映射表
+cleanmgr 打开磁盘清理工具
+cmd.exe 查看cmd版本
+chkdsk.exe 磁盘检查
+certmgr.msc 证书管理实用程序
+dvdplayDVD 播放器
+diskmgmt.msc 磁盘管理
+devmgmt.msc 设备管理器
+dxdiag 检查DirexctX信息，即查看电脑信息
+dcomcnfg 打开系统组件服务
+explorer 打开文件管理
+eventvwr 事件查看器
+eudcedit 造字程序
+fsmgmt.msc 共享文件夹管理器
+lusrmgr.msc 本机用户和组
+msconfig.exe 系统配置程序
+mspaint 画图板
+magnify 放大镜，即win键+加号键
+mmc 打开控制台
+mobsync 打开同步命令
+notepad 打开记事本
+net start messenger 开始信使服务
+net stop messenger 停止信使服务
+nslookup 网络管理的工具向导、ip地址侦查器，即本机ip地址查询
+nattator 屏幕讲述人
+netstat -an-(TC) 命令检查接口
+osk 打开屏幕键盘
+odbcad32ODBC 数据源管理器
+perfmon.msc 计算机性能检测程序
+regsvr32/u .dll 停止dll文件运行（输入需要停止的dll文件名称）
+regedt32（regedit.exe）注册表编辑器
+services.msc 本地服务设置
+sigverif 文件签名验证程序
+shrpubw 创建共享文件夹
+sfc.exe 系统文件检查器
+sfc/scannowwindows 文件保护（扫描错误并复原）
+utilman 打开辅助设置
+wmimgmt.msc 打开Windows管理体系结构（WMI）
+wscript.exe Windows脚本宿主设置
+write 写字板
+wiaacmgr 扫描仪和照相机向导
+####################### 常用工具快捷命令 #######################
+
 ####################### Windows10系统清理 #######################
 1.关闭休眠
 管理员运行cmd:powercfg -h off

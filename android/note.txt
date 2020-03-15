@@ -136,3 +136,11 @@ public void onRequestPermissionsResult(int requestCode, @NonNull String[] permis
 
     }
 }
+
+# Activity销毁时，清空Handler中未执行或正在执行的Callback以及Message
+// 清空消息队列，移除对外部类的引用
+@Override
+protected void onDestroy() {
+    super.onDestroy();
+    mHandler.removeCallbacksAndMessages(null);
+}

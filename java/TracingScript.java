@@ -1,4 +1,4 @@
-﻿/* BTrace Script Template */
+/* BTrace Script Template */
 import com.sun.btrace.annotations.*;
 import static com.sun.btrace.BTraceUtils.*;
 

@@ -2,8 +2,12 @@
 # 启动MySQL服务
 net start mysql
 
+ps -ef | grep mysqld
+./mysqld_safe &
+
 # 停止MySQL服务
 net stop mysql
+./mysqladmin -u root -p shutdown
 
 # 命令
 mysql -h hostname -u username -p
@@ -12,7 +16,7 @@ mysql -h hostname -u username -p
       -p 密码(改字段后面的字符串和-p之间不能有空格)
       -P 端口号
       数据库名
-      -e 执行sql语句(如果指定了该参数,将在登录后执行-e后面的命令或者sql语句并退出)
+      -e 直接在外面交互式查看数据库里面的东西，而不用登录到数据库里面
 
 # 查看配置文件位置
 which mysqld
@@ -26,6 +30,8 @@ CREATE USER 'jeffrey'@'localhost' IDENTIFIED BY 【PASSWORD】 'password'
              jeffrey   用户名
              localhost 主机名(默认为%即对所有的主机开放权限)
              【PASSWORD】使用哈希值设置密码(利用password('password')生成哈希值)
+NOTE:在MySQL5.7中user 表的password已换成了authentication_string
+NOTE:password()加密函数已经在8.0.11中移除了,可以使用MD5()函数代替
 
 # 创建用户并授予权限
 GRANT INSERT,DELETE,UPDATE,SELECT ON *.* TO 'username'@'%' IDENTIFIED BY 'password';
@@ -198,6 +204,14 @@ SHOW VARIABLES LIKE 'default_storage_engine';
 
 # 查看当前字符集
 SHOW VARIABLES LIKE 'character_set_%';
+
+# 定期优化重建数据库
+mysqlcheck -o –all-databases 会让 ibdata1 不断增大。真正的优化仅仅有重建数据表结构：
+CREATE TABLE mydb.mytablenew LIKE mydb.mytable;
+INSERT INTO mydb.mytablenew SELECT * FROM mydb.mytable;
+ALTER TABLE mydb.mytable RENAME mydb.mytablezap;
+ALTER TABLE mydb.mytablenew RENAME mydb.mytable;
+DROP TABLE mydb.mytablezap;
 ####################### 数据库基本操作 #######################
 
 ####################### 数据表基本操作 #######################
@@ -212,6 +226,12 @@ CREATE TABLE tb_emp2
 
 # 查看数据表
 SHOW TABLES;
+
+# 查看表的统计信息
+SHOW TABLE STATUS FROM mybatis;
+
+# 查看表的字段
+SHOW COLUMNS FROM 数据表;
 
 # 查看创建表时的CREATE TABLE语句
 SHOW CREATE TABLE 表名;
@@ -455,10 +475,64 @@ SELECT FROM_UNIXTIME(1578707612);
 
 ####################### 备份还原 #######################
 # 使用mysqldump命令备份
-mysqldump -u username -h host -ppassword --databases dbname > filename.sql
+1.-B --databases            指定多个库。增加建库语句和use语句(提示:备份一个表的时候不要加-B,要不然所有表都会出来，就会报错)
+2.--compact                  去掉注释，适合调试输出
+3.-A --all-databases      备份所有库
+4.-F                                刷新binlog日志
+5.--master-data             增加binlog日志文件名及对应的位置点
+6.-x --lock-all-tables     全局的读锁,会阻止对所有表的写入操作
+7.-l                                 该锁不会阻止读,也不会阻止新的数据插入
+8.-d                               只备份表结构
+9.-t                                只备份数据
+10.--signle-transaction 适合innodb事务数据库备份
+mysqldump -h host -uroot -ppassword --single-transaction -B dbname | gzip > /opt/back/mysqlbak_$(date +%F).sql.gz
+mysqldump -h host -uroot -ppassword --single-transaction -B dbname test_db | gzip > /opt/mysql.bak.sql.gz 备份多个库
+官方自带的逻辑备份工具是mysqldump。当mysqldump使用参--single-transaction的时候，导数据之前就会启动一个事务，来确保拿到一致性视图。而由于MVCC的支持，这个过程中数据是可以正常更新的。
+前提就是引擎要支持这个隔离级别。比如，对于MyISAM这种不支持事务的引擎，如果备份过程中有更新，总是只能取到最新的数据，那么就破坏了备份的一致性。这时候FTWRL命令了就派上用场了。
+为什么我们不用set global readonly=true 的命令让全库处于只读的状态呢？
+注意，这是生产上严厉禁止的，主要有如下两个原因：
+1.在某些系统中，readonly的值会被用来做其他逻辑，比如用来判断一个库是主库还是备库。毫无疑问修改global变量的方式影响面更大。
+2.在异常处理机制上存在差异。如果执行FTWRL命令之后由于客户端发生异常断开，那么MySQL会自动释放这个全局锁，整个库回到可以正常更新的状态。而将整个库设置为readonly之后，如果客户端发生异常，则数据库就会一直保持readonly状态，这样会导致整个库长时间处于不可写状态，很容易造成生产事故。
+
+# 分库备份sh脚本
+#!/bin/bash
+
+MYUSER="root"
+MYPASS="guoke123"
+MYLOG="mysql -u$MYUSER -p$MYPASS -e"
+MYDUMP="mysqldump -u$MYUSER -p$MYPASS -x -F"
+DBLIST=$($MYLOG  "show databases;" | sed 1d | grep -Ev 'info|mysq|per|sys')
+DIR=/backup
+[ ! -d $DIR ] && mkdir $DIR
+cd $DIR
+
+for dbname in $DBLIST
+do
+    TABLIST=$($MYLOG "show tables from $dbname;" | sed 1d)
+    for tabname in $TABLIST
+    do
+        mkdir -p $DIR/$dbname
+        $MYDUMP $dbname $tabname  --events |gzip > $DIR/${dbname}/${tabname}_$(date +%F_%T).sql.gz
+    done
+done
 
 # 还原数据库
-mysql -u username -p [dbname] < filename.sql
+mysql -uroot -p < /opt/mysql_test1.sql         #备份时加-B参数恢复方法
+mysql -uroot -p test < /opt/mysql_test1.sql  #备份时没加-B参数恢复方法
+
+# 使用MySQL的binlog增量恢复
+提示:查看binlog日志需要使用mysqlbinlog打开
+1.开启MySQL的log-bin日志功能
+/etc/my.cnf
+[mysqld]
+log_bin=mysql_bin
+server-id=1
+2.指定开始位置到结束位置，从pos466开始到531结束
+mysqlbinlog --no-defaults mysql_bin.000001 --start-position=466 --stop-position=531 -r pos.sql
+3.指定开始位置到文件结束
+mysqlbinlog --no-defaults mysql_bin.000001 --start-position=531 -r pos531-end.sql
+4.指定时间来恢复
+mysqlbinlog --no-defaults mysql-bin.000001 --start-datetime='2020-1-22 17:30:40' --stop-datetime='2020-3-22 17:30:58' -r time.sql
 
 # 导出表到文件
 SELECT columnlist FROM table WHERE condition INTO OUTFILE 'filename'
@@ -549,9 +623,37 @@ key_len:     索引按字节计算的长度,key_len数据越小表示越快
 ref:         指出关联关系中另一个数据表里的数据列的名字
 rows:        在执行这个查询时预计会从数据表里读出的数据行个数
 extra:       与关联操作有关的信息
+                索引覆盖: using index
+                回表查询: using index condition 或 using index & using where
 ####################### explain语句解释 #######################
 
 ####################### 锁 #######################
+# Shared and Exclusive Locks-共享锁和排他锁(行级锁)
+当给select语句应用lock in share mode或者for update，或者更新某条记录时，加的都是行级别的锁
+
+# Intention Locks-意向锁(表级锁)
+分为intention shared lock(IS)和intention exclusive lock(IX),但IS和IX之间并不互斥,也就是说可以同时给不同的事务加上IS和IX
+作用: 和表级别的共享锁和排他锁互斥,和行级别没有关系！
+
+# Record Locks-行锁
+InnoDB 中,表都以索引的形式存在,每一个索引对应一颗B+树,这里的行锁锁的就是B+中的索引记录。共享锁和排他锁，就是将锁加在这里
+
+# Gap Locks-间隙锁
+锁住的是索引记录间的空隙,是为了解决幻读问题被引入的。有一点需要注意，间隙锁和间隙锁本身之间并不冲突，仅仅和插入这个操作发生冲突
+
+# Next-Key lock
+是行锁（Record）和间隙锁的并集.在RR级别下,InnoDB使用next-key锁进行树搜索和索引扫描
+NOTE: 加锁的基本单位是next-key lock
+
+# 加锁规则
+MySQL 版本：5.x - 5.7.24， 8.0 - 8.0.13. 我是 5.7.27 也未发现问题。
+规则包括：两个“原则”、两个“优化”和一个“bug”。
+原则1：加锁的基本单位是next-key lock。next-key lock是前开后闭区间
+原则2：查找过程中访问到的对象才会加锁。
+优化1：索引上的等值查询，给唯一索引加锁的时候，next-key lock退化为行锁
+优化2：索引上的等值查询，向右遍历时且最后一个值不满足等值条件的时候,next-key lock退化为间隙锁
+一个Bug：唯一索引上的范围查询会访问到不满足条件的第一个值为止。
+
 # 全局锁(让整个数据库处于只读状态)
 FLUSH TABLES WITH READ LOCK;
 FLUSH TABLES t WITH READ LOCK;
@@ -661,3 +763,97 @@ mysqlbinlog binlog日志文件 --start-position 初始偏移量的位置 --stop-
 例:
 mysqlbinlog d:\Mysql-binlog\mysql-bin.000043 --start-position 710 --stop-position 996 | mysql -u root -p pingtouge;
 ####################### 恢复数据 #######################
+
+####################### MySQL查询缓存 #######################
+# 开启缓存
+SET GLOBAL query_cache_size=600000;  --设置缓存内存大小
+SET GLOBAL query_cache_type=ON;       --开启查询缓存
+
+# 关闭缓存
+SET GLOBAL query_cache_size=0;           --设置缓存内存大小为0，即初始化是不分配缓存内存
+SET GLOBAL query_cache_type=OFF;     --关闭查询缓存
+
+# MySQL查询缓存相关的配置参数
+SHOW VARIABLES LIKE '%query_cache%';
++------------------------------+---------+
+| Variable_name | Value |
++------------------------------+---------+
+| have_query_cache | YES |                          --查询缓存是否可用
+| query_cache_limit | 1048576 |                   --可缓存具体查询结果的最大值
+| query_cache_min_res_unit | 4096 |           --查询缓存分配的最小块的大小(字节)
+| query_cache_size | 599040 |                      --查询缓存的大小
+| query_cache_type | ON |                           --是否支持查询缓存
+| query_cache_wlock_invalidate | OFF |       --控制当有写锁加在表上的时候，是否先让该表相关的 Query Cache失效
++------------------------------+---------+
+have_query_cache
+该MySQL Server是否支持Query Cache。
+query_cache_limit
+MySQL能够缓存的最大查询结果，查询结果大于该值时不会被缓存。默认值是1048576(1MB)如果某个查询的结果超出了这个值，Qcache_not_cached的值会加1，如果某个操作总是超出，可以考虑在SQL中加上SQL_NO_CACHE来避免额外的消耗。
+query_cache_min_res_unit
+查询缓存分配的最小块的大小(字节)。 默认值是4096(4KB)。当查询进行的时候，MySQL把查询结果保存在qurey cache中，但如果要保存的结果比较大，超过query_cache_min_res_unit的值 ，这时候mysql将一边检索结果，一边进行保存结果，所以，有时候并不是把所有结果全部得到后再进行一次性保存，而是每次分配一块query_cache_min_res_unit大小的内存空间保存结果集，使用完后，接着再分配一个这样的块，如果还不不够，接着再分配一个块，依此类推，也就是说，有可能在一次查询中，mysql要进行多次内存分配的操作。适当的调节query_cache_min_res_unit可以优化内存如果你的查询结果都是一些small result,默认的query_cache_min_res_unit可能会造成大量的内存碎片如果你的查询结果都是一些larger resule，你可以适当的把query_cache_min_res_unit调大
+query_cache_size
+为缓存查询结果分配的内存的数量，单位是字节，且数值必须是1024的整数倍。默认值是0，即禁用查询缓存。请注意如果设置了该值，即使query_cache_type设置为0也将分配此数量的内存。
+query_cache_type
+设置查询缓存类型，默认为ON。设置GLOBAL值可以设置后面的所有客户端连接的类型。客户端可以设置SESSION值以影响他们自己对查询缓存的使用。
+query_cache_wlock_invalidate
+如果某个表被锁住，是否返回缓存中的数据，默认关闭，也是建议的。一般情况，当客户端对MyISAM表进行WRITE锁定时，如果查询结果位于查询缓存中，则其它客户端未被锁定，可以对该表进行查询。将该变量设置为1，则可以对表进行WRITE锁定，使查询缓存内所有对该表进行的查询变得非法。这样当锁定生效时，可以强制其它试图访问表的客户端来等待
+
+# 查看缓存状态
+SHOW STATUS LIKE 'Qcache%';
++-------------------------+--------+
+| Variable_name | Value |
++-------------------------+--------+
+| Qcache_free_blocks | 1 |                          --在查询缓存中的闲置块，如果该值比较大，则说明Query Cache中的内存碎片可能比较多。FLUSH QUERY CACHE会对缓存中的碎片进行整理，从而得到一个较大的空闲内存块。
+| Qcache_free_memory | 382704 |             --剩余缓存的大小
+| Qcache_hits | 198 |                                   --缓存命中次数
+| Qcache_inserts | 131 |                              --缓存被插入的次数，也就是查询没有命中的次数。
+| Qcache_lowmem_prunes | 0 |                  --由于内存低而被删除掉的缓存条数，如果这个数值在不断增长，那么一般是Query Cache的空闲内存不足（通过Qcache_free_memory判断），或者内存碎片较严重（通过Qcache_free_blocks判断）。
+| Qcache_not_cached | 169 |                      --没有被缓存的条数，有三种情况会导致查询结果不会被缓存：其一，由于query_cache_type的设置；其二，查询不是SELECT语句；其三，使用了now()之类的函数，导致查询语句一直在变化。
+| Qcache_queries_in_cache | 128 |             --缓存中有多少条查询语句
+| Qcache_total_blocks | 281 |                     --总块数
++-------------------------+--------+
+
+# 清理查询缓存内存碎片
+FLUSH QUERY CACHE;
+
+# 从查询缓存中移除所有查询
+RESET QUERY CACHE;
+
+# 关闭所有打开的表，同时该操作会清空查询缓存中的内容
+FLUSH TABLES;
+####################### MySQL查询缓存 #######################
+
+####################### mysql.ini #######################
+# innodb_flush_log_at_trx_commit
+0：log buffer将每秒一次地写入log file中，并且log file的flush(刷到磁盘)操作同时进行。该模式下在事务提交的时候，不会主动触发写入磁盘的操作
+1：每次事务提交时MySQL都会把log buffer的数据写入log file，并且flush(刷到磁盘)中去，该模式为系统默认
+2：每次事务提交时MySQL都会把log buffer的数据写入log file，但是flush(刷到磁盘)操作并不会同时进行。该模式下，MySQL会每秒执行一次 flush(刷到磁盘)操作
+NOTE:
+当设置为0，该模式速度最快，但不太安全，mysqld进程的崩溃会导致上一秒钟所有事务数据的丢失
+当设置为1，该模式是最安全的，但也是最慢的一种方式。在mysqld 服务崩溃或者服务器主机crash的情况下，binary log 只有可能丢失最多一个语句或者一个事务
+当设置为2，该模式速度较快，也比0安全，只有在操作系统崩溃或者系统断电的情况下，上一秒钟所有事务数据才可能丢失
+查找资料时候看到其他文章说innodb_flush_log_at_trx_commit和sync_binlog 两个参数是控制MySQL 磁盘写入策略以及数据安全性的关键参数，当两个参数都设置为1的时候写入性能最差，推荐做法是innodb_flush_log_at_trx_commit=2，sync_binlog=500 或1000
+
+# innodb_buffer_pool_size
+推荐将数据全然保存在 innodb_buffer_pool_size ，即按存储量规划 innodb_buffer_pool_size 的容量。这样你能够全然从内存中读取数据。最大限度降低磁盘操作
+SHOW GLOBAL STATUS LIKE 'innodb_buffer_pool_pages_%';
+发现 Innodb_buffer_pool_pages_free 为 0，则说明 buffer pool 已经被用光，须要增大 innodb_buffer_pool_size
+
+# 慢查询日志
+记录全部查询。这在用 ORM 系统或者生成查询语句的系统非常实用。注意不要在生产环境用。否则会占满你的磁盘空间。
+log=/var/log/mysql.log
+
+记录运行时间超过 1 秒的查询：
+long_query_time=1
+log-slow-queries=/var/log/mysql/log-slow-queries.log
+####################### mysql.ini #######################
+
+####################### GEO #######################
+SELECT * FROM users_location WHERE
+    latitude > '.$lat.' - 1 AND latitude < '.$lat.' + 1 AND longitude > '.$lon.' - 1 AND longitude < '.$lon.' + 1 
+    ORDER BY
+    ACOS(
+        SIN( ( '.$lat.' * 3.1415 ) / 180 ) * SIN( ( latitude * 3.1415 ) / 180 ) + COS( ( '.$lat.' * 3.1415 ) / 180 ) * COS( ( latitude * 3.1415 ) / 180 ) * COS( ( '.$lon.' * 3.1415 ) / 180 - ( longitude * 3.1415 ) / 180 ) 
+    ) * 6380 ASC 
+    LIMIT 10 ';
+####################### GEO #######################
