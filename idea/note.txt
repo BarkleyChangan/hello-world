@@ -87,6 +87,9 @@
     s. 请求进入到断点后自动激活Debug窗口
        File -> settings -> Build,Execution,Deployment -> Debugger -> 勾选Show debug window on breakpoint
 
+    t. 配置Tomcat
+       File -> settings -> Build,Execution,Deployment -> Application Servers ->点击+ -> Tomcat Server
+
 5. 快捷键
    alt + enter      	   万能纠错
    alt + r 				       执行
@@ -124,6 +127,7 @@
    ctrl + shift + w      关闭所有的tab
    ctrl + shift + x 	   打开代码所在硬盘的文件夹
    ctrl + shift + y      大小写转换
+   ctrl + shift + F9    重新编译
 
    shift + enter		     向下开始新的一行
    shift + shift		     查找文件
@@ -190,3 +194,24 @@ File->Settings->Editor->File and Code Templates->Incudes->File Header下添加�
 需要一个Facebook或Twitter的账号(最好Twitter)
 进入这个网址：https://my.jrebel.com/，并登录
 然后在Install and Acticate里可以得到你的永久激活码
+
+利用破解激活插件:
+a.安装JRebel for IntelliJ插件:File->Settings->Plugins->Browse repositories->搜索jrebel
+b.打开激活插件ReverseProxy_windows_amd64.exe
+c.重新打开idea,点击Rebel Debug 'Tomcat 9.0.10'
+d.在Activate JRebel窗口:
+    第一行输入:http://127.0.0.1:8888/578eec14-a3ee-4b77-8565-92777839f1ae
+    生成GUID网站:https://www.guidgen.com
+    第二行输入:changan25801@163.com
+    选中"I agree with the terms & conditions of the License Agreement."
+    点击"Activate JRebel"按钮,进行激活
+e.激活成功后:File->Settings->JRebel->点击"Work offline"按钮
+f.关闭ReverseProxy_windows_amd64.exe,激活完成
+
+14.生成serialVersionUID
+File->Settings->Editor->Inspections->选中Serializable class without 'serialVersionUID'
+
+15.创建JavaEE项目
+File -> New -> Project -> Java Enterprise -> Additional Libraries and Frameworks: 选中Web Application
+在WEB-INF下新建lib文件夹,在添加jar包后在lib文件夹上右键-> Add as Library
+File -> Project Structure -> Artifacts -> fix

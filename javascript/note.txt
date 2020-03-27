@@ -75,6 +75,24 @@ btn.onclick = function (e) {
     var e = e || window.event                  //event兼容写法
     var target = e.target || e.srcElement //target兼容写法
 }
+
+# requestAnimationFrame实现动画
+IE:10以上,Firefox:4以上,Chrome:10以上,Safari:6以上,Opera:15以上
+特点:
+1.由浏览器来决定回调函数的执行时机，即紧跟浏览器的刷新步调。如果屏幕刷新频率是60Hz，那么回调函数每16.7ms被执行一次，如果屏幕刷新频率是75Hz，那么这个时间间隔就变成了1000/75=13.3ms。它能保证回调函数在屏幕每一次的刷新间隔中只被执行一次，这样就不会引起丢帧现象，自然不会导致动画的卡顿
+2.CPU节能:使用setTimeout实现的动画，当页面被隐藏（隐藏的<iframe>）或最小化（后台标签页）时，setTimeout仍然在后台执行动画任务，由于此时页面处于不可见或不可用状态，刷新动画是没有意义的，而且还浪费 CPU 资源和电池寿命。而requestAnimationFrame则完全不同，当页面处于未激活的状态下，该页面的屏幕绘制任务也会被浏览器暂停，因此跟着浏览器步伐走的requestAnimationFrame也会停止渲染，当页面被激活时，动画就从上次停留的地方继续执行，有效节省了 CPU 开销，提升性能和电池寿命
+3.函数节流：在高频率事件(resize,scroll 等)中，为了防止在一个刷新间隔内发生多次函数执行，使用requestAnimationFrame可保证每个绘制间隔内，函数只被执行一次，这样既能保证流畅性，也能更好的节省函数执行的开销。一个绘制间隔内函数执行多次时无意义，因为显示器（60Hz）每16.7ms 绘制一次，多次执行并不会在屏幕上体现出来
+// DEMO:
+function moveTo(dom, to) {
+    dom.scrollLeft += 1;
+    if(dom.scrollLeft <= to) {
+        window.requestAnimationFrame(() => {
+                moveTo(element, to)
+        });
+    }
+}
+
+
 ####################### prototype #######################
 1. 函数的显示原型指向的对象:默认是空Object对象{}(但Object不满足)
 Fn.prototype instanceof Object           true
@@ -169,3 +187,9 @@ console.profile('性能分析器');
 All();
 onsole.profileEnd();
 ####################### console #######################
+
+####################### 宏队列,微队列 #######################
+微队列:promise回调,mutation回调
+宏队列:dom事件回调,ajax回调,定时器回调
+
+####################### 宏队列,微队列 #######################

@@ -172,8 +172,9 @@ public final class SFTPClientUtil {
 		}
 
 		try {
-			cd(directory);
-			channelSftp.put(is, channelSftpFileName, ChannelSftp.OVERWRITE); // 上传文件
+			directory = directory == null ? "" : directory;
+			String remoteFullFileName = Paths.get(directory, channelSftpFileName).toString();
+			channelSftp.put(is, remoteFullFileName, ChannelSftp.OVERWRITE); // 上传文件
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -207,9 +208,10 @@ public final class SFTPClientUtil {
 		}
 
 		try {
-			cd(directory);
+			directory = directory == null ? "" : directory;
+			String remoteFullFileName = Paths.get(directory, channelSftpFileName).toString();
 			File file = new File(localFullFileName);
-			channelSftp.put(new FileInputStream(file), channelSftpFileName, ChannelSftp.OVERWRITE); // 上传文件
+			channelSftp.put(new FileInputStream(file), remoteFullFileName, ChannelSftp.OVERWRITE); // 上传文件
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -238,9 +240,10 @@ public final class SFTPClientUtil {
 		File file = null;
 
 		try {
-			cd(directory);
+			directory = directory == null ? "" : directory;
+			String remoteFullFileName = Paths.get(directory, downloadFileName).toString();
 			file = new File(saveFullFileName);
-			channelSftp.get(downloadFileName, new FileOutputStream(file));
+			channelSftp.get(remoteFullFileName, new FileOutputStream(file));
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -305,9 +308,13 @@ public final class SFTPClientUtil {
 		}
 
 		try {
-			cd(directory);
-			channelSftp.rm(deleteFile);
-			return true;
+			directory = directory == null ? "" : directory;
+			String remoteFullFileName = Paths.get(directory, deleteFile).toString();
+
+			if (isExistFile(directory, deleteFile)) {
+				channelSftp.rm(remoteFullFileName);
+				return true;
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -329,7 +336,6 @@ public final class SFTPClientUtil {
 		}
 
 		try {
-			cd(directory);
 			Vector vector = channelSftp.ls(directory);
 
 			if (vector != null) {
@@ -446,16 +452,12 @@ public final class SFTPClientUtil {
 	 * 
 	 * @param directory
 	 */
-	public void cd(String directory) {
+	public void cd(String directory) throws Exception {
 		if (directory == null || directory.trim().length() == 0 || "/".equals(directory)) {
 			return;
 		}
 
-		try {
-			channelSftp.cd(directory);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		channelSftp.cd(directory);
 	}
 
 	// /**
@@ -507,6 +509,7 @@ public final class SFTPClientUtil {
 		// /root/.ssh/download/SFTPClientUtil.java
 
 		SFTPClientUtil channelSftp = null;
+
 		try {
 			channelSftp = new SFTPClientUtil("114.255.225.37", "ems", "", 8001, "/root/.ssh/id_rsa", "");
 			channelSftp.connect();

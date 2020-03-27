@@ -46,9 +46,21 @@
     5. alt + shift + f 格式化文档
     6. F2 修改文件名
     7. alt + 向上箭头|向下箭头 当前行向上移动|当前行向下移动
-    8. ctrl + shift + k 删除一行
+    8. ctrl + shift + k,ctrl+x 删除一行
     9. ctrl + shift + p 显示全局命令面板
-    10. ctrl + [|] 行缩进
+    10. ctrl + [ or ] 行缩进
     11. ctrl + shift + p 显示全局命令面板
     12. alt + 鼠标左键 选中多个区域编辑
+    13. ctrl + shift+ [ or ] 代码折叠or展开
+    14. shift + alt + \ or 2,3,4 拆分编辑框
+    15. ctrl + d 单词选中
+    16. ctrl + b 打开|关闭侧边栏
+    17. ctrl + g 跳转到指定行
+    18. ctrl + shift + o 文件中符号跳转
+    19. ctrl + t 工作区符号跳转
+    20. ctrl + backspace 删除上一个词
+    21. ctrl + shift + d 复制行
+    22. ctrl + alt + up|down 编辑多处光标
+    23. shift + alt + 鼠标 块选中
+    24. ctrl + p 命令面板:打开文件、查看快捷键
 

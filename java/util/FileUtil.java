@@ -1,6 +1,7 @@
 package com.post.common.util;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -9,7 +10,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.nio.channels.FileChannel;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -278,39 +281,91 @@ public final class FileUtil {
 		}
 
 		boolean result = false;
-		InputStream in = null;
-		OutputStream out = null;
+		InputStream fis = null;
+		BufferedInputStream bis = null;
+		OutputStream fos = null;
+		BufferedOutputStream bos = null;
 		bufferSize = bufferSize < 1 ? 1024 : bufferSize;
 
 		try {
-			in = new FileInputStream(sourceFile);
-			out = new FileOutputStream(destFile);
+			fis = new FileInputStream(sourceFile);
+			bis = new BufferedInputStream(fis);// 装饰模式，即将fis在被包装一层
+			fos = new FileOutputStream(destFile);
+			bos = new BufferedOutputStream(fos);
 
-			byte[] buffer = new byte[bufferSize];
+			byte[] data = new byte[bufferSize];
 			int len;
 
-			while ((len = in.read(buffer)) > 0) {
-				out.write(buffer, 0, len);
+			// 将fis对象文件逐个读到数组中，每次为bufferSize长度
+			while ((len = bis.read(data)) != -1) {
+				bos.write(data, 0, len);
 			}
 			result = true;
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			if (in != null) {
+			if (bis != null) {
 				try {
-					in.close();
+					bis.close();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
 
-			if (out != null) {
+			if (fis != null) {
 				try {
-					out.close();
+					fis.close();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
+
+			if (bos != null) {
+				try {
+					bos.close();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+
+			if (fos != null) {
+				try {
+					fos.close();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+		return result;
+	}
+
+	/**
+	 * 拷贝文件(JDK1.7版新方法)
+	 * 
+	 * @param sourceFullFileName
+	 * @param destFullFileName
+	 * @return
+	 */
+	public static boolean copyJDK7(String sourceFullFileName, String destFullFileName) {
+		if (sourceFullFileName == null || sourceFullFileName.trim().length() == 0 || destFullFileName == null || destFullFileName.trim().length() == 0) {
+			return false;
+		}
+
+		File sourceFile = new File(sourceFullFileName);
+		File destFile = new File(destFullFileName);
+
+		if (!sourceFile.exists() || !sourceFile.isFile()) {
+			return false;
+		}
+
+		boolean result = false;
+
+		try {
+			Files.copy(sourceFile.toPath(), destFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+			result = true;
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 
 		return result;
@@ -322,7 +377,7 @@ public final class FileUtil {
 	 * @param sourceFullFileName
 	 * @param destFullFileName
 	 */
-	public static boolean copyNio(String sourceFullFileName, String destFullFileName) {
+	public static boolean copyNIO(String sourceFullFileName, String destFullFileName) {
 		if (sourceFullFileName == null || sourceFullFileName.trim().length() == 0 || destFullFileName == null || destFullFileName.trim().length() == 0) {
 			return false;
 		}
@@ -371,8 +426,8 @@ public final class FileUtil {
 		// System.out.println(delete(dir));
 		// System.out.println(deleteDirectory(dir));
 
-		System.out.println(copy("C:\\Users\\chang\\Desktop\\碑林区学生健康监测台帐.xls", "C:\\Users\\chang\\Desktop\\bootstrap-3.3.7-dist\\456.xls", 1024));
-		// System.out.println(copyNio("C:\\Users\\chang\\Desktop\\碑林区学生健康监测台帐 - 数据.xls",
-		// "C:\\Users\\chang\\Desktop\\bootstrap-3.3.7-dist\\123.xls"));
+		System.out.println(copy("C:\\Users\\chang\\Desktop\\碑林区学生健康监测台帐.xls", "C:\\Users\\chang\\Desktop\\bootstrap-3.3.7-dist\\123.xls", 1024));
+		System.out.println(copyJDK7("C:\\Users\\chang\\Desktop\\碑林区学生健康监测台帐.xls", "C:\\Users\\chang\\Desktop\\bootstrap-3.3.7-dist\\456.xls"));
+		System.out.println(copyNIO("C:\\Users\\chang\\Desktop\\碑林区学生健康监测台帐 - 数据.xls", "C:\\Users\\chang\\Desktop\\bootstrap-3.3.7-dist\\789.xls"));
 	}
 }

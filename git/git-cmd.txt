@@ -1,6 +1,9 @@
 ***************** 初始化配置 *****************
 https://github.com/github/gitignore
 
+# 升级
+git update-git-for-windows
+
 # 系统级配置(默认位置为C:\Program Files\Git\mingw64\etc\gitconfig)
 git config --edit --system
 

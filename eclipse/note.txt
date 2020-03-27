@@ -87,3 +87,12 @@
     注意: 采用下面两种方法来提升安装更新的速度：
     a. Windows -> Preferences -> Install/Update -> Available Software Sites，将里面不用的信息删除，将本次更新不需要的停用（选中之后然后点右边的Disable按钮）。
     b. 在线安装插件的Install窗口,将下面的Contact all update sites during install to find required software前面的选项去掉
+
+17. 热部署
+a. Tomcat安装目录下,修改conf/server.xml中在Host标签中添加reloadable="true"
+b. Tomcat安装目录下,在conf/web.xml文件的servlet标签中添加如下内容:
+<init-param>
+    <param-name>development</param-name>
+    <param-value>true</param-value>
+</init-param>
+c. 重新挂载项目,然后以调试的方式启动就可以热部署了

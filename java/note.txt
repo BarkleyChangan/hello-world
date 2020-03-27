@@ -229,6 +229,16 @@ ZoneOffset usaOffset = usaRules.getOffset(instant);
 ZoneOffsetTransition china2usa = ZoneOffsetTransition.of(chinaTime, chinaOffset, usaOffset);
 china2usa.getDateTimeBefore();
 china2usa.getDateTimeAfter();
+
+# substring方法在JDK1.6中的优化
+str = str.substring(1, 3) + "";
+
+# 设置该变量可以保存动态代理类，默认名称$Proxy0.class
+System.getProperties().put("sun.misc.ProxyGenerator.saveGeneratedFiles", "true");
+
+# 如何设置线程池数量
+CPU密集型:线程数=CPU核数 +1
+IO密集型:   线程数=CPU核心数 * (1 + IO 耗时/ CPU 耗时)
 ####################### Java基础 #######################
 
 ####################### 阻塞队列 #######################
@@ -329,6 +339,7 @@ jhat
 jmap -dump:format=b,file=/tmp/dump.dat 21711
 jhat -port 9998 /tmp/dump.dat 注意:如果dump文件太大,可能需要加上-J-Xmx512m参数指定最大堆内存
 jhat -J-Xmx512m -port 9998 /tmp/dump.dat 然后就可以在浏览器中输入主机地址:9998查看了
+在线分析dump文件网址:https://console.perfma.com/
 
 # hprof(Heap/CPU Profiling Tool)展现CPU使用率,统计堆内存使用情况
 java -agentlib:hprof[=options] ToBeProfiledClass
@@ -385,6 +396,10 @@ multipart/form-data:需要在表单中进行文件上传时,就需要使用该�
 ####################### Web #######################
 
 ####################### Spring #######################
+# Scope常量
+@Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
+@Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+
 # 获取当前的代理
 ((LoginDaoImpl)AopContext.currentProxy()).findUser();
 

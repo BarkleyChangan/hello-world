@@ -485,8 +485,8 @@ SELECT FROM_UNIXTIME(1578707612);
 8.-d                               只备份表结构
 9.-t                                只备份数据
 10.--signle-transaction 适合innodb事务数据库备份
-mysqldump -h host -uroot -ppassword --single-transaction -B dbname | gzip > /opt/back/mysqlbak_$(date +%F).sql.gz
-mysqldump -h host -uroot -ppassword --single-transaction -B dbname test_db | gzip > /opt/mysql.bak.sql.gz 备份多个库
+mysqldump -h host -uroot -ppassword --master-data=2 --default-character-set=utf8 --single-transaction -B dbname | gzip > /opt/back/mysqlbak_$(date +%F).sql.gz
+mysqldump -h host -uroot -ppassword --master-data=2 --default-character-set=utf8 --single-transaction -B dbname test_db | gzip > /opt/mysql.bak.sql.gz 备份多个库
 官方自带的逻辑备份工具是mysqldump。当mysqldump使用参--single-transaction的时候，导数据之前就会启动一个事务，来确保拿到一致性视图。而由于MVCC的支持，这个过程中数据是可以正常更新的。
 前提就是引擎要支持这个隔离级别。比如，对于MyISAM这种不支持事务的引擎，如果备份过程中有更新，总是只能取到最新的数据，那么就破坏了备份的一致性。这时候FTWRL命令了就派上用场了。
 为什么我们不用set global readonly=true 的命令让全库处于只读的状态呢？
@@ -517,8 +517,10 @@ do
 done
 
 # 还原数据库
-mysql -uroot -p < /opt/mysql_test1.sql         #备份时加-B参数恢复方法
-mysql -uroot -p test < /opt/mysql_test1.sql  #备份时没加-B参数恢复方法
+1. mysql> source test1.sql; 恢复test1表
+2. /usr/local/mysql5.7/bin/mysql --socket=/tmp/mysql.sock --port=3306 -uroot -p -e "use rec ; source  test1.sql;"
+3. mysql -uroot -p < /opt/mysql_test1.sql         #备份时加-B参数恢复方法
+    mysql -uroot -p test < /opt/mysql_test1.sql  #备份时没加-B参数恢复方法
 
 # 使用MySQL的binlog增量恢复
 提示:查看binlog日志需要使用mysqlbinlog打开
@@ -824,6 +826,17 @@ FLUSH TABLES;
 ####################### MySQL查询缓存 #######################
 
 ####################### mysql.ini #######################
+# 数据库连接超时问题处理
+解决方案：
+1. 修改my.ini配置，增加超时时间
+2. 连接url中添加“&autoReconnect=true”
+在port=3306下面添加如下配置:
+wait_timeout=31536000
+interactive_timeout=31536000
+3. 这种情况也有可能是数据库连接池maxIdleTime配置导致的
+<!-- 最大空闲时间,60秒内未使用则连接被丢弃。若为0则永不丢弃。Default: 0 --> 
+<property name="maxIdleTime" value="0"></property> 
+
 # innodb_flush_log_at_trx_commit
 0：log buffer将每秒一次地写入log file中，并且log file的flush(刷到磁盘)操作同时进行。该模式下在事务提交的时候，不会主动触发写入磁盘的操作
 1：每次事务提交时MySQL都会把log buffer的数据写入log file，并且flush(刷到磁盘)中去，该模式为系统默认

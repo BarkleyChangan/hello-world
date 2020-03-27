@@ -48,6 +48,22 @@ cd /d e:\software //跳转到其他硬盘的其他文件夹（此处必须加/d�
 # 路由跟踪
 tracert www.baidu.com
 
+# 显示路由表
+route print
+route add: 使用本命令，可以将路由项目添加给路由表
+route change: 可以使用本命令来修改数据的传输路由，不过，用户不能使用本命令来改变数据的目的地
+route delete: 使用本命令可以从路由表中删除路由
+
+# nslookup命令
+查询任何一台机器的 IP 地址和其对应的域名
+
+# netstat命令
+netstat –a：-a 选项显示所有的有效连接信息列表，包括已建立的连接（ESTABLISHED），也包括监听连接请求（LISTENING）的那些连接
+netstat –n：以点分十进制的形式列出 IP 地址，而不是象征性的主机名和网络名
+netstat -e：-e 选项用于显示关于以太网的统计数据。它列出的项目包括传送的数据包的总字节数、错误数、删除数、数据包的数量和广播的数量
+netstat -r：-r 选项可以显示关于路由表的信息，类似于route print命令时看到的信息。除了显示有效路由外，还显示当前有效的连接
+netstat -s：-s 选项能够按照各个协议分别显示其统计数据
+
 # 远程桌面连接
 mstsc
 
