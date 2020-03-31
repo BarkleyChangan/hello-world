@@ -27,7 +27,7 @@
     }
     ```
     
-    5. JavaScript (ES6) code snippets 代码提示
+    5. Visual Studio Intellicode代码提示
     6. Code Runner (运行NodeJS)
     7. Node Snippets
     

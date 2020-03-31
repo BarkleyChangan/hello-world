@@ -1,6 +1,9 @@
 ***************** 初始化配置 *****************
 https://github.com/github/gitignore
 
+# 查看版本
+git --version
+
 # 升级
 git update-git-for-windows
 
@@ -16,9 +19,10 @@ git config --edit
 # 初次运行-git前的配置
 git config --global user.name "John Doe"
 git config --global user.email "johndoe@example.com"
+配置完以后查看:git config --list
 git config --global color.ui auto
-           --local  # 只对某个仓库有效
-           --global # 对当前用户所有仓库有效
+           --local     # 只对某个仓库有效
+           --global  # 对当前用户所有仓库有效
            --system # 对系统所有登录用户有效
 
 # Git可以在你提交时自动地把行结束符CRLF转换成LF，而在签出代码时把LF转换成CRLF。
@@ -37,6 +41,15 @@ ssh -T git@github.com
 
 # 在现有目录中初始化仓库
 git init
+hooks 包含客户端或服务器的钩子脚本
+info 包含一个全局性排除文件
+logs 日志信息
+objects 存储所有数据内容
+refs 存储指向数据(分支)的提交对象指针
+config 项目特有的配置选项
+description 显示对仓库的描述信息
+HEAD 指示目前被检出的分支
+index 保存暂存区信息
 ***************** 初始化配置 *****************
 
 ***************** 获取 *****************
@@ -224,6 +237,9 @@ git merge hofix
 # 删除分支
 git branch -d hotfix
 
+# 强制删除分支
+git branch -D hotfix
+
 # 删除远程分支
 git push origin :serverfix
 git push origin --delete <分支名>
@@ -232,8 +248,34 @@ git push origin --delete <分支名>
 git checkout -b serverfix origin/serverfix
 git checkout --track origin/serverfix  (1.6.2 以上版本的 Git)
 
+# 将一个已存在的本地分支改成一个跟踪分支
+git branch -u origin/master
+
+# 查看远程跟踪分支
+git branch -vv
+
 # 选择一个 commit，合并进当前分支
 git cherry-pick <commit>
+
+# 删除远程分支
+git push origin --delete serverfix
+
+# 列出仍在远程跟踪但是已被删除的无用分支
+git remote prune origin --dry-run
+清除上面命令列出的远程跟踪
+git remote prune origin
+
+本地分支怎么去跟踪远程跟踪分支:
+1.当克隆的时候会自动生成一个master本地分支(已经跟踪了对应的远程跟踪分支)
+2.在新建其他分支时,可以指定想要跟踪的远程跟踪分支
+git checkout -b 本地分支名 远程跟踪分支名
+git checkout --track 远程跟踪分支名
+
+git checkout --track origin/zdy
+3.将一个已经存在的本地分支,改成一个跟踪分支
+git branch -u 远程跟踪分支名
+
+git branch -u origin/zdy
 ***************** 分支 *****************
 
 ***************** 变基 *****************
@@ -288,6 +330,9 @@ git log
 
 # git可以为你的 SHA-1 值生成出简短且唯一的缩写
 git log --abbrev-commit --pretty=oneline
+
+# 查看项目分叉历史
+git log --oneline --decorate --graph --all
 		
 # 使用图形化工具查阅提交历史
 gitk
@@ -326,6 +371,9 @@ git branch -v
 # 查看已经（或尚未）与当前分支合并的分支
 git branch --merged
 git branch --no-merged
+
+# 新建一个分支并且使指向对应的提交对象
+git branch name COMMITHASH
 
 # 当前分支同其他分支合并时的完整内容差异
 git diff master
@@ -439,3 +487,31 @@ git checkout -b MyTagBranch v1.1.1
 # - 一般以单个空格紧跟短划线或者星号作为每项条目的起始符。每个条目间用一空行隔开。
    不过这里按自己项目的约定，可以略作变化。
 ***************** 提交说明格式模版 *****************
+
+***************** Git底层命令 *****************
+# Git对象
+git hash-object -w fileName 生成一个hash值,val压缩后的文件内容,键值对存储到.git/objects
+-w: 是否存储数据对象,若不指定则只是返回hash
+
+git cat-file -p 560a3d89bf36ea10794402f6664740c284d4ae3b 根据键值查看数据
+git cat-file -t 560a3d89bf36ea10794402f6664740c284d4ae3b 查看文件类型
+
+
+# tree对象
+git update-index --add --cacheinfo 100644 hash test.txt 往暂存区添加一条记录(让git对象对应上文件名)
+git write-tree 生成树对象
+
+# Commit对象
+echo "first commit" | git commit-tree treehash 生成一个提交对象,存储到.git/objects
+
+# 查看暂存区
+git ls-files -s
+
+# 操作基本流程说明
+git add .
+    git hash-object -w 文件名
+    git update-index ...
+git commit -m "注释内容"
+    git write-tree
+    git commit-tree
+***************** Git底层命令 *****************

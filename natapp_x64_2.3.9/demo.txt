@@ -1,0 +1,2 @@
+# 将natapp.exe放到桌面,打开cmd后执行如下命令:
+natapp -authtoken=630bdf543e7d2376

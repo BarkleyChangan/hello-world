@@ -97,6 +97,7 @@
        ./configure --prefix=/usr/local/nginx --with-http_ssl_module --with-http_realip_module
     5. 编译安装
        make && sudo make install
+       建立软链接(可选):ln -n /usr/local/nginx-1.16.1/sbin/nginx /usr/local/sbin
 
        重新安装: rm -rf /usr/local/nginx/*
                        cd /usr/src/nginx-1.10.3
@@ -113,15 +114,18 @@
        kill pid
        killall nginx
     7. Nginx其他命令
+       nginx -h 查看命令选项
+       nginx -v 显示版本信息
+       nginx -V 显示版本信息和编译选项
        nginx -s reload 在Nginx启动的情况下重新加载配置文件(提示:nginx服务中只要涉及到IP地址的修改,都需要重启nginx服务,而不能采用平滑重启)
        nginx -s reopen 重新打开日志文件
        nginx -c /特定目录/nginx.conf 以特定目录下的配置文件启动Nginx
-       nginx -t 检测当前配置文件是否正确
+       nginx -t 测试配置文件是否正确,默认只测试默认的配置文件conf/nginx.conf
        nginx -t -c /特定目录/nginx.conf 检测特定目录下的Nginx配置文件是否正确
-       nginx -v 显示版本信息
-       nginx -V 显示版本信息和编译选项
+       nginx -T：测试配置文件是否正确,并显示配置文件内容
+       nginx -tq：在配置文件测试过程中,只显示错误信息
     8. 查看端口占用
-       netstat -tlnp
+       netstat -tunlp
     9. 配置防火墙
        iptables -I INPUT -p tcp --dport 80 -j ACCEPT
        #指定为IP地址为192.168.78.11开通80端口
@@ -506,7 +510,7 @@ http {
 
 # 5. 静态资源缓存
 server {
-  locationn ~\.(gif|jpg|jpeg|png|bmp|swf)$ {
+  location ~.*\.(gif|jpg|jpeg|png|bmp|swf)$ {
     # 30天后过期
     expires 30d;
   }
@@ -658,3 +662,8 @@ ip addr add 10.4.7.101/24 dev eth0 label eth0:1
 ip addr add 10.4.7.102/24 dev eth0 label eth0:2
 检查是否配置成功:
 ip add | grep -E "101|102"
+
+####################### nginx.conf #######################
+worker_processes 设置为cpu内核数量或内核数量的整数倍,在不确定时还可以指定其值为auto
+worker_cpu_affinity 为了进一步提高系统性能，我们会将worker进程与具体的内核进行绑定。该绑定操作是通过worker_cpu_affinity属性进行设置的。若指定worker_processes的值为auto，则无法设置worker_cpu_affinity。该设置是通过二进制进行的。每个内核使用一个二进制表示，0代表内核关闭；1代表内核开启。也就是说，有几个内核，就需要使用几个二进制位。
+####################### nginx.conf #######################

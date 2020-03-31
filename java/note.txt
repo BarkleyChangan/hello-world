@@ -360,6 +360,33 @@ jstack pid | grep 54ee
 ####################### JVM #######################
 
 ####################### Web #######################
+# jsp9大内置对象
+request
+response
+pageContext jsp的上下文对象
+session
+application    ServletContext对象
+config             ServletConfig对象
+out
+page
+exception       isErrorPage="true"
+
+# jsp页面中同意使用print方法
+out.write() 非字符串参数会有问题
+out.print()
+
+# jsp静态引入
+<%@ include file=""%>
+request,response,out对象其实是引用main.jsp中的对象
+
+# jsp动态引入
+<jsp:include page="">
+    <jsp:param name="pwd" value="123456"/>
+</jsp:include>
+
+# jsp请求转发
+<jsp:forward page="/scope2.jsp"/></jsp:forward>
+
 # 去掉jsp过于的空格
 web.xml中加入以下配置
 <jsp-config>
@@ -394,6 +421,35 @@ application/x-www-form-urlencoded:<form encType=””>中默认的encType,form�
 上传文件之时使用的：
 multipart/form-data:需要在表单中进行文件上传时,就需要使用该格式
 ####################### Web #######################
+
+####################### EL表达式 #######################
+# 判断值是否为null,空串,集合元素个数为0
+${empty}
+
+# 11个隐含对象
+pageContext        PageContextImpl          获取jsp中的9大内置对象
+pageScope           Map<String,Object>
+requestScope       Map<String,Object>
+sessionScope       Map<String,Object>
+applicationScope Map<String,Object>
+param                    Map<String,String>
+paramValues         Map<String,String[]>
+header                   Map<String,String>
+headerValues        Map<String,String[]>
+cookie                    Map<String,Cookie>
+initParam               Map<String,String>
+initParam               Map<String,String> 获取web.xml中配置的<context-param>上下文参数
+####################### EL表达式 #######################
+
+####################### JSTL表达式 #######################
+http://java.sun.com/jsp/jstl/core             核心库c
+http://java.sun.com/jsp/jstl/fmt               格式化fmt
+http://java.sun.com/jsp/jstl/functions     函数fn
+http://java.sun.com/jsp/jstl/sql                数据库sql
+http://java.sun.com/jsp/jstl/xml               xml;x
+
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+####################### JSTL表达式 #######################
 
 ####################### Spring #######################
 # Scope常量
