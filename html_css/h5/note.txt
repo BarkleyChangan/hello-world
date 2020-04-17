@@ -100,6 +100,13 @@ docuemnt.documentElement.clientWidth | docuemnt.documentElement.clientHeight: �
 offsetWidth | offsetHeight: border box
 docuemnt.documentElement.offsetWidth | docuemnt.documentElement.offsetHeight: 根标签border box
 NOTE: 在IE10以及IE10以下,根标签的clientWidth和offsetWidth统一被指定为视口宽度
+
+# 图片处理
+图片压缩:                       https://tinypng.com/
+雪碧图:                          http://www.spritecow.com/
+image转dataurI的网址:http://tool.c7sky.com/datauri/ 只支持IE8以上浏览器
+SVG意为可缩放矢量图形(Scalable Vector Graphics)SVG使用XML格式定义图像 http://www.bejson.com/convert/image_to_svg/
+在线转换为webp:          https://zhitu.isux.us/
 ####################### HTML5 #######################
 
 ####################### 事件 #######################

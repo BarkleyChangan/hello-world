@@ -72,6 +72,11 @@ java -Djava.ext.dirs=./ SFTPClientUtil
 # 数值类型转换
 从float和double转换为整数值时,小数位将被截断。若你想对结果进行四舍五入,可以使用java.lang.Math的round()方法
 
+# 三元表达式的类型转化规则
+若两个表达式类型相同,返回值类型为该类型
+若两个表达式类型不同,但类型不可转换,返回值类型为Object类型
+若两个表达式类型不同,但类型可以转化,先把包装数据类型转化为基本数据类型,然后按照基本数据类型的转换规则（byte<short(char)<int<long<float<double）来转化,返回值类型为优先级最高的基本数据类型
+
 # 异或运算
 1 ^ 1->0
 0 ^ 0->0
@@ -135,6 +140,7 @@ RESULT:3.14159260000000006840537025709636509418487548828125
 
 # 格式化修饰符
 %[argument_index$][flags][width][.precision]conversion
+argument_index:从1开始
 
 # Integer的Class对象并不是Number的Class 对象的子类
 ERROR:Class<Number> clazz = int.class;
@@ -468,3 +474,7 @@ spring.task.scheduling.pool.size=10
 spring.task.scheduling.thread-name-prefix=task-test
 通过上面的配置，Spring将会使用TaskScheduler子类ThreadPoolTaskScheduler，内部线程数为pool-size数量，这个线程数将会直接设置ScheduledExecutorService线程数量。
 ####################### Spring #######################
+
+####################### API #######################
+sign的值一般是将所有非空参数按照升续排序然后+token+key+timestamp+nonce(随机数)拼接在一起，然后使用某种加密算法进行加密，作为接口中的一个参数sign来传递，也可以将sign放到请求头中。
+####################### API #######################

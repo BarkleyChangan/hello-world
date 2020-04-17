@@ -22,6 +22,18 @@ mysql -h hostname -u username -p
 which mysqld
 ->/usr/local/mysql/bin/mysqld
 /usr/local/mysql/bin/mysqld --verbose --help | grep -A 1 'Default options'
+
+# 字符集
+SET NAMES 'charset_name'; 不过这里需要大家特别注意,SET names语句并不会改变客户端的默认字符集
+该语句和下边三个语句等效：
+SET character_set_client = charset_name;
+SET character_set_results = charset_name;
+SET character_set_connection = charset_name;
+
+通过执行SHOW VARIABLES LIKE 'character%'命令搞清楚：
+character_set_client：服务器是怎样认为客户端发送过来的请求是采用何种字符集编码的
+character_set_connection：服务器在运行过程中会采用何种字符集编码请求中的字符
+character_set_result：服务器会将响应使用何种字符集编码后再发送给客户端的
 ####################### CMD命令 #######################
 
 ####################### 用户管理 #######################
@@ -181,6 +193,15 @@ SHOW VARIABLES LIKE '%datadir%';
 
 # 查看二进制日志是否开启
 SHOW VARIABLES LIKE '%log_bin%';
+
+# 字符排序规则collation
+字符集+语言名称+后缀
+_ai   Accent-insensitive 口音不敏感
+_as  Accent-sensitive 口音敏感
+_ci   Case-insensitive 大小写不敏感
+_cs   Case-sensitive 大小写敏感
+_bin Binary 二进制排序
+对于是ci后缀的collation(大小写不敏感)也意味着Accent-insensitive(口音不敏感)。同理对于是cs后缀的collation(大小写敏感)也意味着Accent-sensitive(口音敏感)
 ####################### 基本操作 #######################
 
 ####################### 数据库基本操作 #######################
@@ -212,6 +233,9 @@ INSERT INTO mydb.mytablenew SELECT * FROM mydb.mytable;
 ALTER TABLE mydb.mytable RENAME mydb.mytablezap;
 ALTER TABLE mydb.mytablenew RENAME mydb.mytable;
 DROP TABLE mydb.mytablezap;
+
+# 获取插入的自增ID
+SELECT LAST_INSERT_ID();
 ####################### 数据库基本操作 #######################
 
 ####################### 数据表基本操作 #######################

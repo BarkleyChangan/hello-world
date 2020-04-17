@@ -663,7 +663,88 @@ ip addr add 10.4.7.102/24 dev eth0 label eth0:2
 检查是否配置成功:
 ip add | grep -E "101|102"
 
-####################### nginx.conf #######################
+####################### nginx优化 #######################
 worker_processes 设置为cpu内核数量或内核数量的整数倍,在不确定时还可以指定其值为auto
+
 worker_cpu_affinity 为了进一步提高系统性能，我们会将worker进程与具体的内核进行绑定。该绑定操作是通过worker_cpu_affinity属性进行设置的。若指定worker_processes的值为auto，则无法设置worker_cpu_affinity。该设置是通过二进制进行的。每个内核使用一个二进制表示，0代表内核关闭；1代表内核开启。也就是说，有几个内核，就需要使用几个二进制位。
+DEMO:
+worker_processes 4;
+worker_cpu_affinity 0001 0010 0100 1000;
+
+use指令用来指定 Nginx 的工作模式
+events {
+    use epoll;
+}
+
+worker_connections指令调整Nginx单个进程允许的客户端最大连接数,默认是1024
+events {
+    worker_connections 20480;
+}
+最大连接数的计算公式如下:maxclients = workerprocesses * worker_connections
+另外，进程的最大连接数受 Linux 系统进程的最大打开文件数限制，在执行操作系统命令 ulimit -HSn 65535或配置相应文件后， worker_connections 的设置才能生效
+
+默认情况下，Nginx 进程只会在一个时刻接收一个新的连接，我们可以配置multi_accept 为 on，实现在一个时刻内可以接收多个新的连接，提高处理效率
+events {
+    multi_accept on;
+}
+
+配置worker进程的最大打开文件数
+worker_rlimit_nofile 65535;
+可设置为系统优化后的ulimit -HSn的结果
+
+TCP优化
+http {
+    sendfile on;
+    tcp_nopush on;
+    keepalive_timeout 120;
+    tcp_nodelay on;
+}
+sendfile配置可以提高Nginx静态资源托管效率
+TCPNOPUSH是FreeBSD的一个socket选项，对应Linux的TCPCORK，Nginx里统一用tcp_nopush来控制它，并且只有在启用了sendfile之后才生效。启用它之后，数据包会累计到一定大小之后才会发送，减小了额外开销，提高网络效率
+TCPNODELAY也是一个socket选项，启用后会禁用Nagle算法，尽快发送数据，某些情况下可以节约200ms（Nagle算法原理是：在发出去的数据还未被确认之前，新生成的小数据先存起来，凑满一个MSS或者等到收到确认后再发送）。Nginx只会针对处于keep-alive状态的TCP连接才会启用tcpnodelay
+
+优化连接参数
+http {
+    client_header_buffer_size 32k;
+    large_client_header_buffers 4 32k;
+    client_max_body_size 1024m;
+    client_body_buffer_size 10m;
+}
+clientmaxbody_size用来决定请求体的大小，用来限制上传文件的大小
+
+Gzip压缩
+http {
+    gzip on;
+    gzip_buffers 16 8k;
+    gzip_comp_level 6;
+    gzip_http_version 1.0;
+    gzip_min_length 1000;
+    gzip_proxied any;
+    gzip_vary on;
+    gzip_types text/xml application/xml application/atom+xml application/rss+xml application/xhtml+xml image/svg+xml text/javascript application/javascript application/x-javascript text/x-json application/json application/x-web-app-manifest+json text/css text/plain text/x-component font/opentype application/x-font-ttf application/vnd.ms-fontobject image/x-icon;
+    gzip_disable "MSIE [1-6]\.(?!.*SV1)";
+}
+gzip_vary用来输出Vary响应头
+gzip_disable指令接受一个正则表达式，当请求头中的UserAgent字段满足这个正则时，响应不会启用GZip，这是为了解决在某些浏览器启用GZip带来的问题
+默认Nginx只会针对HTTP/1.1及以上的请求才会启用GZip，因为部分早期的HTTP/1.0客户端在处理GZip时有Bug。现在基本上可以忽略这种情况，于是可以指定gziphttpversion1.0来针对HTTP/1.0及以上的请求开启GZip
+
+静态资源优化
+server {
+    # 图片、视频
+    location ~ .*\.(gif|jpg|jpeg|png|bmp|swf|flv|mp4|ico)$ {
+        expires 30d;
+        access_log off;
+    }
+    # 字体
+    location ~ .*\.(eot|ttf|otf|woff|svg)$ {
+        expires 30d;
+        access_log off;
+    }    
+    # js、css
+    location ~ .*\.(js|css)?$ {
+        expires 7d;
+        access_log off;
+    }
+}
+
 ####################### nginx.conf #######################

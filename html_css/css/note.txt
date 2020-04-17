@@ -258,6 +258,9 @@ filter:alpha(opacity=50);
 https://www.w3.org/TR/selectors
 https://developer.mozilla.org/zh-CN/
 
+# animate.css动画库
+https://daneden.github.io/animate.css/
+
 # 属性选择器
 div[attr]
 div[attr=val]

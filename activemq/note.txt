@@ -15,10 +15,15 @@ ps aux | grep activemq					# 检查进程
 /usr/local/apache-activemq-5.15.10/bin/activemq stop	# 关闭
 
 # 管理界面
-http://ip:8161/admin/
+http://192.168.100.10:8161/admin/
 用户名: admin
 密码: admin
 ActiveMQ 使用的是 jetty 提供 HTTP 服务.启动稍慢,建议短暂等待再访问测试
+
+查看防火墙状态:systemctl status firewalld
+防火墙添加端口:firewall-cmd —zone=public —add-port=61616/tcp —permanent
+重启防护墙:systemctl restart firewalld.service
+关闭防火墙:systemctl stop firewalld.service
 
 # 修改访问端口
 修改 ActiveMQ 配置文件: /usr/local/apache-activemq-5.15.10/conf/jetty.xml 
@@ -35,3 +40,54 @@ docs 存放的是说明文档
 examples 存放的是简单的实例
 lib 存放的是 activemq 所需 jar 包
 webapps 用于存放项目的目录
+
+# ActiveMQ服务
+1. 创建一个systemd服务文件:vi /usr/lib/systemd/system/activemq.service
+[Unit]
+Description=ActiveMQ service
+After=network.target
+
+[Service]
+Type=forking
+ExecStart=/usr/local/apache-activemq-5.15.10/bin/activemq start
+ExecStop=/usr/local/apache-activemq-5.15.10/bin/activemq stop
+User=root
+Group=root
+Restart=always
+RestartSec=9
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=activemq
+
+[Install]
+WantedBy=multi-user.target
+
+2. 设置activemq配置文件/usr/local/apache-activemq-5.15.10/bin/env中的JAVA_HOME:
+# Location of the java installation
+# Specify the location of your java installation using JAVA_HOME, or specify the
+# path to the "java" binary using JAVACMD
+# (set JAVACMD to "auto" for automatic detection)
+JAVA_HOME="/usr/local/jdk1.8.0_171"
+JAVACMD="auto"
+
+3. 通过systemctl管理activemq启停
+创建软件链接:ln -s /usr/lib/systemd/system/activemq.service /etc/systemd/system/multi-user.target.wants/activemq.service
+开机自启:systemctl enable activemq
+查看自启状态:systemctl list-unit-files | grep activemq
+启动:systemctl start activemq
+查看:systemctl status activemq
+停止：systemctl stop activemq
+
+# 项目中使用:
+<!-- https://mvnrepository.com/artifact/org.apache.activemq/activemq-all -->
+<dependency>
+    <groupId>org.apache.activemq</groupId>
+    <artifactId>activemq-all</artifactId>
+    <version>5.15.12</version>
+</dependency>
+
+SpringBoot中使用:
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-activemq</artifactId>
+</dependency>

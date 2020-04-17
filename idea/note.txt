@@ -48,13 +48,12 @@
      */
 
     h. 设置项目文件编码
-    Editor -> File Encodings -> Global Encoding: UTF-8
-     							              Project Encoding:UTF-8
-     							              Default encoding for properties files:UTF-8(勾选Transparent native-to-ascii conversion)
+    Editor -> File Encodings -> Global Encoding: UTF-8 ->
+      Project Encoding:UTF-8
+      Default encoding for properties files:UTF-8(勾选Transparent native-to-ascii conversion)
 
     i. 设置自动编译
-    Build,Execution,Deployment -> Compiler -> 勾选Build project automatically
-    										                      勾选Compile independent modules in parallel
+    Build,Execution,Deployment -> Compiler -> 勾选Build project automatically -> 勾选Compile independent modules in parallel
 
     j. 调试优化
     Build,Execution,Deployment -> Debugger -> Transport: Shared memory
@@ -82,7 +81,7 @@
        Tab limit: 设置最多展示多少个Tab
 
     r. 自动生成serialVersionUID
-       File -> Settings -> Editor -> Inspections -> 搜索Serializable -> 勾选"Serializable class without 'serialVersionUID'"
+       File->Settings->Editor->Inspections->选中Serializable class without 'serialVersionUID'
 
     s. 请求进入到断点后自动激活Debug窗口
        File -> settings -> Build,Execution,Deployment -> Debugger -> 勾选Show debug window on breakpoint
@@ -90,47 +89,54 @@
     t. 配置Tomcat
        File -> settings -> Build,Execution,Deployment -> Application Servers ->点击+ -> Tomcat Server
 
-5. 快捷键
-   alt + enter      	   万能纠错
-   alt + r 				       执行
-   alt + up 			       向上移动行
-   alt + down 			     向下移动行
-   alt + shift + c  	   收起所有方法
-   alt + shift + m 	     抽取方法
-   alt + shift + r  	   重构:修改变量名或方法名
-   alt + shift + s  	   生成构造器/get/set/toString
-   alt + shift + x  	   打开所有方法
-   alt + shift + z  	   生成try...catch
-   alt + 7               查看一个类里面有那些方法
-   alt + F8              debug时计算表达式
+    o. 用*标识编辑过的文件
+      Editor -> General -> Editor Tabs -> 选中Mark modifyied tabs with asterisk
 
-   ctrl + e 			       打开最近修改的文件
-   ctrl + o 			       查看类的结构
+    p. 取消注释被格式化
+      Editor -> Code Style -> Java -> JavaDoc选项卡 -> 取消勾选的Enable JavaDoc formatting
+
+5. 快捷键
+   alt + enter         万能纠错
+   alt + r                执行
+   alt + up             向上移动行
+   alt + down        向下移动行
+   alt + shift + c    收起所有方法
+   alt + shift + m   抽取方法
+   alt + shift + r     重构:修改变量名或方法名
+   alt + shift + s     生成构造器/get/set/toString
+   alt + shift + x     打开所有方法
+   alt + shift + z     生成try...catch
+   alt + 7                 查看一个类里面有那些方法
+   alt + F8               debug时计算表达式
+
+   ctrl + e               打开最近修改的文件
+   ctrl + o              查看类的结构
    ctrl + u              调试:查看表达式的值
-   ctrl + w 			       关闭当前的tab
-   ctrl + F12            查看一个类里面有那些方法
+   ctrl + w              关闭当前的tab
+   ctrl + F12          查看一个类里面有那些方法
    ctrl + b              查看某个方法被那些地方调用
 
-   ctrl + alt + /   	   提示方法参数类型
-   ctrl + alt + f   	   添加到收藏
-   ctrl + alt + down	   向下复制一行
+   ctrl + alt + /      提示方法参数类型
+   ctrl + alt + f      添加到收藏
+   ctrl + alt + down   向下复制一行
    ctrl + alt + F7       查看一个类里面定义的变量在那些地方被调用
    ctrl + alt + b        需要看一个类/方法的实现类/方法
    ctrl + alt + h        查看某个方法的调用链关系
    ctrl + alt + 左方向键  debug时跳回来
 
    ctrl + shift + enter  向上开始新的一行
-   ctrl + shift + h      查找方法在哪里被调用
-   ctrl + shift + q 	   快速搜索类中的错误
-   ctrl + shift + t 	   查看源码
-   ctrl + shift + v 	   选择要粘贴的内容
-   ctrl + shift + w      关闭所有的tab
-   ctrl + shift + x 	   打开代码所在硬盘的文件夹
-   ctrl + shift + y      大小写转换
-   ctrl + shift + F9    重新编译
+   ctrl + shift + h         查找方法在哪里被调用
+   ctrl + shift + q         快速搜索类中的错误
+   ctrl + shift + t          查看源码
+   ctrl + shift + v         选择要粘贴的内容
+   ctrl + shift + w        关闭所有的tab
+   ctrl + shift + x         打开代码所在硬盘的文件夹
+   ctrl + shift + y         大小写转换
+   ctrl + shift + F9       重新编译
+   ctrl + shift + alt + n 使用symbol来查找
 
-   shift + enter		     向下开始新的一行
-   shift + shift		     查找文件
+   shift + enter     向下开始新的一行
+   shift + shift     查找文件
 
 6. 代码模板
    psvm                  main方法
@@ -153,11 +159,12 @@
                                             Password: ******
 
 8. Maven配置
-   File -> Other Settings ->  Other Settings -> Build,Execution,Deployment -> Build Tools -> Maven -> 
-    Maven home directory: D:\Program\Green\64\apache-maven-3.5.2
-    User settings file: D:\Program\Green\64\apache-maven-3.5.2\conf\settings.xml
-    Local repository: D:\MavenRepository
-   Build,Execution,Deployment -> Build Tools -> Maven -> Importing -> 勾选Import Maven projects automatically
+File -> Other Settings -> Default Settings -> Build,Execution,Deployment -> Build Tools -> Maven -> 
+Maven home directory: D:\Program\Green\64\apache-maven-3.5.2
+User settings file: D:\Program\Green\64\apache-maven-3.5.2\conf\settings.xml
+Local repository: D:\MavenRepository
+
+File -> Other Settings -> Default Settings -> Build,Execution,Deployment -> Build Tools -> Maven -> Importing -> 勾选Import Maven projects automatically
 
 9. 缓存和索引清理
 File -> Invalidate Cache/Restart...
@@ -208,10 +215,13 @@ d.在Activate JRebel窗口:
 e.激活成功后:File->Settings->JRebel->点击"Work offline"按钮
 f.关闭ReverseProxy_windows_amd64.exe,激活完成
 
-14.生成serialVersionUID
-File->Settings->Editor->Inspections->选中Serializable class without 'serialVersionUID'
-
-15.创建JavaEE项目
+14.创建JavaEE项目
 File -> New -> Project -> Java Enterprise -> Additional Libraries and Frameworks: 选中Web Application
 在WEB-INF下新建lib文件夹,在添加jar包后在lib文件夹上右键-> Add as Library
 File -> Project Structure -> Artifacts -> fix
+
+15. svn不能同步代码问题修正
+File -> Settings ->Subversion ->General -> Use command line client 选中
+1.使用command line方式需要指定svn.exe的路径,例如:D:\tools\TortoiseSVN\bin\svn.exe
+2.注意,安装TortoiseSVN时路径中不要带空格,例如:C:\Program Files\TortoiseSVN\bin\svn.exe就会报错
+3.安装TortoiseSVN选择全部安装组件,否则可能没有svn.exe

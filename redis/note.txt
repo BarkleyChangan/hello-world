@@ -17,8 +17,10 @@ cp redis.conf /usr/local/redis/bin/redis.conf
 
 4. 启动redis
 cd /usr/local/redis/bin
-./redis-server redis.conf
-redis-cli -p 6379
+前台启动(关闭终端自动停止): ./redis-server redis.conf
+后台启动:1. 修改redis.conf文件: daemonize yes
+               2. ./redis-server & redis.conf
+客户端连接: ./redis-cli -p 6379
 ping
 
 ps -ef | grep redis
@@ -46,10 +48,12 @@ service iptables status(查看开放端口)
 # redis命令
 select 0 选择数据库
 keys *   查看当前数据库所有的key
+randomkey 随机的获取一个key
 flushdb  清空当前库
 flushall 清空所有库
 dbsize   查看存储的数量
 exist k1 是否存在
+exists key key名 判断key是否存在
 move k3 2 移动k3到2号数据库
 expire key 为key设置过期时间(秒):expire k2 10
 ttl key  查看还有多少秒过期-1表示永不过期 -2表示已过期
@@ -60,6 +64,7 @@ config get requirepass
 save     备份rdb
 bgsave   Redis会在后台异步进行快照操作
 lastsave 获取最一次save的时间
+rename name nickname 改变key的名字
 
 # 查看Redis内部正在做什么
 INFO commandstats
@@ -76,3 +81,14 @@ watch key1 监视一个或多个key,如果在事务执行之前这个key被其�
 info replication
 slaveof 127.0.0.1 6379
 slaveof no one
+
+# 统计
+INFO commandstats
+重置:CONFIG RESETSTAT
+
+# 回收策略
+建议使用 volatile-lru 策略——前提是你对key已经设置了超时
+但如果你运行的是一些类似于 cache 的东西，并且没有对 key 设置超时机制，可以考虑使用 allkeys-lru 回收机制
+
+# Try/Except
+数据很重要请使用Try/Except
