@@ -116,7 +116,7 @@
     7. Nginx其他命令
        nginx -h 查看命令选项
        nginx -v 显示版本信息
-       nginx -V 显示版本信息和编译选项
+       nginx -V 显示版本信息和编译选项(nginx -V | grep http_realip_module)
        nginx -s reload 在Nginx启动的情况下重新加载配置文件(提示:nginx服务中只要涉及到IP地址的修改,都需要重启nginx服务,而不能采用平滑重启)
        nginx -s reopen 重新打开日志文件
        nginx -c /特定目录/nginx.conf 以特定目录下的配置文件启动Nginx
@@ -748,3 +748,11 @@ server {
 }
 
 ####################### nginx.conf #######################
+
+####################### 常见问题 #######################
+# nginx做反向代理时出现302错误
+修改为proxy_set_header Host $host:$server_port;
+
+# 响应头中添加后端服务器地址
+add_header Kss-Upstream $upstream_addr;
+####################### 常见问题 #######################

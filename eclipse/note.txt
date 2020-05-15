@@ -96,3 +96,13 @@ b. Tomcat安装目录下,在conf/web.xml文件的servlet标签中添加如下内
     <param-value>true</param-value>
 </init-param>
 c. 重新挂载项目,然后以调试的方式启动就可以热部署了
+
+18. Tab键改为4个空格
+Windows -> Preferences -> General -> Editors -> Text Editors -> 选中Insert spaces for tabs
+Windows -> Preferences -> General -> Java -> Code Style -> Formatter -> 点击Editor...按钮 -> 选择Indentation选项卡 -> 在General Settings里选择Spaces only
+
+19. 设置当行代码120个宽度
+Windows -> Preferences -> General -> Java -> Code Style -> Formatter -> 点击Editor...按钮 -> 选择Line Wrapping选项卡 -> 在General Settings里设置Maximum line width
+
+20. 换行符使用Unix格式
+Windows -> Preferences -> General -> Workspace -> 在New text file line delimiter的Other选择Unix

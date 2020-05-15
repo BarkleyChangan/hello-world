@@ -73,7 +73,9 @@ public class DateUtil {
 
 		if (strDate != null && strDate.trim().length() > 0) {
 			try {
-				date = DateUtil.getSimpleDateFormat(pattern).parse(strDate);
+				SimpleDateFormat sdf =DateUtil.getSimpleDateFormat(pattern);
+				sdf.setLenient(false);
+				date = sdf.parse(strDate);
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}
@@ -93,7 +95,9 @@ public class DateUtil {
 
 		if (strDate != null && strDate.trim().length() > 0) {
 			try {
-				date = DateUtil.getSimpleDateFormat(PATTERN_DEFAULT_DATE).parse(strDate);
+				SimpleDateFormat sdf =DateUtil.getSimpleDateFormat(PATTERN_DEFAULT_DATE);
+				sdf.setLenient(false);
+				date = sdf.parse(strDate);
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}
@@ -113,7 +117,9 @@ public class DateUtil {
 
 		if (strDateTime != null && strDateTime.trim().length() > 0) {
 			try {
-				date = DateUtil.getSimpleDateFormat(PATTERN_DEFAULT_DATETIME).parse(strDateTime);
+				SimpleDateFormat sdf =DateUtil.getSimpleDateFormat(PATTERN_DEFAULT_DATETIME);
+				sdf.setLenient(false);
+				date = sdf.parse(strDateTime);
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}

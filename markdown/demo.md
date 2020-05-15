@@ -225,6 +225,7 @@
    [runoob]: http://www.runoob.com
 7. 图片
    ```markdown
+   ![alt 属性文本](图片地址)
    ![RUNOOB 图标](http://static.runoob.com/images/runoob-logo.png)  
    ![RUNOOB 图标](http://static.runoob.com/images/runoob-logo.png "RUNOOB")
    ```

@@ -4,23 +4,33 @@
 2.BFC的区域不会与float的元素区域重叠
 3.内部的Box垂直方向由margin决定。属于同一个BFC的两个相邻Box的margin会发生重叠，与方向无关
 4.每个元素的左外边距与包含块的左边界相接触（从左向右），即使浮动元素也是如此。（这说明BFC中子元素不会超出他的包含块，而position为absolute的元素可以超出他的包含块边界）
-5.计算BFC的高度时，浮动元素也要参与计算(清除浮动 hasLayout)
-6.BFC就是页面上的一个隔离的独立容器，容器里面的子元素不会影响到外面的元素，反之也如此。
+5.计算BFC的高度时，浮动元素也要参与计算(清除浮动hasLayout)
+6.BFC就是页面上的一个隔离的独立容器，容器里面的子元素不会影响到外面的元素,反之也如此。
 7.开启BFC的元素可以包含浮动的子元素
 8.父元素的垂直外边距不会和子元素重叠
 
-# 形成BFC的条件
-根元素
-float不为none
-position为absolute或fixed
-overlow不为visible
-display为inline-block,table-cell,table-capiton,flex,inline-flex
+# BFC的渲染规则
+1.BFC区域内的元素外边距会发生重叠
+2.BFC区域内的元素不会与浮动元素重叠
+3.计算BFC区域的高度时,浮动元素也参与计算
+4.BFC区域就相当于一个容器,内部的元素不会影响到外部,同样外部的元素也不会影响到内部
+5.BFC 区域内部元素的排列和外部元素是一致的,也遵循块元素占一行,行内块元素不占一行等规则
 
-# 如何开启BFC
-1.float的值不是none:使用这种方式虽然可以撑开父元素,但是会导致父元素宽度丢失并且下面的元素上移
-2.position的值不是static或者relative
-3.display的值是inline-block、table-cell、flex、table-caption或者inline-flex
-4.overflow的值不是visible(设置为hidden是副作用最小的开启BFC方式)
+# 开启BFC
+1.根元素(html)html元素所在的区域就是一个BFC区域,所以我们平时编写的元素都是在一个BFC区域内渲染的,有很多东西为什么要这样应该有些也理解了
+2.浮动元素(元素的float不是none)
+3.绝对定位元素(元素的position为absolute或fixed)
+4.行内块元素(元素的display为inline-block)
+5.表格单元格(元素的display为table-cell,HTML表格单元格默认为该值)
+6.表格标题(元素的display为table-caption,HTML表格标题默认为该值)
+7.匿名表格单元格元素(元素的display为table、``table-row、table-row-group、``table-header-group、``table-footer-group(分别是HTML table、row、tbody、thead、tfoot的默认属性)或inline-table)
+8.overflow值不为visible的块元素
+9.display值为flow-root的元素
+10.contain值为layout、content或paint的元素
+11.弹性元素(display为flex或inline-flex元素的直接子元素)
+12.网格元素(display为grid或inline-grid元素的直接子元素)
+13.多列容器(元素的column-count或column-width不为auto，包括``column-count为1)
+14.column-span为all的元素始终会创建一个新的BFC,即使该元素没有包裹在一个多列容器中(标准变更,Chrome bug)
 
 # 解决高度塌陷
 1.开启BFC
@@ -47,11 +57,21 @@ width:除auto外任何值
 height:除auto外任何值
 zoom:除normal外任何值
 overflow:hidden;
+writing-mode:tb-rl;
+
+IE8~IE11通过document.documentElement.currentStyle.hasLayout依然可以获得hasLayout的标志
 
 # 清除浮动
 clear可以清除其他浮动元素对当前元素的影响
-.clearfix{zoom:1;}
-.clearfix::before,.clearfix::after{content:"";display:table;clear:both;}
+/* IE6/IE7 */
+.clearfix{*zoom:1;}
+.clearfix::before,.clearfix::after{content:".";display:block;height:0;visibility:hidden;clear:both;}
+
+由Nicolas Gallagher 大湿提出来的:http://nicolasgallagher.com/micro-clearfix-hack/
+/* IE6/IE7 */
+.clearfix{*zoom:1;}
+/* IE8+ */
+.clearfix::before,.clearfix::after{content:"";display:table;clear:both;} 
 
 # 透明度
 opcity:0.5;

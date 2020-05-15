@@ -2,6 +2,10 @@
 # Linux命令在线查询网站
 https://man.linuxde.net
 
+# 调小TCP协议的time_wait超时时间(系统默认240秒)
+/etc/sysctl.conf
+net.ipv4.tcp_fin_timeout=30
+
 # 桌面和命令行模式互相切换
 ctrl + alt + F(1~6)
 
@@ -102,6 +106,9 @@ ps -aux | grep nginx
 ps -lax  可以提供父进程ID(PPID)和谦让度(NI)但不会显示进程属主的用户名
 ps -l 仅查看自己的bash相关进程
 ps aux 查看系统所有进程
+ps -L 1213 特定进程的线程
+ps -C getty 通过进程名查看进程
+ps -axjf 树形的显示进程
 
 # pstree
 pstree [-A|U] [-up]
@@ -140,16 +147,16 @@ kill -signal %jobnumber
      -2 代表与由键盘输入ctrl -c同样的动作
      -9 立刻强制删除一个工作
      -15 以正常的进程方式终止一项工作,与-9是不一样的
-常用的信号       信号名     描述                      默认情况下执行的操作
-0               EXIT       程序退出时收到该信号        终止
-1               HUP        挂起                      终止
-2               INT        中断                      终止
-3               QUIT       退出                      终止
-9               KILL       杀死                      终止
-11              SEGV       段错误                    终止
-15              TERM       软件终止                  终止
-取决于硬件体系   USR1       用户定义                  终止
-取决于硬件体系   USR1       用户定义                  终止
+常用的信号       信号名      描述                                 默认情况下执行的操作
+0                     EXIT        程序退出时收到该信号        终止
+1                     HUP        挂起                                 终止
+2                     INT         中断                                 终止
+3                     QUIT       退出                                 终止
+9                     KILL        杀死                                  终止
+11                   SEGV       段错误                              终止
+15                   TERM      软件终止                           终止
+取决于硬件体系   USR1    用户定义                           终止
+取决于硬件体系   USR1    用户定义                           终止
 
 # 启动程序时设置进程的谦让度(-20~+19之间浮动)
 nice -n 2 hello
@@ -368,6 +375,9 @@ lspci [-vvn]
 # 查看系统USB装置
 lsusb [-t]
        -t 使用类似树状的目录来显示各个USB端口的信息
+
+# 刷新DNS缓存
+sudo /etc/init.d/networking restart
 ***************** 系统 *****************
 
 ***************** 开发 *****************
@@ -993,8 +1003,17 @@ rpm -qa 软件包名字(不是安装文件名字) -a选项可以列出当前系�
     -qR 列出与该软件相关的所有文件
     -qf 由后面接的文件名,找出该文件属于哪一个已安装的软件
     -q --scripts 列出是否含有安装后需要执行的脚本
+    -c 查看配置文件信息rpm -q mysql-community-server -c
+    -d 查看文档信息包括man帮助文档rpm -q mysql-community-server -d
+    --filesbypkg 列出内部的全部文件rpm -q mysql-community-server --filesbypkg
+    -i 查看包的信息包括安装时间rpm -q mysql-community-server -i
+    -R 查看指定包要依赖的东西rpm -q mysql-community-server -R
+    --scripts 查看指定包的一些安装卸载过程中的脚本rpm -q mysql-community-server --scripts
     --rebuilddb 重建数据库
-rpm -qa | grep mysql
+
+查看全部包，根据安装日期倒序排列
+rpm -qa --last
+rpm -qa -last | grep mysql
 
 # 查看rpm信息(未安装的也可查看)
 rpm -qp[icdlR]
@@ -1033,6 +1052,15 @@ yum clean packages 将已下载的软件文件删除
 yum clean headers  将下载的软件文件头删除
 yum clean all      将所有软件数据都删除
 yum whatprovides /usr/bin/sftp 查看sftp这个命令属于哪个软件包
+
+yum自动下载RPM包及其所有依赖的包:
+安装Downloadonly插件,以root身份运行以下命令:
+yum install yum-plugin-downloadonly
+此插件并不适用于yum groupinstall。默认情况下,这个插件将会下载仓库中最新可用的软件包。然而你可以通过指定版本号来下载某个特定的软件版本yum install --downloadonly --downloaddir=/root/mypackages/ httpd-2.2.6-40.el7
+yum install --downloadonly <package-name> 默认情况下,这个命令将会下载并把软件包保存到/var/cache/yum/的rhel-{arch}-channel/packageslocation目录,不过你也可以下载和保存软件包到任何位置,你可以通过–downloaddir选项来指定
+yum install --downloadonly --downloaddir=<directory> <package-name>
+yum install --downloadonly --downloaddir=/root/mypackage/ tcpdump
+yum install --downloadonly --downloaddir=/root/mypackage/ lrzsz
 
 # yum软件群组功能
 yum 

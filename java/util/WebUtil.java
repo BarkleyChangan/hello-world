@@ -1,6 +1,7 @@
 package com.post.util;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.springframework.mock.web.MockHttpServletRequest;
 
 import java.util.Map;
 
@@ -24,4 +25,21 @@ public final class WebUtil {
 
         return bean;
     }
-}
+
+    public static String getIpAddr(MockHttpServletRequest request) {
+        String ip = request.getHeader("x-forwarded-for");
+
+        if (ip == null || ip.trim().length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("Proxy-Client-IP");
+        }
+
+        if (ip == null || ip.trim().length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("WL-Proxy-Client-IP");
+        }
+
+        if (ip == null || ip.trim().length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getRemoteAddr();
+        }
+
+        return ip;
+    }

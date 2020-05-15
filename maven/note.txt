@@ -174,3 +174,17 @@ mvn install -Pproduction -X
 
 # Maven仓库
 http://mvnrepository.com/
+
+# option=true
+当某个依赖的<optional>被定义为true后,该依赖便只能在本项目中传递,不会被传递到引用该依赖的父项目中,父项目需要主动引用才行
+
+# jar包冲突问题处理
+1.打出所有依赖
+mvn dependency:tree > ~/dependency.txt
+2.只打出指定groupId和artifactId的依赖关系
+mvn dependency:tree -Dverbose -Dincludes=groupId:artifactId
+3.vm启动脚本加入。在tomcat启动脚本中可见加载类的详细信息
+-XX:+TraceClassLoading
+-verbose
+4.greys的sc命令也能清晰的看到当前类是从哪里加载过来的
+greys:sc

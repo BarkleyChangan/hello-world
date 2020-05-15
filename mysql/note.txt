@@ -22,6 +22,11 @@ mysql -h hostname -u username -p
 which mysqld
 ->/usr/local/mysql/bin/mysqld
 /usr/local/mysql/bin/mysqld --verbose --help | grep -A 1 'Default options'
+->Default options are read from the following files in the given order:
+->/etc/mysql/my.cnf /etc/my.cnf ~/.my.cnf 
+->2020-05-13 09:24:35 14082 [Note] Binlog end
+->2020-05-13 09:24:35 14082 [Note] Shutting down plugin 'MyISAM'
+->2020-05-13 09:24:35 14082 [Note] Shutting down plugin 'CSV'
 
 # 字符集
 SET NAMES 'charset_name'; 不过这里需要大家特别注意,SET names语句并不会改变客户端的默认字符集
@@ -49,7 +54,11 @@ NOTE:password()加密函数已经在8.0.11中移除了,可以使用MD5()函数�
 GRANT INSERT,DELETE,UPDATE,SELECT ON *.* TO 'username'@'%' IDENTIFIED BY 'password';
 
 # 删除用户
-DROP USER 'username'@'%'
+SELECT User, Host FROM mysql.user;
+
+DROP USER [IF EXISTS] USER_ACCOUNT [, USER_ACCOUNT] ...
+DROP USER 'username'@'%';
+DELETE FROM mysql.user WHERE user='用户名' AND host='%';
 
 # 修改密码(使用mysqladmin和GRANT命令设置密码均会加密密码不需要使用PASSWORD()函数)
 mysqladmin -u username -h host -p password "newpwd";
@@ -73,6 +82,12 @@ SHOW GRANTS FOR 'username'@'host'
 ####################### 用户管理 #######################
 
 ####################### 基本操作 #######################
+# 连接字符串
+jdbc:mysql://localhost:3306/test_db?characterEncoding=utf8mb4&amp;useSSL=false&amp;useServerPrepStmts=true&amp;cachePrepStmts=true&amp;serverTimezone=Asia/Shanghai
+
+# 计算数据表数据量大小
+SELECT CONCAT(ROUND(SUM(DATA_LENGTH/1024/1024),2),'M') FROM TABLES WHERE table_schema='szw' AND table_name='temp_table';
+
 # 查看警告信息
 SHOW WARNINGS;
 
@@ -202,9 +217,44 @@ _ci   Case-insensitive 大小写不敏感
 _cs   Case-sensitive 大小写敏感
 _bin Binary 二进制排序
 对于是ci后缀的collation(大小写不敏感)也意味着Accent-insensitive(口音不敏感)。同理对于是cs后缀的collation(大小写敏感)也意味着Accent-sensitive(口音敏感)
+
+# 将数据库、表、列的字符编码、collation改为utf8md4、utf8mb4_unicode_ci
+# For each database:
+ALTER DATABASE database_name CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+# For each table:
+ALTER TABLE table_name CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+# For each column:
+ALTER TABLE table_name CHANGE column_name column_name VARCHAR(LENGTH) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+# 修复和优化所有的表以免出现一些莫名其妙的错误
+REPAIR TABLE table_name;
+OPTIMIZE TABLE table_name;
 ####################### 基本操作 #######################
 
 ####################### 数据库基本操作 #######################
+# SQL模式
+SQL模式主要分两类:语法支持类和数据检查类
+1.语法支持类
+ONLY_FULL_GROUP_BY:对于GROUP BY聚合操作,如果在SELECT中的列、HAVING或者ORDER BY子句的列没有在GROUP BY中出现,那么这个SQL是不合法的
+ANSI_QUOTES:启用 ANSI_QUOTES后,不能用双引号来引用字符串,因为它被解释为识别符,作用与`一样,设置它以后update t set f1="" …,会报Unknown column ‘’ in field list这样的语法错误
+PIPES_AS_CONCAT:将||视为字符串的连接操作符而非或运算符,这和Oracle数据库是一样的,也和字符串的拼接函数CONCAT()相类似
+NO_TABLE_OPTIONS:使用SHOW CREATE TABLE时不会输出MySQL特有的语法部分,如ENGINE,这个在使用mysqldump跨DB种类迁移的时候需要考虑
+NO_AUTO_CREATE_USER:字面意思不自动创建用户。在给MySQL用户授权时,我们习惯使用GRANT … ON … TO dbuser顺道一起创建用户。设置该选项后就与oracle操作类似,授权之前必须先建立用户
+2.数据检查类
+NO_ZERO_DATE:认为日期0000-00-00非法,与是否设置后面的严格模式有关
+a、如果设置了严格模式,则NO_ZERO_DATE自然满足。但如果是INSERT IGNORE或UPDATE IGNORE,0000-00-00依然允许且只显示warning
+b、如果在非严格模式下,设置了NO_ZERO_DATE,效果与上面一样,0000-00-00允许但显示warning;如果没有设置NO_ZERO_DATE,no warning,当做完全合法的值
+c、NO_ZERO_IN_DATE情况与上面类似,不同的是控制日期和天,是否可为0,即2010-01-00是否合法
+NO_ENGINE_SUBSTITUTION:使用ALTER TABLE或CREATE TABLE指定ENGINE时,需要的存储引擎被禁用或未编译该如何处理。启用NO_ENGINE_SUBSTITUTION时,那么直接抛出错误;不设置此值时,CREATE用默认的存储引擎替代,ATLER不进行更改,并抛出一个warning
+STRICT_TRANS_TABLES:启用严格模式。注意STRICT_TRANS_TABLES不是几种策略的组合,单独指INSERT、UPDATE出现少值或无效值该如何处理
+a、前面提到的把‘’传给int,严格模式下非法,若启用非严格模式则变成0,产生一个warning
+b、Out Of Range,变成插入最大边界值
+c、当要插入的新行中,不包含其定义中没有显式DEFAULT子句的非NULL列的值时,该列缺少值
+
+-- 查看 MySQL 版本
+SELECT VERSION();
+-- 查看 sql_mode
+SELECT @@sql_mode;
+
 # 创建数据库
 CREATE DATABASE test_db CHARACTER SET utf8mb4;
 
@@ -319,6 +369,9 @@ ALTER TABLE 表名 DROP FOREIGN KEY fk_引用id;
 # 查看指定表中的创建的索引
 SHOW INDEX FROM book;
 
+# 重建主键索引
+ALTER TABLE T ENGINE=InnoDB;
+
 # 查看索引使用情况
 1. SHOW STATUS LIKE 'Handler_read%';
 handler_read_key:这个值越高越好，越高表示使用索引查询到的次数
@@ -333,10 +386,21 @@ Handler_read_rnd_next：在数据文件中读下一行的请求数。如果你�
 2. SELECT * FROM sys.schema_unused_indexes;
 
 # 开启优化器跟踪
-SET SESSION optimizer_trace='enabled=on';
-SELECT * FROM user WHERE phone = '15627231000' ORDER BY id LIMIT 1;
--- 查看优化器追踪
-SELECT * FROM information_schema.optimizer_trace;
+1.查看优化器跟踪是否状态
+SHOW VARIABLES LIKE '%optimizer_trace%';
+2.开启tracing (默认是关闭的):
+SET SESSION optimizer_trace="enabled=on";
+3.执行查询语句
+SELECT ...; 
+4.查询trace json文件
+SELECT * FROM INFORMATION_SCHEMA.OPTIMIZER_TRACE;
+5.完成后关闭trace
+SET SESSION optimizer_trace="enabled=off";
+
+
+# 驱动表和被驱动表
+1.当连接查询没有where条件时，左连接查询时前面的表是驱动表，后面的表是被驱动表右连接查询时相反;内连接查询时,哪张表的数据较少哪张表就是驱动表
+2.当连接查询有where条件时,带where条件的表是驱动表,否则是被驱动表
 ####################### 数据表基本操作 #######################
 
 ####################### 函数 #######################
@@ -509,14 +573,55 @@ SELECT FROM_UNIXTIME(1578707612);
 8.-d                               只备份表结构
 9.-t                                只备份数据
 10.--signle-transaction 适合innodb事务数据库备份
+
 mysqldump -h host -uroot -ppassword --master-data=2 --default-character-set=utf8 --single-transaction -B dbname | gzip > /opt/back/mysqlbak_$(date +%F).sql.gz
 mysqldump -h host -uroot -ppassword --master-data=2 --default-character-set=utf8 --single-transaction -B dbname test_db | gzip > /opt/mysql.bak.sql.gz 备份多个库
+-- 全量压缩备份
+mysqldump -h host -uroot -p111111 --default-character-set=utf8 --single-transaction -F -B dbname -e | gzip > /backup/mysql_backup_`date +%F`.sql.gz
+
 官方自带的逻辑备份工具是mysqldump。当mysqldump使用参--single-transaction的时候，导数据之前就会启动一个事务，来确保拿到一致性视图。而由于MVCC的支持，这个过程中数据是可以正常更新的。
 前提就是引擎要支持这个隔离级别。比如，对于MyISAM这种不支持事务的引擎，如果备份过程中有更新，总是只能取到最新的数据，那么就破坏了备份的一致性。这时候FTWRL命令了就派上用场了。
 为什么我们不用set global readonly=true 的命令让全库处于只读的状态呢？
-注意，这是生产上严厉禁止的，主要有如下两个原因：
-1.在某些系统中，readonly的值会被用来做其他逻辑，比如用来判断一个库是主库还是备库。毫无疑问修改global变量的方式影响面更大。
+注意:这是生产上严厉禁止的,主要有如下两个原因：
+1.在某些系统中，readonly的值会被用来做其他逻辑,比如用来判断一个库是主库还是备库。毫无疑问修改global变量的方式影响面更大。
 2.在异常处理机制上存在差异。如果执行FTWRL命令之后由于客户端发生异常断开，那么MySQL会自动释放这个全局锁，整个库回到可以正常更新的状态。而将整个库设置为readonly之后，如果客户端发生异常，则数据库就会一直保持readonly状态，这样会导致整个库长时间处于不可写状态，很容易造成生产事故。
+
+# 使用mysqldump命令全量备份
+mysqldump -h127.0.0.1 -uroot -pServer2008 -P3306 --master-data=2 --single-transaction --events --routines --databases testdb > /mysql/backup/testdb.sql
+注意:必须要添加--master-data=2,这样才会备份集里面mysqldump备份的终点位置
+
+#使用mysqldump命令全量恢复
+mysql -uroot -pServer2008 testdb < /mysql/backup/testdb.sql
+
+# 使用MySQL的binlog增量恢复
+mysqlbinlog增量恢复方式
+    基于时间点恢复
+        (1)指定开始时间到结束时间mysqlbinlog mysqlbin.000005 --start-datetime='2020-02-25 01:10:46' --stop datetime='2020-02-25 03:10:46' -r time.sql
+        (2)指定开始时间到文件结束mysqlbinlog mysqlbin.000005 --start-datetime='2020-02-25 01:10:46' -d esen -r time.sql
+        (3)从文件开头到指定结束时间mysqlbinlog mysqlbin.000005 --stop-datetime='2020-02-25 03:10:46' -d esen -r time.sql
+    基于位置点的增量恢复
+        (1)指定开始位置到结束位置mysqlbinlog mysqlbin.000005 --start-position=510 --stop-position=1312 -r pos.sql
+        (2)指定开始位置到文件结束mysqlbinlog mysqlbin.000005 --start-position=510 -r pos.sql
+        (3)从文件开始位置到指定结束位置mysqlbinlog mysqlbin.000005 --stop-position=1312 -r pos.sql
+
+使用mysqlbinlog进行增量日志恢复最重要的就是确定待恢复的起始位置(start-position)和终止位置(stop-position),起始位置(start-position)是我们执行全被之后的位置,而终止位置则是故障发生之前的位置
+1.确认start-position
+cat testdb.sql |grep "CHANGE MASTER"
+-- CHANGE MASTER TO MASTER_LOG_FILE='master-bin.000044', MASTER_LOG_POS=8526828
+备份到了44号日志的8526828位置,那么恢复的起点可以设置为:44号日志的8526828
+2.确认stop-position
+接下来确认要恢复的终点位置,即执行"DROP DATABASE testdb"之前的位置,需要到binlog里面确认
+mysqlbinlog -v master-bin.000054 | grep -i "drop database testdb"
+3.保存到文本便于搜索
+mysqlbinlog -v master-bin.000054 > master-bin.txt
+4.确认drop database之前的位置为:54号文件的9019487
+5.确定了开始结束点执行增量恢复
+开始:44号日志的8526828
+结束:54号文件的9019487
+这里分为3条命令执行,起始日志文件涉及到参数start-position参数,单独执行;中止文件涉及到stop-position参数,单独执行;中间的日志文件不涉及到特殊参数,全部一起执行
+起始日志文件:mysqlbinlog --start-position=8526828 /mysql/binlog/master-bin.000044 | mysql -uroot -pServer2008
+中间日志文件:mysqlbinlog /mysql/binlog/master-bin.000045 /mysql/binlog/master-bin.000046 /mysql/binlog/master-bin.000047 /mysql/binlog/master-bin.000048 /mysql/binlog/master-bin.000049 /mysql/binlog/master-bin.000050 /mysql/binlog/master-bin.000051 /mysql/binlog/master-bin.000052 /mysql/binlog/master-bin.000053 | mysql -uroot -pServer2008
+终止日志文件:mysqlbinlog --stop-position=9019487 /mysql/binlog/master-bin.000054 | mysql -uroot -pServer2008
 
 # 分库备份sh脚本
 #!/bin/bash
@@ -684,13 +789,30 @@ MySQL 版本：5.x - 5.7.24， 8.0 - 8.0.13. 我是 5.7.27 也未发现问题。
 FLUSH TABLES WITH READ LOCK;
 FLUSH TABLES t WITH READ LOCK;
 
+解锁的方式也是UNLOCK TABLES;
+
 # 导数据之前启动一个事务,来确保拿到一致性快照
 设置事务为RR模式,然后利用事务的特性,来获得一致性的数据,但是:在mysqldump运行期间,不能执行alter table,drop table,rename table,truncate table等等的DDL语句,因为一致性读和这些语句时无法隔离的
 mysqldump --single-transaction
 
 # 表锁
-LOCK TABLES 表名 READ/WRITE;
-UNLOCK TABLES
+使用表锁需要注意几点:
+1）使用LOCK TABLES虽然可以给InnoDB加表级锁，表级锁不是InnoDB存储引擎层管理的，而是由其上一层MySQL Server负责的
+2）在用LOCK TABLES对InnoDB表加锁时需要注意，要将AUTOCOMMIT设置为0，否则MySQL不会给表加锁；事务结束前，不要用UNLOCK TABLES释放表锁，因为UNLOCK_TABLES隐含提交事务；COMMIT或ROLLBACK并不能释放用LOCK TABLES加表级锁
+SET AUTOCOMMIT=0;
+LOCK TABLES table1 WRITE, table2 READ,...；
+[do something....]
+COMMIT;
+UNLOCK TABLES;
+
+Lock Tables....READ不会阻塞其他线程对表数据的读取,会阻塞其他线程对数据变更
+Lock Tables....WRITE会阻塞其他线程对数据读和写
+Lock Tables....READ不允许对表进行更新操作(新增、删除也不行),并且不允许访问未被锁住的表
+Lock Tables....WRITE允许对被锁住的表进行增删改查,但不允许对其他表进行访问
+
+# 查询MySQL是否存在lock tables锁状态
+show status like "%lock%";
+show OPEN TABLES where In_use > 0;
 
 # 排他锁
 SELECT col FROM table WHERE ID=1 FOR UPDATE;
@@ -741,10 +863,6 @@ port=3306
 
 # 创建用户
 CREATE USER [用户名] IDENTIFIED BY '[密码]';
-
-# 删除用户
-DROP USER 用户名;
-DELETE FROM mysql.user WHERE user='用户名' AND host='%';
 
 # 修改密码
 SET PASSWORD FROM '用户名' @host=password('新密码');
@@ -861,14 +979,24 @@ interactive_timeout=31536000
 <!-- 最大空闲时间,60秒内未使用则连接被丢弃。若为0则永不丢弃。Default: 0 --> 
 <property name="maxIdleTime" value="0"></property> 
 
+# sync_binlog
+设置为1,表示每次事务的binlog都直接持久化到磁盘(注意是这里指的是binlog日志本身落盘),保证mysql重启后binlog记录是完整的
+NOTE:sync_binlog和innodb_flush_log_at_trx_commit这两个参数决定了是否等待直到将redo log和bin log持久化之后再返回
+sync_binlog=0,表示每次提交事务都只write,不fsync
+sync_binlog=1,表示每次提交事务都会执行fsync
+sync_binlog=N(N>1)的时候,表示每次提交事务都write,但累积N个事务后才fsync。但如果宕机了可能会丢失最后的N条语句
+
 # innodb_flush_log_at_trx_commit
-0：log buffer将每秒一次地写入log file中，并且log file的flush(刷到磁盘)操作同时进行。该模式下在事务提交的时候，不会主动触发写入磁盘的操作
-1：每次事务提交时MySQL都会把log buffer的数据写入log file，并且flush(刷到磁盘)中去，该模式为系统默认
-2：每次事务提交时MySQL都会把log buffer的数据写入log file，但是flush(刷到磁盘)操作并不会同时进行。该模式下，MySQL会每秒执行一次 flush(刷到磁盘)操作
+设置为1,表示每次事务的redolog都直接持久化到磁盘(注意是这里指的是redolog日志本身落盘),保证mysql重启后数据不丢失
+0:log buffer将每秒一次地写入log file中,并且log file的flush(刷到磁盘)操作同时进行。该模式下在事务提交的时候,不会主动触发写入磁盘的操作
+  表示事务提交时不进行写入redo log操作,这个操作仅在master thread中完成,而在master thread中每1秒进行一次重做日志的fsync操作,因此实例crash最多丢失1秒钟内的事务(master thread是负责将缓冲池中的数据异步刷新到磁盘保证数据的一致性)
+1:每次事务提交时MySQL都会调用一次fsync操作把log buffer的数据写入log file,并且flush(刷到磁盘)中去,该模式为系统默认
+2:每次事务提交时MySQL都会把log buffer的数据写入log file,但是flush(刷到磁盘)操作并不会同时进行。该模式下MySQL会每秒执行一次flush(刷到磁盘)操作
+  当设置参数为2时,则在事务提交时只做write操作,只保证将redo log buffer写到系统的页面缓存中,不进行fsync操作,因此如果MySQL数据库宕机时,不会丢失事务,但操作系统宕机则可能丢失事务
 NOTE:
-当设置为0，该模式速度最快，但不太安全，mysqld进程的崩溃会导致上一秒钟所有事务数据的丢失
-当设置为1，该模式是最安全的，但也是最慢的一种方式。在mysqld 服务崩溃或者服务器主机crash的情况下，binary log 只有可能丢失最多一个语句或者一个事务
-当设置为2，该模式速度较快，也比0安全，只有在操作系统崩溃或者系统断电的情况下，上一秒钟所有事务数据才可能丢失
+当设置为0:该模式速度最快，但不太安全，mysqld进程的崩溃会导致上一秒钟所有事务数据的丢失
+当设置为1:该模式是最安全的，但也是最慢的一种方式。在mysqld 服务崩溃或者服务器主机crash的情况下，binary log 只有可能丢失最多一个语句或者一个事务
+当设置为2:该模式速度较快，也比0安全，只有在操作系统崩溃或者系统断电的情况下，上一秒钟所有事务数据才可能丢失
 查找资料时候看到其他文章说innodb_flush_log_at_trx_commit和sync_binlog 两个参数是控制MySQL 磁盘写入策略以及数据安全性的关键参数，当两个参数都设置为1的时候写入性能最差，推荐做法是innodb_flush_log_at_trx_commit=2，sync_binlog=500 或1000
 
 # innodb_buffer_pool_size
@@ -885,7 +1013,37 @@ long_query_time=1
 log-slow-queries=/var/log/mysql/log-slow-queries.log
 ####################### mysql.ini #######################
 
+####################### MySQL优化 #######################
+# GROUP BY优化
+1.如果对GROUP BY语句的结果没有排序要求,要在语句后面加ORDER BY NULL
+2.尽量让GROUP BY过程用上表的索引,不但不需要临时表还不需要额外的排序
+3.如果GROUP BY需要统计的数据量不大,尽量只使用内存临时表;也可以通过适当调大tmp_table_size参数,来避免用到磁盘临时表
+4.如果数据量实在太大,使用SQL_BIG_RESULT这个提示,来告诉优化器直接使用排序算法得到GROUP BY的结果
+
+# IN优化
+IN关键字适合主表大子表小
+EXIST关键字适合主表小子表大
+
+####################### MySQL优化 #######################
+
 ####################### GEO #######################
+/* Function structure for function `func_calc_distance` */
+DROP FUNCTION IF EXISTS `func_calc_distance`;
+DELIMITER $$
+CREATE DEFINER=`wxmsg`@`%` FUNCTION `func_calc_distance`(
+	targetLongitude DECIMAL(10,6),	-- 目的地经度
+	targetLatitude DECIMAL(10,6),	-- 目的地纬度
+	currentLongitude DECIMAL(10,6), -- 当前地点经度
+	currentLatitude DECIMAL(10,6)) RETURNS DOUBLE -- 单位:米
+BEGIN
+	DECLARE result DOUBLE DEFAULT 0;
+	SET result = ROUND(6378.138*2*ASIN(SQRT(POW(SIN((targetLatitude*PI()/180-currentLatitude*PI()/180)/2),2)+COS(targetLatitude*PI()/180)*COS(currentLatitude*PI()/180)*POW(SIN((targetLongitude*PI()/180-currentLongitude*PI()/180)/2),2)))*1000);
+	RETURN result;      
+END$$
+DELIMITER ;
+使用func_calc_distance的查询语句:
+SELECT INST,NAME,longitude,latitude,distance FROM (SELECT INST,NAME,longitude,latitude,func_calc_distance(latitude,longitude,%s,%s) AS distance FROM t_jr_inst WHERE LEV='3' AND longitude IS NOT NULL AND latitude IS NOT NULL) AS tmp WHERE tmp.distance<=MAX_DISTANCE ORDER BY IF(ISNULL(distance),0,1),distance LIMIT 0,MAX_COUNT
+
 SELECT * FROM users_location WHERE
     latitude > '.$lat.' - 1 AND latitude < '.$lat.' + 1 AND longitude > '.$lon.' - 1 AND longitude < '.$lon.' + 1 
     ORDER BY

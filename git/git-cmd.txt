@@ -67,6 +67,8 @@ git pull origin srcBranch:destBranch
 	git fetch [remote-name]
     自动抓取数据下来，然后将远端分支自动合并到本地仓库中当前分支
     git pull
+与远程仓库同步
+git pull --rebase orgin master
 	
 # 把现有仓库导出为裸仓库 — 即一个不包含当前工作目录的仓库
 git clone --bare my_project my_project.git
@@ -330,7 +332,8 @@ git push origin :serverfix
 git push origin --delete <分支名>
 
 # 切换到新建的 serverfix 本地分支，其内容同远程分支 origin/serverfix 一致
-git checkout -b serverfix origin/serverfix
+通过以下命令，设置本地远程分支origin/serverfix与本地serverfix分支的追踪关系：
+git checkout -b serverfix origin/master
 git checkout --track origin/serverfix  (1.6.2 以上版本的 Git)
 
 # 将一个已存在的本地分支改成一个跟踪分支
@@ -343,6 +346,7 @@ git branch -vv
 git cherry-pick <commit>
 
 # 删除远程分支
+git push origin :develop 删除远程develop分支
 git push origin --delete serverfix
 
 # 列出仍在远程跟踪但是已被删除的无用分支
@@ -477,22 +481,24 @@ git blame [file_name]
 # 轻量标签之所以轻量是因为它只是一个特定commit的引用。而“附注标签”是存储在git数据库中的一个完整对象。
 # 列出标签
 git tag
+git tag --list
+
+# 查找标签(支持正则)
+git tag -l <tag_name>
 git tag -l 'v1.8.5*'
 
 # 创建轻量级标签
-git tag v1.4-lw
-git tag -a 版本号 -m 'tag 信息'
-git tag -a vx.x.x -m 'message' commit-hash
+git tag <tag_name>
+git tag v1.0
 
 # 创建含附注的标签
+git tag -a <tag_name> -m '注释'
 git tag -a v1.4 -m 'my version 1.4'
+git tag -a vx.x.x -m 'message' commit-hash
 git tag -a v1.2 9fceb02
 
-# 查看标签信息以及提交信息
+# 查看标签内容
 git show v1.4
-
-# 轻量标签:创建轻量标签，不需要使用 -a、-s 或 -m 选项，只需要提供标签名字
-git tag v1.4
 
 # 签署标签
 git tag -s v1.5 -m 'my signed 1.5 tag'
@@ -501,22 +507,30 @@ git tag -s v1.5 -m 'my signed 1.5 tag'
 git tag -a v1.2 9fceb02
 
 # 向服务器推送标签
+git push origin <tag_name>
 git push origin v1.2
 
-# 将本地创建的所有 tag推送到远端origin
+# 将本地创建的所有tag推送到远端origin
 git push origin --tags
+
+# 删除远程标签(本地标签没有同时删除)
+git push origin :<tag_name>
+git push origin :v3.0
+
+git push origin --delete <tag_name>
+
+# 删除本地标签
+git tag -d <tag_name>
+git tag -d v3.0
+
+# 切换标签
+git checkout <tag_name>
 
 # 在特定的标签上创建一个新分支
 git checkout -b version2 v2.0
 
 # 验证标签
 git tag -v v1.4.2.1
-
-# 分享标签
-git push origin [tagname]
-
-# 一次推送所有本地新增的标签上去
-git push origin --tags
 
 # 我们检出分支时，在分支的名字后方添加上相应的版本号，即可在该 tag 号所对应的分支上进行checkout
 git checkout -b MyTagBranch v1.1.1
@@ -581,3 +595,28 @@ git commit -m "注释内容"
     git write-tree
     git commit-tree
 ***************** Git底层命令 *****************
+
+***************** Git子库 *****************
+# 引入子库
+git submodule add 子库地址 保存目录
+
+# 同步子库变化
+git submodule foreach git pull
+该命令会遍历当前版本库所依赖的所有子版本库，并将它们的更新拉取到父版本库git_parent
+
+***************** Git子库 *****************
+
+***************** Git问题处理 *****************
+# git clone速度太慢的解决办法
+nslookup github.global.ssl.fastly.Net
+nslookup github.com
+1.修改hosts文件
+Windows:C:\Windows\System32\drivers\etc\hosts
+Linux:/etc/hosts
+在hosts文件末尾添加两行:
+github.com 13.229.188.59
+github.global.ssl.fastly.Net 151.101.229.194
+2.刷新DNS缓存
+Windows:ipconfig /flushdns
+Linux:sudo /etc/init.d/networking restart
+***************** Git问题处理 *****************

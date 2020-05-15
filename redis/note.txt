@@ -66,6 +66,13 @@ bgsave   Redis会在后台异步进行快照操作
 lastsave 获取最一次save的时间
 rename name nickname 改变key的名字
 
+SET key value [EX seconds] [PX milliseconds] [NX|XX]
+新版的set命令增加了EX、PX、NX|XX参数选项,他们的含义如下:
+EX seconds         设置键key的过期时间,单位时秒
+PX milliseconds  设置键key的过期时间,单位时毫秒
+NX                       只有键key不存在的时候才会设置key的值
+XX                        只有键key存在的时候才会设置key的值
+
 # 查看Redis内部正在做什么
 INFO commandstats
 执行CONFIG RESETSTAT命令就可以重置,这样你就可以得到一个全新的统计结果
@@ -92,3 +99,32 @@ INFO commandstats
 
 # Try/Except
 数据很重要请使用Try/Except
+
+########## RDB持久化 ##########
+自动触发
+除了执行以上命令手动触发以外,Redis内部可以自动触发RDB持久化。自动触发的RDB持久化都是采用bgsave的方式,减少Redis进程的阻塞。那么在什么场景下会自动触发呢？
+1. 在配置文件中设置了save的相关配置,如sava m n,它表示在m秒内数据被修改过n次时,自动触发bgsave操作
+2. 当从节点做全量复制时,主节点会自动执行bgsave操作，并且把生成的RDB文件发送给从节点
+3. 执行debug reload命令时,也会自动触发bgsave操作
+4. 执行shutdown命令时,如果没有开启AOF持久化也会自动触发bgsave操作
+########## RDB持久化 ##########
+
+########## AOF持久化配置 ##########
+# appendonly改为yes开启AOF
+appendonly yes
+# AOF文件的名字
+appendfilename "appendonly.aof"
+# AOF文件的写入方式
+# everysec每个一秒将缓存区内容写入文件,默认开启的写入方式
+appendfsync everysec
+# 运行AOF重写时AOF文件大小的增长率的最小值
+auto-aof-rewrite-percentage 100
+# 运行AOF重写时文件大小的最小值
+auto-aof-rewrite-min-size 64mb
+
+
+# 触发文件重写
+AOF持久化流程中的文件重写可以手动触发，也可以自动触发
+手动触发: 使用bgrewriteaof命令
+自动触发: 根据auto-aof-rewrite-min-size和auto-aof-rewrite-percentage配置确定自动触发的时机。auto-aof-rewrite-min-size表示运行AOF重写时文件大小的最小值，默认为64MB；auto-aof-rewrite-percentage表示当前AOF文件大小和上一次重写后AOF文件大小的比值的最小值，默认为100。只用前两者同时超过时才会自动触发文件重写
+########## AOF持久化配置 ##########

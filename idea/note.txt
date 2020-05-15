@@ -80,20 +80,33 @@
        File -> Settings -> Editor -> General -> Editor Tabs -> 取消勾选Show tabs in one row
        Tab limit: 设置最多展示多少个Tab
 
-    r. 自动生成serialVersionUID
+    q. 自动生成serialVersionUID
        File->Settings->Editor->Inspections->选中Serializable class without 'serialVersionUID'
 
-    s. 请求进入到断点后自动激活Debug窗口
+    r. 请求进入到断点后自动激活Debug窗口
        File -> settings -> Build,Execution,Deployment -> Debugger -> 勾选Show debug window on breakpoint
 
-    t. 配置Tomcat
+    s. 配置Tomcat
        File -> settings -> Build,Execution,Deployment -> Application Servers ->点击+ -> Tomcat Server
 
-    o. 用*标识编辑过的文件
+    t. 用*标识编辑过的文件
       Editor -> General -> Editor Tabs -> 选中Mark modifyied tabs with asterisk
 
-    p. 取消注释被格式化
+    u. 取消注释被格式化
       Editor -> Code Style -> Java -> JavaDoc选项卡 -> 取消勾选的Enable JavaDoc formatting
+
+    v. 设置缓冲区的输出日志大小
+    Editor -> General -> Console -> 勾选Override console cycle buffer size(1024 KB)并修改
+    禁用缓存区大小限制:修改bin目录下的启动配置文件idea.properties -> idea.cycle.buffer.size=disabled
+
+    w. Tab键改为4个空格
+    Editor -> Code Style -> Java -> 选中Tabs and Indents选项卡 -> 取消勾选Use tab character
+
+    x. 设置当行代码120个宽度
+    Editor -> Code Style -> Hard wrap at 120 columns 选中Wrap on typing
+
+    y. 换行符使用Unix格式
+    Editor -> Code Style -> Line separator: Unix and OS X(\n)
 
 5. 快捷键
    alt + enter         万能纠错
@@ -214,6 +227,14 @@ d.在Activate JRebel窗口:
     点击"Activate JRebel"按钮,进行激活
 e.激活成功后:File->Settings->JRebel->点击"Work offline"按钮
 f.关闭ReverseProxy_windows_amd64.exe,激活完成
+此时虽然安装好了JRebel并成功激活了，但是我们使用JRebel debug的时候，发现修改代码后，热部署不起作用。因为还需要设置两个地方
+1).设置项目自动编译
+File -> Settings -> Build,Execution,Deployment -> Compiler -> 勾选Build project automatically
+2).设置 compiler.automake.allow.when.app.running
+CTRL+ SHIFT + A或者help -> find action…打开:搜索registry
+找到 compiler.automake.allow.when.app.running并勾选
+g.项目中使用:
+View -> Tool Windows -> JRebel -> 勾选第一个复选框
 
 14.创建JavaEE项目
 File -> New -> Project -> Java Enterprise -> Additional Libraries and Frameworks: 选中Web Application

@@ -3,7 +3,15 @@ ActiveMQ 官网:http://activemq.apache.org
 ActiveMQ5.10.x 以上版本必须使用 JDK1.8 才能正常使用
 ActiveMQ5.9.x 及以下版本使用 JDK1.7 即可正常使用
 
+# 协议支持
+OpenWire、REST、STOMP、WS-Notification、MQTT、XMPP以及AMQP
+
 # 安装ActiveMQ
+1. 先卸载系统自带的JDK
+rpm -qa | grep java
+rpm -e --nodeps 包名
+2. 安装JDK(ActiveMQ是使用Java开发的)
+3. 安装ActiveMQ
 tar -zxvf apache-activemq-5.15.10-bin.tar.gz
 ls -al apache-activemq-5.15.10/bin	# 检查权限
 chmod 755 apache-activemq-5.15.10	# 修改权限
@@ -13,6 +21,17 @@ chmod 755 apache-activemq-5.15.10	# 修改权限
 ps aux | grep activemq					# 检查进程
 /usr/local/apache-activemq-5.15.10/bin/activemq restart	# 重启
 /usr/local/apache-activemq-5.15.10/bin/activemq stop	# 关闭
+
+# JMS消息模型
+1. 点对点模型(基于队列)
+2. 发布者/订阅者模型(基于主题的)
+
+# 消息正文格式
+StreamMessage: Java原始值得数据流
+MapMessage: 一套名称-值对
+TextMessage: 一个字符串对象
+ObjectMessage: 一个序列化的Java对象
+BytesMessage: 一个字节的数据流
 
 # 管理界面
 http://192.168.100.10:8161/admin/
