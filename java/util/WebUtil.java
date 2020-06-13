@@ -16,7 +16,6 @@ public final class WebUtil {
     }
 
     public static <T> T copyParamToBean(Map<String, String> map, T bean) {
-
         try {
             BeanUtils.populate(bean, map);
         } catch (Exception e) {
@@ -25,21 +24,4 @@ public final class WebUtil {
 
         return bean;
     }
-
-    public static String getIpAddr(MockHttpServletRequest request) {
-        String ip = request.getHeader("x-forwarded-for");
-
-        if (ip == null || ip.trim().length() == 0 || "unknown".equalsIgnoreCase(ip)) {
-            ip = request.getHeader("Proxy-Client-IP");
-        }
-
-        if (ip == null || ip.trim().length() == 0 || "unknown".equalsIgnoreCase(ip)) {
-            ip = request.getHeader("WL-Proxy-Client-IP");
-        }
-
-        if (ip == null || ip.trim().length() == 0 || "unknown".equalsIgnoreCase(ip)) {
-            ip = request.getRemoteAddr();
-        }
-
-        return ip;
-    }
+}

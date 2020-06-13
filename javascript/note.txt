@@ -1,3 +1,6 @@
+# 在线工具ES6 TO ES5
+https://babeljs.io/repl/#?browsers=&build=&builtIns=false&spec=false&loose=false&code_lz=Q&debug=false&forceAllTransforms=false&shippedProposals=false&circleciRepo=&evaluate=true&fileSize=false&timeTravel=false&sourceType=module&lineWrap=false&presets=es2015%2Creact%2Cstage-2&prettier=false&targets=&version=7.9.6&externalPlugins=
+
 # window.onerror
 1.无法捕获语法错误
 2.只有在返回true的时候,异常才不会向上抛出（浏览器接收后报红）,否则即使是知道异常的发生控制台还是会显示Uncaught Error:xxxxx

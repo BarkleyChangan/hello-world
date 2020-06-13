@@ -128,3 +128,26 @@ AOF持久化流程中的文件重写可以手动触发，也可以自动触发
 手动触发: 使用bgrewriteaof命令
 自动触发: 根据auto-aof-rewrite-min-size和auto-aof-rewrite-percentage配置确定自动触发的时机。auto-aof-rewrite-min-size表示运行AOF重写时文件大小的最小值，默认为64MB；auto-aof-rewrite-percentage表示当前AOF文件大小和上一次重写后AOF文件大小的比值的最小值，默认为100。只用前两者同时超过时才会自动触发文件重写
 ########## AOF持久化配置 ##########
+
+########## 性能优化 ##########
+# 通过redis进程查看
+info server
+
+# 查看redis进程swap情况
+cat /proc/1686/smaps
+
+# 网络延迟测试
+redis-cli -h {host} -p {port} --latency
+
+# 网络采样延迟测试(默认15s一次)
+redis-cli -h {host} -p {port} --latency-history
+
+# 图形线上测试结果
+redis-cli -h {host} -p {port} --latency-dist
+
+# redis服务运行状况
+redis-cli -h {host} -p {port} --stat
+
+# 查看命令最近一次fork耗时
+info stats
+########## 性能优化 ##########

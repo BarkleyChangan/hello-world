@@ -1,0 +1,245 @@
+[Client]
+character_set_client=utf8mb4
+socket=/usr/local/mysql/mysql.sock
+
+[mysqld]
+# GENERAL
+server-id=21
+port=3306
+user=mysql
+character_set_server=utf8mb4
+default_storage_engine=InnoDB
+transaction-isolation=REPEATABLE
+
+basedir=/usr/local/mysql
+datadir=/usr/local/mysql/data
+pid_file=/usr/local/mysql/mysql.pid
+sql_mode=NO_ENGINE_SUBSTITUTION,STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_AUTO_VALUE_ON_ZERO,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,PIPES_AS_CONCAT,ANSI_QUOTES
+
+
+# 限制只允许mysql实例被某一个ip方问
+bind_address=0.0.0.0
+autocommit=1
+
+# 设成了1带来的问题就是你不能在mysql中使用主机名来对客户端权限进行划分,而是需要使用ip
+skip_name_resolve=1
+
+# INNODB
+#innodb_buffer_pool_size=
+#innodb_log_file_size=
+#innodb_file_per_table=1
+#inno_flush_method=0_DIRECT
+#innodb_lock_wait_timeout=30
+#innodb_deadlock_detect=on
+
+# MYISAM
+#key_buffer_size=
+
+# MySQL官方,max_connections值受系统os最大打开连接数限制,因此我们需要做以下2步操作:
+#1. 在/etc/security/limits.conf底部增加2行
+#mysql hard nofile 65535
+#mysql soft nofile 65535
+#2.在/usr/lib/systemd/system/mysqld.service(视如何安装mysql所决定,用编译安装和yum安装会产生path路径不同)文件最后添加:
+LimitNOFILE=65535
+LimitNPROC=65535
+#3.systemctl daemon-reload
+#   systemctl restart mysqld.service
+#如不生效重服务器
+max_connections=20,000
+
+# 生产上设10;开发测试上使用默认-100
+# 如果客户端连接此MySQL服务器失败(如密码错误等等)10次,则MySQL会无条件强制阻止此客户端连接。相关的登录错误信息会记录到performance_schema.host_cache表中。如果希望重置此计数器的值,则必须重启MySQL服务器或者执行:FLUSH HOSTS;
+max_connect_errors=10
+
+# 此参数是5.6所没有的
+# 核心交易系统设置为1,默认为1,其他2或者0
+# 0:log buffer将每秒一次地写入log file中,并且log file的flush(刷到磁盘)操作同时进行。该模式下在事务提交的时候,不会主动触发写入磁盘的操作
+# 1:每次事务提交时MySQL都会把log buffer的数据写入log file,并且flush(刷到磁盘)中去,该模式为系统默认(因此会保留每一份redo日志)
+# 2:每次事务提交时MySQL都会把log buffer的数据写入log file,但是flush(刷到磁盘)操作并不会同时进行。该模式下,MySQL会每秒执行一次flush(刷到磁盘)操作。该模式速度较快,也比0安全,只有在操作系统崩溃或者系统断电的情况下,上一秒钟所有事务数据才可能丢失
+innodb_flush_log_at_trx_commit=2
+
+transaction_isolation=READ-COMMITTED
+
+# mysql5.7默认对于timestamp字段会显示“系统当前日期”,就算你在插表时这个timestamp字段留空,它在select出来时也会显示系统日期。因此这个值的影响范围是你在建表时导致的
+explicit_defaults_for_timestamp=1
+
+join_buffer_size=16M
+
+# show global status like 'created_tmp%';把得到的结果中的(Created_tmp_disk_tables/Created_tmp_tables)*100%如果<=25%为最佳值。注意:在生产时热设定时一定要用类似以下算法:set global tmp_table_size=64*1024*1024而不是set global tmp_table_size=64M
+tmp_table_size=67108864
+
+max_allowed_packet=134217728
+
+# 不需要去设置，使用默认的
+#sql_mode
+
+# 单位为s,系统默认为:28800s即8小时
+interactive_timeout=600
+wait_timeout=600
+
+#应用场景：
+#1:SELECT INTO … OUTFILE ‘fileName‘
+#2: When filesort is used, during merge buffers and when merged results are written to a temporary file, then writes are buffered
+read_buffer_size=4194304
+
+# 对order by关键字起作用,当order by的计划成本超出了sort_buffer_size后,mysql会产用随机读取并消耗额外的内容,很多外面的博客说它是只对myisam引擎起作用,但其实不是,该参数还真的覆盖到所有引擎
+read_rnd_buffer_size=8388608
+
+# 每个会话执行排序操作所分配的内存大小,想要增大max_sort_length参数,需要增大sort_buffer_size参数
+sort_buffer_size=4194304
+
+# 这个值可要小心,一般它在设置后就不能轻易改了决定了,这个innodb_page_size决定了一个基本页的大小
+innodb_page_size=8192
+
+# 对于<4G的mysql用服务器来说按照20%系统内存来设置
+innodb_buffer_pool_size=72G
+
+# 在32位机器下,nnodb_buffer_pool_instances一般为1,在64位机器上,这个值为8-64,pool_instances其实为cpu核数
+innodb_buffer_pool_instances=8
+
+innodb_buffer_pool_load_at_startup=0
+innodb_buffer_pool_dump_at_shutdown=0
+
+innodb_lru_scan_depth=2000
+
+# 动态改变命令如下：
+#SHOW GLOBAL VARIABLES LIKE 'innodb_lock_wait_timeout';
+#SET GLOBAL innodb_lock_wait_timeout=500;
+#SHOW GLOBAL VARIABLES LIKE 'innodb_lock_wait_timeout';
+innodb_lock_wait_timeout=60
+
+# 这个值很重要,它对读无效,对写很有决定意义
+innodb_io_capacity_max=8000
+innodb_io_capacity=4000
+
+innodb_file_per_table=1
+
+innodb_flush_method=O_DIRECT
+
+innodb_file_format=Barracuda
+innodb_file_format_max=Barracuda
+
+innodb_log_group_home_dir=/redolog/
+innodb_undo_directory=/undolog/
+
+# 指定回滚段的个数
+innodb_undo_logs=128
+
+# 定单独存放的undo表空间个数
+innodb_undo_tablespaces=3
+
+innodb_flush_neighbors=0
+
+# 这个值的默认为5M，是远远不够的，在安装完mysql时需要尽快的修改这个值
+# show engine innodb status;
+innodb_log_file_size=140M
+
+innodb_log_buffer_size=16777216
+
+# 这个参数是和innodb_force_recovery关联起来的,只有当数据库崩溃后重启时才会临时去设的
+innodb_force_recovery=6
+innodb_purge_threads=0
+
+# 在mysql5.6中这个开关叫on|off。而在5.7中叫0|1,由于我们前面设置了utf8mb4,因此这边我们必须把这个参数开启
+innodb_large_prefix=1
+
+# 64核cpu那么推荐64(<=cpu核数)
+innodb_thread_concurrency=64
+
+innodb_print_all_deadlocks=1
+
+# 开启InnoDB严格检查模式,尤其采用了页数据压缩功能后,最好是开启该功能。开启此功能后,当创建表CREATE TABLE、更改表ALTER TABLE和创建索引CREATE INDEX语句时,如果写法有错误,不会有警告信息,而是直接抛出错误,这样就可直接将问题扼杀在摇篮里
+innodb_strict_mode=1
+
+log_error=/var/lib/mysql/mysql-error.log
+slow_query_log=1
+slow_query_log_file=/var/lib/mysql/mysql-slow.log
+
+log_queries_not_using_indexes=1
+log_slow_admin_statements=1
+log_slow_slave_statements=1
+
+# 这个值不能太大,不能让binlog无限占用你的磁盘空间
+expire_logs_days=30
+
+log_throttle_queries_not_using_indexes=50
+
+# 即一切>=10s的sql都会被记录
+long_query_time=10
+
+# 这个值配合着慢查询sql记录用,指定为少于该值的行的查询就算慢sql不被记录成”慢sql日志“
+min_examined_row_limit=100
+
+# 主从复制时用推荐TABLE
+# 从机保存主节点信息方式,设成file时会生成master.info和relay-log.info2个文件,设成table信息就会存在mysql.master_slave_info表中
+master_info_repository=TABLE
+
+# 主从复制时用推荐TABLE
+# 这个参数和上面的master_info_repository必须保持一致,要不然mysql实例启不起来
+# 不过需要注意:这几个table默认用的是myIsAM引擎,要开启成TABLE模式的话一定记得把这两个表的引擎改成innodb
+# alter table slave_master_info engine=innodb;
+# alter table slave_relay_log_info engine=innodb;
+# alter table slave_worker_info engine=innodb;
+relay_log_info_repository=TABLE
+
+# 主从复制时用,主从复制下的bin.log日志所在文件夹
+log_bin=bin.log
+sync_binlog=1
+
+# 主从复制时用推荐开启成on,它的用处就是允许你在从库上进行”备份“,从库上在进行备份时它能够获取主库的binlog位点
+# 在开启该参数时,log-bin和log-slave-updates也必须开启,否则MySQL Server拒绝启动
+gtid_mode=on
+enforce_gtid_consistency=1
+
+# 它只要标注在my.cnf里就代表起作用了
+# 主从复制时用,见gtid_mode,这是牵连参数,随着gtid_mode的开启一起开启
+log_slave_updates
+
+# 主从复制时用,mysql5.7有3种bin log模式
+binlog_format=row
+
+# 主从复制用,定义relay_log的位置和名称,如果值为空,则默认位置在数据文件的目录(datadir)文件名为host_name-relay-bin.nnnnnn
+relay_log=
+relay_log_recovery=1
+
+slave_skip_errors=ddl_exist_errors
+
+# 这个值越大，mysql启动时间越长,它是你的innodb_buffer_pool_size的百分比
+innodb_buffer_pool_dump_pct=25
+
+# 这值一般会在主从延迟的情况下会去设，它的值最好是=innodb_buffer_pool_instance的值,它就是cpu的核数
+innodb_page_cleaners=8
+
+# 即开启在线回收(收缩)undo log日志文件,支持动态设置
+innodb_undo_log_truncate=1
+
+innodb_max_undo_log_size=2G
+
+# 控制回收undo log的频率
+innodb_purge_rseg_truncate_frequency=128
+
+# 前提是你的mysql必须>5.7.6,否则要设为关闭
+# 这个参数控制了当mysql启动或重启时,mysql在搜寻GTIDs时是如何迭代使用binlog文件的
+binlog_gtid_simple_recovery=1
+
+# 控制错误日志、慢查询日志等日志中的显示时间
+log_timestamps=system
+
+# 这个值不需要去设,因为你用的不是mysql8.0,在5.7.6版以后这个制不是很成熟,如果要开启一般会使用:XXHASH64
+#transaction_write_set_extraction
+
+# 这个参数是兼容mysql5.6版的INFORMATION_SCHEMA.GLOBAL_STATUS相关功能的,它有利于从5.6到5.7的过渡时非mysql专职dba但是懂mysql的运维用的
+show_compatibility_56=on
+
+# MyISAM
+key_buffer_size= <value>
+
+# OTHER
+max_heap_table_size= 32M
+query_cache_type=0
+query_cache_size=0
+thread_cache=<value>
+table_cache=<value>
+open_files_limit=65535
+# 不区分大小写
+lower_case_table_names=1

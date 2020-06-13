@@ -76,12 +76,12 @@ rpm -e --nodeps 文件名
 # 安装依赖包
 yum install -y cmake make gcc gcc-c++ bison ncurses ncurses-devel
 
-# 上传安装包到/var/local目录下
+# 上传安装包到/usr/local/src目录下
 mysql-5.7.26.tar.gz
 boost_1_59_0.tar.gz
 
 # 解压
-cd /usr/local
+cd /usr/local/src
 
 tar -zxvf mysql-5.7.26.tar.gz
 tar -zxvf boost_1_59_0.tar.gz
@@ -103,7 +103,7 @@ cmake \
 -DCMAKE_INSTALL_PREFIX=/usr/local/mysql \
 -DMYSQL_DATADIR=/usr/local/mysql/data \
 -DMYSQL_UNIX_ADDR=/usr/local/mysql/mysql.sock \
--DWITH_BOOST=/usr/local/mysql-5.7.26/boost/boost_1_59_0 \ #注意此路径是否正确
+-DWITH_BOOST=/usr/local/src/mysql-5.7.26/boost_1_59_0 \ #注意此路径是否正确
 -DSYSTEMD_PID_DIR=/usr/local/mysql \
 -DSYSCONFDIR=/usr/local/mysql/conf \
 -DWITH_INNOBASE_STORAGE_ENGINE=1 \
@@ -118,7 +118,7 @@ cmake \
 -DWITH_EMBEDDED_SERVER=1 \
 -DMYSQL_TCP_PORT=3306 \
 -DDEFAULT_CHARSET=utf8mb4 \
--DDEFAULT_COLLATION=utf8mb4_general_ci \
+-DDEFAULT_COLLATION=utf8mb4_unicode_ci \
 -DENABLE_DTRACE=0 \
 -DENABLED_LOCAL_INFILE=1
 
@@ -137,12 +137,13 @@ make clean
 
 rm -rf mysql-boost-5.7.26.tar.gz
 rm -rf mysql-boost-5.7.26
+rm -rf /usr/local/src/mysql-5.7.26
 
 # 修改配置文件
 vi /usr/local/mysql/conf/my.cnf
 
 [client]
-port = 3306
+port=3306
 default-character-set=utf8mb4
 socket=/usr/local/mysql/mysql.sock
 [mysql]
@@ -174,42 +175,48 @@ source /etc/profile   #使写入生效
 # 修改数据库目录权限
 chown -R mysql:mysql /usr/local/mysql
 cd /usr/local/mysql/
-chmod  755  data/
+chmod 755 /usr/local/mysql/data/
 
 # 空密码初始化数据库
 rm -rf /usr/local/mysql/data/*
 cd /usr/local/mysql/bin
+
 ./mysqld  \
 --initialize \
---user=mysql \                    #指定管理用户
---basedir=/usr/local/mysql \      #指定工作目录
---datadir=/usr/local/mysql/data \ #指定数据文件目录
+--user=mysql \                               #指定管理用户
+--basedir=/usr/local/mysql \       #指定工作目录
+--datadir=/usr/local/mysql/data #指定数据文件目录
 
 记录临时密码: ZXGhA2np:kiG
 
 # 创建mysql服务
+CentOS6:
 cp /usr/local/mysql/support-files/mysql.server /etc/init.d/mysqld
 chmod +x /etc/init.d/mysqld
 chkconfig --add mysqld # 加入系统服务
 chkconfig mysqld on    # 开机启动
 
+CentOS7:
 cp /usr/local/mysql/usr/lib/systemd/system/mysqld.service /usr/lib/systemd/system/
+cd /usr/lib/systemd/system/
 chmod +x mysqld.service
 systemctl enable mysqld.service
 systemctl daemon-reload    #刷新识别mysqld.service服务
 systemctl start mysqld.service
+systemctl stop mysqld.service
 systemctl status mysqld.service
 
 netstat -anpt | grep 3306
 
 # 修改密码
-mysql -root -p(使用之前初始化的时候产生的临时密码)
+mysql -uroot -p(使用之前初始化的时候产生的临时密码)
 修改root用户的密码: ALTER USER 'root'@'localhost' identified by 'Server2008';
-更新root的host:       UPDATE USER SET HOST = '%' WHERE USER = 'root';
+更新root的host:       use mysql;
+                                 UPDATE user SET HOST='%' WHERE User='root';
 赋予'root'@'%'用户所有权限: GRANT ALL PRIVILEGES ON *.* TO 'root'@'%';
 授权新用户:                            GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY 'Server2008' WITH GRANT OPTION;
-改变root'@'%用户的密码校验规则以便可以使用Navicat等工具访问：ALTER USER 'root'@'%' IDENTIFIED WITH mysql_native_password BY 'Server2008';
-刷新权限:                  FLULSH PRIVILEGES;
+改变root'@'%用户的密码校验规则以便可以使用Navicat等工具访问：ALTER user 'root'@'%' IDENTIFIED WITH mysql_native_password BY 'Server2008';
+刷新权限:                  FLUSH PRIVILEGES;
 
 # 新增用户
 CREATE USER test IDENTIFIED BY '111111';
@@ -219,15 +226,17 @@ ALTER USER 'test'@'%' IDENTIFIED WITH mysql_native_password BY '111111';
 
 # 添加mysql端口防火墙
 netstat -tnlp | grep mysql
+CentOS6:
 iptables -I INPUT -p tcp --dport 3306 -j ACCEPT
 service iptables save
 
+CentOS7:
 firewall-cmd --permanent --zone=public --add-port=3306/tcp #启用3306 tcp 协议网络访问
 firewall-cmd --permanent --zone=public --add-port=3306/udp #启用3306 udp 协议网络访问
 firewall-cmd --reload
 
 # 创建数据库
-CREATE DATABASE IF NOT EXISTS my_db DEFAULT CHARSET utf8mb4 COLLATE utf8mb4_general_ci;
+CREATE DATABASE IF NOT EXISTS test_db DEFAULT CHARSET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 # 创建mysql独立数据库用户
 USE my_db;
@@ -237,43 +246,7 @@ GRANT SELECT,INSERT,UPDATE,DELETE ON my_db.* to itshop@'%' IDENTIFIED BY '123456
 *******************************************************************************
 
 # MySQL相关路径说明
-/var/lib/mysql/		MySQL数据库文件的存放路径		/var/lib/mysql/localhost.localdomain.pid
-/usr/share/mysql    配置文件目录					MySQL.server命令以及配置文件
-/usr/bin			相关命令目录					mysqladmin,mysqldump等命令
-/etc/init.d/mysql   MySQL服务相关脚本
-
-# 主从复制
-a. 主机配置,编辑/etc/my.cnf配置文件
-log-bin=自己本地路径/mysqlbin-log
-server-id=17
-
-service mysql restart 
-
-b. 创建用于主从复制的用户
-/usr/local/mysql/bin/mysql -uroot -pServer2008
-# 执行如下语句创建用户分配权限:用户名:slave,密码:Server2008,仅客户端192.168.57.11可登录,*.*表示可操作所有的数据库和表
-GRANT REPLICATION SLAVE ON *.* TO 'slave'@'192.168.57.11' IDENTIFIED BY 'Server2008';
-FLUSH PRIVILEGES;
-SHOW MASTER STATUS;  # 记录Position一列的值,配置从库时有用
-
-c. 从机配置,编辑/etc/my.cnf配置文件
-server-id=18
-
-service mysql restart
-
-d. 同步主数据库
-CHANGE MASTER TO MASTER_HOST='192.168.57.20',
-MASTER_USER='slave',
-MASTER_PASSWORD='Server2008',
-MASTER_LOG_FILE='mysqlbin-log.000001',
-MASTER_LOG_POS=262;
-
-START SLAVE;
-SHOW SLAVE STATUS \G
-...
-...
-Slave_IO_Running: Yes   # 从服务器IO运行中
-Slave_SQL_Running: Yes  # 从服务器SQL运行中
-看到以上两项为yes说明当前已经配置成功
-
-STOP SLAVE;             # 停止从服务器
+/var/lib/mysql/        MySQL数据库文件的存放路径    /var/lib/mysql/localhost.localdomain.pid
+/usr/share/mysql    配置文件目录                               MySQL.server命令以及配置文件
+/usr/bin                   相关命令目录                               mysqladmin,mysqldump等命令
+/etc/init.d/mysql    MySQL服务相关脚本

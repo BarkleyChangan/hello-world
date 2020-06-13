@@ -1,0 +1,37 @@
+# 服务说明项
+[Unit]
+# 描述
+Description=nginx
+# 在哪些服务启动之后启动该服务，多个服务用空格隔开
+After=network.target
+# 在哪些服务启动之前启动该服务
+# Before=xxx
+# 弱依赖，如果xxx服务启动失败或停止运行，不影响该服务
+# Wants=xxx
+# 强依赖，如果xxx服务启动失败或停止运行，该服务也必须退出
+# Requires=xxx
+  
+# 运行参数设置
+[Service]
+# 启动类型
+# simple（默认值）：ExecStart字段启动的进程为主进程
+# forking：ExecStart字段将以fork()方式启动，此时父进程将会退出，子进程将成为主进程
+# oneshot：类似于simple，但只执行一次，Systemd 会等它执行完，才启动其他服务
+# dbus：类似于simple，但会等待 D-Bus 信号后启动
+# notify：类似于simple，启动结束后会发出通知信号，然后 Systemd 再启动其他服务
+# idle：类似于simple，但是要等到其他任务都执行完，才会启动该服务。一种使用场合是为让该服务的输出，不与其他服务的输出相混合
+Type=forking
+# Start命令
+ExecStart=/usr/local/nginx/sbin/nginx
+# Reload命令
+ExecReload=/usr/local/nginx/sbin/nginx -s reload
+# Stop命令
+ExecStop=/usr/local/nginx/sbin/nginx -s quit
+# 是否给服务分配独立的临时空间
+PrivateTmp=true
+  
+# 配置开机启动方式
+[Install]
+# 该服务所在的 Target，Target的含义是服务组，表示一组服务
+# multi-user.target 默认被配置为开机启动
+WantedBy=multi-user.target

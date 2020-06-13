@@ -2,9 +2,14 @@
   官网地址: [MongoDB]("https://www.mongodb.com" "MongoDB官网")
   下载地址: <https://www.mongodb.com/download-center/community>
                     <https://www.mongodb.org/dl/win32>
+  
 * 版本说明
   MongoDB的版本偶数版为稳定版,奇数版为开发版。MongoDB对于32位系统支持不好,所以3.2版本以后没有再对32位系统支持
+  
 * 安装
+  
+  ### Windows安装: ###
+  
   1. 直接双击安装
   2. path中添加: `D:\program\install\64\MongoDB4.2\bin`
   3. 在C盘根目录创建一个**c:\data\db**文件夹
@@ -15,6 +20,87 @@
                   `mongod --dbpath d:\data\db --port 1234`
   5. 客户端连接: `mongo`
   6. 默认端口: 27017
+  
+  ### Linux安装:
+  
+  1. 解压: `tar -zxvf mongodb-linux-x86_64-rhel70-4.2.7.tgz`
+  
+  2. 配置系统文件: 
+  
+     ```bash
+     vi /etc/profile
+     
+     export MONGODB_HOME=/usr/local/mongodb-4.2.7 
+     export PATH=$PATH:$MONGODB_HOME/bin
+     
+     source /etc/profile
+     ```
+  
+  3. 创建数据库和日志文件夹
+  
+     ```bash
+     cd /usr/local/mongodb-4.2.7
+     mkdir -p data log
+     chmod -R 777 data log
+     ```
+  
+  4. 启动配置
+  
+     `cd /usr/local/mongodb-4.2.7/bin`
+  
+     `vi mongodb.conf`
+  
+     ```text
+     # 数据文件存放目录
+     dbpath=/usr/local/mongodb-4.2.7/data
+     # 日志文件存放目录
+     logpath=/usr/local/mongodb-4.2.7/log/mongodb.log  
+     # 端口
+     port=27017
+     # 后台运行 
+     fork=true
+     # 验证用户名密码
+     auth=true 
+     logappend=true
+     # 默认是127.0.0.1,设置成0.0.0.0是表示所有IP地址都可以访问
+     bind_ip=0.0.0.0
+     ```
+  
+  5. 端口加入防火墙
+  
+     ```bash
+     firewall-cmd --zone=public --add-service=http --permanent
+     firewall-cmd --zone=public --add-port=27017/tcp --permanent
+     firewall-cmd --reload
+     
+     firewall-cmd --list-all
+     ```
+  
+  6. 服务端命令
+  
+     ```bash
+     cd /usr/local/mongodb-4.2.7/bin
+     # 启动
+     ./mongod -f ./mongodb.conf
+     ```
+  
+  7. 客户端命令
+  
+     ```bash
+     cd /usr/local/mongodb-4.2.7/bin
+     
+     # 连接
+     ./mongo
+     ```
+  
+  8. 创建管理员
+  
+     ```mongodb
+     use admin
+     
+     db.createUser({user:"root",pwd:"Server2008",roles:[{role:"userAdminAnyDatabase",db:"admin"}]})
+     ```
+  
 * 将MongoDB设为系统服务
   1. 创建相应目录: `mkdir c:\data\db` `mkdir c:\data\log`
   2. 创建配置文件: `D:\program\install\64\MongoDB4.2\mongod.cfg`
@@ -31,6 +117,7 @@
      sc create MongoDB binPath="\"D:\program\install\64\MongoDB4.2\bin\mongod.exe\" --service --config=\"D:\program\install\64\MongoDB4.2\mongod.cfg\"" DisplayName="MongoDB" start="auto"
      sc delete MongoDB
      ```
+  
 * 数据库操作
   在MongoDB中,数据库和集合都不需要手动创建,当我们创建文档时,如果文档所在集合或数据库不存在会自动创建数据库和集合。
   显示所有数据库: `show databases`
@@ -72,6 +159,7 @@
   db.staus.drop()
   db.dropDatabase()
   ```
+  
 * Mongoose
   官方网站: <https://mongoosejs.com>
   通过Node操作MongoDB模块。Mongoose是一个对象文档模型(ODM),它对Node原生的MongoDB模块进行了进一步的优化封装并提供了更多的功能。

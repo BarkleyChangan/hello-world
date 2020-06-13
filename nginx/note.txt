@@ -491,12 +491,15 @@ http {
 }
 
 # 3. 限制服务器并发数
+其中limit_conn perip 10表示限制单个IP同时最多能持有10个连接;limit_conn perserver 100表示server同时能处理并发连接的总数为100个
 http {
+  limit_conn_zone $binary_remote_addr zone=perip:10m;
   limit_conn_zone $server_name zone=perserver:10m;
   server {
     listen 80;
     server_name localhost;
-    limit_conn perserver 20;
+    limit_conn perip 10;
+    limit_conn perserver 100;
   }
 }
 
@@ -519,6 +522,15 @@ server {
     expires 12h;
   }
 }
+
+# 6. 限制单位时间内的请求数即速率限制
+limit_req_zone $binary_remote_addr zone=mylimit:10m rate=2r/s;
+server { 
+    location / { 
+        limit_req zone=mylimit burst=4;
+    }
+}
+以上配置表示限制每个IP访问的速度为2r/s;burst=4表示每个IP最多允许4个突发请求
 
 二十六、与Keepalived整合搭建高可用方案
 # 下载Keepalived

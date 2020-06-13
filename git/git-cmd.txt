@@ -15,11 +15,12 @@ git config --edit --global
 git config --edit
 
 # 初次运行-git前的配置
-git config --global user.name "John Doe"
-git config --global user.email "johndoe@example.com"
+配置用户名:git config --global user.name "Barkley.Chang"
+配置邮箱:git config --global user.email "changan25801@163.com"
+查看全局配置列表:git config --global --list
 配置完以后查看:git config --list
 git config --global color.ui auto
-           --local     # 只对某个仓库有效
+           --local     # 只对指定的仓库有效,如果不指定时(git config)默认是配置local,如果要指定仓库,配置时要先切换到对应仓库的目录
            --global  # 对当前用户所有仓库有效
            --system # 对系统所有登录用户有效
 
@@ -133,6 +134,10 @@ git mv README.md README
 
 # 删除版本库中的文件
 git rm PROJECTS.md
+使用git rm且git commit之后文件会从本地中删除,且会从版本库中删除
+
+如果我们只想删除版本库的文件保留工作区的,同样的执行时需要commit一下
+git rm --cached PROJECTS.md
 
 # 移除文件(如果删除之前修改过并且已经放到暂存区域的话，则必须要用强制删除选项 -f（译注：即 force 的首字母），以防误删除文件后丢失修改的内容。)
 git rm -f PROJECTS.md
@@ -295,12 +300,15 @@ git stash branch testchanges
 # 创建分支
 git branch feature-A
 git checkout -b feature-A
+git switch -b feature-A
 
 # 切换分支
 git checkout master
+git switch master
 
-# 合并分支
-git merge --no-ff feature-A
+# 禁用快进模式合并分支
+git merge --no-ff -m '版本信息' <brandname>
+git merge --no-ff -m 'merge no fast forward' feature-A
 
 # 查看分支
 git branch
@@ -401,8 +409,10 @@ git status --short
 gitk
 git gui
 
-# 查看已暂存和未暂存的更新(请注意，单单 git diff 不过是显示还没有暂存起来的改动，而不是这次工作和上次提交之间的差异。)
-git diff
+# 版本对比
+工作区与版本库比对:git diff
+暂存区与版本库比对:git diff --staged
+版本间比对:git diff 新版本 老版本
 
 # 查看已经暂存起来的文件和上次提交时的快照之间的差异
 git diff --cached
@@ -507,6 +517,7 @@ git tag -s v1.5 -m 'my signed 1.5 tag'
 git tag -a v1.2 9fceb02
 
 # 向服务器推送标签
+NOTE:git push推送时并不会把标签也推送到远程服务器上,只有通过显示命令才能把标签推送出去
 git push origin <tag_name>
 git push origin v1.2
 
@@ -518,6 +529,8 @@ git push origin :<tag_name>
 git push origin :v3.0
 
 git push origin --delete <tag_name>
+如果标签已经推送出去,要删除标签就需要先删除本地,再从远程删除,远程删除命令:
+git push origin :refs/tags/<tagname>
 
 # 删除本地标签
 git tag -d <tag_name>
@@ -549,7 +562,10 @@ git checkout -b MyTagBranch v1.1.1
 	1. 所有空行或者以注释符号 ＃ 开头的行都会被 Git 忽略。
 	2. 可以使用标准的 glob 模式匹配。
 	3. 匹配模式最后跟反斜杠（/）说明要忽略的是目录。
-	4. 要忽略指定模式以外的文件或目录，可以在模式前加上惊叹号（!）取反。
+	4. 要忽略指定模式以外的文件或目录，可以在模式前加上惊叹号（!）取反
+
+# .gitignore文件第几行的匹配规则屏蔽了该文件
+git check-ignore -v <file>
 ***************** 忽略文件 *****************
 
 ***************** 提交说明格式模版 *****************
@@ -573,9 +589,12 @@ git checkout -b MyTagBranch v1.1.1
 git hash-object -w fileName 生成一个hash值,val压缩后的文件内容,键值对存储到.git/objects
 -w: 是否存储数据对象,若不指定则只是返回hash
 
-git cat-file -p 560a3d89bf36ea10794402f6664740c284d4ae3b 根据键值查看数据
-git cat-file -t 560a3d89bf36ea10794402f6664740c284d4ae3b 查看文件类型
-
+git cat-file -t 560a3d89bf36ea10794402f6664740c284d4ae3b 查看每个SHA-1的类型
+git cat-file -p 560a3d89bf36ea10794402f6664740c284d4ae3b 查看每个对象的内容和简单的数据结构
+1000:regular file
+1010:symbolic link
+1110:gitlink
+040:dir
 
 # tree对象
 git update-index --add --cacheinfo 100644 hash test.txt 往暂存区添加一条记录(让git对象对应上文件名)

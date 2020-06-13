@@ -9,7 +9,7 @@ ps -ef | grep mysqld
 net stop mysql
 ./mysqladmin -u root -p shutdown
 
-# 命令
+# 登录命令
 mysql -h hostname -u username -p
       -h 主机名
       -u 用户名
@@ -18,9 +18,20 @@ mysql -h hostname -u username -p
       数据库名
       -e 直接在外面交互式查看数据库里面的东西，而不用登录到数据库里面
 
+# 使用mysql.sock登录
+mysql.sock是mysql的主机和客户机在同一Host(物理服务器)上的时候,使用unix domain socket做为通讯协议的载体,比TCP快
+1.新建user.root.cnf文件
+[client]
+user=root
+password=Server2008
+socket=/usr/local/mysql/mysql.sock
+2.使用如下命令登录:
+mysql --defaults-extra-file=../conf/user.root.cnf
+
 # 查看配置文件位置
 which mysqld
 ->/usr/local/mysql/bin/mysqld
+
 /usr/local/mysql/bin/mysqld --verbose --help | grep -A 1 'Default options'
 ->Default options are read from the following files in the given order:
 ->/etc/mysql/my.cnf /etc/my.cnf ~/.my.cnf 
@@ -29,7 +40,7 @@ which mysqld
 ->2020-05-13 09:24:35 14082 [Note] Shutting down plugin 'CSV'
 
 # 字符集
-SET NAMES 'charset_name'; 不过这里需要大家特别注意,SET names语句并不会改变客户端的默认字符集
+SET NAMES 'charset_name';不过这里需要大家特别注意,SET names语句并不会改变客户端的默认字符集
 该语句和下边三个语句等效：
 SET character_set_client = charset_name;
 SET character_set_results = charset_name;
@@ -82,8 +93,31 @@ SHOW GRANTS FOR 'username'@'host'
 ####################### 用户管理 #######################
 
 ####################### 基本操作 #######################
+MySQL数据目录:
+|- ib_buffer_pool  // 保存缓冲池中页面的表空间ID和页面ID，用于重启恢复缓冲池
+|- ib_logfile0        // redo log磁盘文件1
+|- ib_logfile1        // redo log磁盘文件2,默认情况下重做日志存在磁盘的这两个文件中,循环的方式写入重做日志
+|- ibdata1            // 系统表空间文件
+|- ibtmp1            // 默认临时表空间文件,可通过innodb_temp_data_file_path属性指定文件位置
+|- mysql/
+|- mysql-bin.000001  // bin log文件
+|- mysql-bin.000001  // bin log文件
+|- mysql-bin.index    // bin log文件索引
+|- mysqld.local.err    // 错误日志
+|- mysqld.local.pid   // mysql进程号
+|- performance_schema/  // performance_schema数据库
+|- sys/  // sys数据库
+|- test/  // 数据库文件夹
+    |- db.opt  // test数据库配置文件,包含数据库字符集属性
+    |- t.frm    // 数据表元数据文件,不管是使用独立表空间还是系统表空间,每个表都对应有一个
+    |- t.ibd    // 数据库表独立表空间文件,如果使用的是独立表空间,则一个表对应一个ibd文件,否则保存在系统表空间文件中
+
 # 连接字符串
-jdbc:mysql://localhost:3306/test_db?characterEncoding=utf8mb4&amp;useSSL=false&amp;useServerPrepStmts=true&amp;cachePrepStmts=true&amp;serverTimezone=Asia/Shanghai
+jdbc:mysql://localhost:3306/test_db?characterEncoding=utf8&useSSL=false&useServerPrepStmts=true&cachePrepStmts=true&fserverTimezone=Asia/Shanghai&rewriteBatchedStatements=true&autoReconnect=true
+
+# 修改参数
+SET @@global.read_buffer_size=524288;
+SET @@session.read_buffer_size=524288;
 
 # 计算数据表数据量大小
 SELECT CONCAT(ROUND(SUM(DATA_LENGTH/1024/1024),2),'M') FROM TABLES WHERE table_schema='szw' AND table_name='temp_table';
@@ -121,16 +155,18 @@ LOCK TABLE user READ/WRITE;
 # 关闭表锁
 UNLOCK TABLES;
 
-# 开启事务
-所以事务开始时间点，分为两种情况：
-1）START TRANSACTION时,是第一条语句的执行时间点,就是事务开始的时间点,第一条select语句建立一致性读的snapshot
-2）START TRANSACTION WITH CONSISTENT SNAPSHOT时,则是立即建立本事务的一致性读snapshot,当然也开始事务了
-
-# 查看事务
-select * from information_schema.INNODB_TRX;
-
 # 查看锁
 select * from information_schema.INNODB_LOCKS;
+lock_id:锁ID
+lock_trx_id:事务ID
+lock_mode:锁模式
+lock_type:锁的类型,表锁还是行锁
+lock_table:要加锁的表
+lock_index:锁的索引
+lock_space:InnoDB存储引擎表空间的ID号
+lock_page:被锁住页的数量,若是表锁则该值为NULL
+lock_rec:被锁住行的数量,若是表锁则该值为NULL
+lock_data:被锁住行的主键值,若是表锁则该值为NULL
 
 # 查看锁等待
 select * from information_schema.INNODB_LOCK_WAITS;
@@ -145,6 +181,9 @@ SHOW STATUS LIKE 'innodb_row_lock%';
 
 # 检查InnoDB的状态
 show engine innodb status;
+Log sequence number:当前的LSN
+Log flushed up to:刷新到重做日志文件的LSN
+Last checkpoint at:刷新到磁盘的LSN
 
 # 会在explain的基础上额外提供一些查询优化的信息。紧随其后通过 show warnings 命令可以 得到优化后的查询语句，从而看出优化器优化了什么。
 explain extended select * from film where id = 1;
@@ -199,11 +238,17 @@ SET UNIQUE_CHECKS=1;
 SET FOREIGN_HKEYCHECKS=0;
 SET FOREIGN_KEYCHECKS=1;
 
+SET FOREIGN_KEY_CHECKS=0;
+SET FOREIGN_KEY_CHECKS=1;
+
 # 禁用/启用自动提交
 SET AUTOCOMMIT=0;
 SET AUTOCOMMIT=1;
 
-# 查看datadir路径
+# 定位:配置文件my.cnf路径
+./mysql --help | grep my.cnf
+
+# 定位:datadir路径
 SHOW VARIABLES LIKE '%datadir%';
 
 # 查看二进制日志是否开启
@@ -254,6 +299,7 @@ c、当要插入的新行中,不包含其定义中没有显式DEFAULT子句的�
 SELECT VERSION();
 -- 查看 sql_mode
 SELECT @@sql_mode;
+SET sql_mode='STRICT_TRANS_TABLES';
 
 # 创建数据库
 CREATE DATABASE test_db CHARACTER SET utf8mb4;
@@ -365,15 +411,20 @@ ALTER TABLE users ADD INDEX idx_列名1_列名2_列名3 (`列名1`,`列名2`,`�
 6.添加外键
 ALTER TABLE 表名 ADD CONSTRAINT fk_引用id FOREIGN KEY(引用id) REFERENCES 被引用表名 (被引用id);
 ALTER TABLE 表名 DROP FOREIGN KEY fk_引用id;
+NOTE:InnoDB存储引擎会自动对外键添加索引,删除外键上的索引会抛出异常
 
 # 查看指定表中的创建的索引
 SHOW INDEX FROM book;
+Cardinality值非常关键,优化器根据这个值来判断是否使用索引,这个值并非实时更新,这是一个大概值,如果需要更新Cardinality的值使用ANALYZE TABLE t;
+
+# 修复索引(会记录binlog日志)
+ANALYZE TABLE book;
 
 # 重建主键索引
 ALTER TABLE T ENGINE=InnoDB;
 
 # 查看索引使用情况
-1. SHOW STATUS LIKE 'Handler_read%';
+1. SHOW STATUS LIKE 'tableName%';
 handler_read_key:这个值越高越好，越高表示使用索引查询到的次数
 handler_read_rnd_next:这个值越高，说明查询低效
 
@@ -420,9 +471,6 @@ UTC_TIMESTAMP()
 # UNIX时间戳
 UNIX_TIMESTAMP()
 UNIX_TIMESTAMP(date)
-
-# 将UNIX时间戳转换为普通格式时间
-FROM_UNIXTIME(date)
 
 # 获取星期
 DAYOFWEEK(date)  1:周日;2:周一...7:周六;
@@ -558,7 +606,12 @@ WITH ROLLUP
 
 # 时间戳与时间相互转换
 SELECT UNIX_TIMESTAMP('2020-01-11 09:53:32');
-SELECT FROM_UNIXTIME(1578707612);
+将UNIX时间戳转换为普通格式时间:
+SELECT FROM_UNIXTIME(System.currentTimeMillis()/1000);
+
+# 返回参数中的第一个非空表达式
+SELECT COALESCE(NULL,'N/A') FROM dual;
+SELECT COALESCE(NULL,NULL,3) FROM dual;
 ####################### 函数 #######################
 
 ####################### 备份还原 #######################
@@ -567,23 +620,33 @@ SELECT FROM_UNIXTIME(1578707612);
 2.--compact                  去掉注释，适合调试输出
 3.-A --all-databases      备份所有库
 4.-F                                刷新binlog日志
-5.--master-data             增加binlog日志文件名及对应的位置点
-6.-x --lock-all-tables     全局的读锁,会阻止对所有表的写入操作
+5.--master-data[=value] 增加binlog日志文件名及对应的位置点;当value为1时转储文件中记录CHANGE MASTER TO语句,当value为2时CHANGE MASTER TO语句被注释
+6.-x --lock-all-tables     全局的读锁,会阻止对所有表的写入操作,对所有架构的所有表上锁
 7.-l                                 该锁不会阻止读,也不会阻止新的数据插入
 8.-d                               只备份表结构
 9.-t                                只备份数据
-10.--signle-transaction 适合innodb事务数据库备份
+10.--signle-transaction 适合innodb事务数据库备份,导数据之前就会启动一个事务来确保拿到一致性视图;对于MyISAM这种不支持事务的引擎,如果备份过程中有更新,总是只能取到最新的数据,那么就破坏了备份的一致性,这时我们就需要使用FTWRL命令了
+11.--lock-tables             适合MyISAM存储引擎,依次每个架构中的表上锁,只能保证每个架构下表备份的一致性
+12.--routines(-R)            备份存储过程和函数
+13.--triggers                   备份触发器
+14.--hex-blob                 将BINARY,VARBINARY,BLOG,BIT列类型备份为十六进制的格式
+15.--tab=path                产生TAB分割的数据文件,对于每张表mysqldump创建一个包含CREATE TABLE语句的table_name.sql文件和包含数据的tbl_name.txt
+16.--where='condition' 导出给定条件的数据
 
 mysqldump -h host -uroot -ppassword --master-data=2 --default-character-set=utf8 --single-transaction -B dbname | gzip > /opt/back/mysqlbak_$(date +%F).sql.gz
 mysqldump -h host -uroot -ppassword --master-data=2 --default-character-set=utf8 --single-transaction -B dbname test_db | gzip > /opt/mysql.bak.sql.gz 备份多个库
 -- 全量压缩备份
 mysqldump -h host -uroot -p111111 --default-character-set=utf8 --single-transaction -F -B dbname -e | gzip > /backup/mysql_backup_`date +%F`.sql.gz
+--表结构和数据分离
+mysqldump -h host -uroot -ppassword --master-data=2 --default-character-set=utf8 --single-transaction --tab='/usr/local/mysql/data/backup' -B dbname;
+--导入
+mysql -uroot -pServer2008 < test_backup.sql
 
 官方自带的逻辑备份工具是mysqldump。当mysqldump使用参--single-transaction的时候，导数据之前就会启动一个事务，来确保拿到一致性视图。而由于MVCC的支持，这个过程中数据是可以正常更新的。
 前提就是引擎要支持这个隔离级别。比如，对于MyISAM这种不支持事务的引擎，如果备份过程中有更新，总是只能取到最新的数据，那么就破坏了备份的一致性。这时候FTWRL命令了就派上用场了。
-为什么我们不用set global readonly=true 的命令让全库处于只读的状态呢？
+为什么我们不用SET GLOBAL readonly=true 的命令让全库处于只读的状态呢？
 注意:这是生产上严厉禁止的,主要有如下两个原因：
-1.在某些系统中，readonly的值会被用来做其他逻辑,比如用来判断一个库是主库还是备库。毫无疑问修改global变量的方式影响面更大。
+1.在某些系统中,readonly的值会被用来做其他逻辑,比如用来判断一个库是主库还是备库。毫无疑问修改global变量的方式影响面更大。
 2.在异常处理机制上存在差异。如果执行FTWRL命令之后由于客户端发生异常断开，那么MySQL会自动释放这个全局锁，整个库回到可以正常更新的状态。而将整个库设置为readonly之后，如果客户端发生异常，则数据库就会一直保持readonly状态，这样会导致整个库长时间处于不可写状态，很容易造成生产事故。
 
 # 使用mysqldump命令全量备份
@@ -671,36 +734,77 @@ mysqldump -T path dbname tablename -u root -p
 mysql -u root -p [--vertical] [-html|-xml] --execute="SELECT * FROM person;" dbname > C:\person.txt
 
 # 导入表
+SET @@foreign_key_checks=0;
 LOAD DATA INFILE 'filename' INTO TABLE tablename
+SET @@foreign_key_checks=1;
+--命令行工具
 mysqlimport -u root -p dbname filename.txt
+user-thread:并发导入不同文件
 
 # xtraBackup备份与还原工具
 https://www.cnblogs.com/lijiaman/p/12291509.html
+
+# 导入导出
+NOTE:执行SELECT INTO OUTFILE和LOAD DATA INFILE需要开启secure_file_priv,空值代表文件可以在任意处或指定具体路径,NULL表示禁止使用
+
+SELECT...INTO OUTFILE的结果只包含了表数据,默认以Tab分隔也可指定分隔符
+NOTE:OUTFILE '/path/file'中的path需要有mysql的权限否则会报错
+SELECT * FROM `t_order` INTO OUTFILE 'C:\\Users\\chang\\Desktop\\t_order.sql' FIELDS TERMINATED BY ',';
+
+NOTE:LOAD DATA需要有处理文件的权限:GRANT FILE ON *.* TO user@host;
+LOAD DATA INFILE 'C:\\Users\\chang\\Desktop\\t_order.sql' INTO TABLE `t_order_bk` FIELDS TERMINATED BY ',';
+
+# 命令行导入工具mysqlimport
+mysqlimport -uroot -pServer2008 --local zsy "C:\\Users\\chang\\Desktop\\t_order_bk.sql" --fields-terminated-by=,
+OPTION选项:
+--fields-terminated-by=字符串:设置字符串为字段之间的分隔符,可以为单个或多个字符。默认值为制表符“\t”
+--fields-enclosed-by=字符:设置字符来括住字段的值,只能为单个字符
+--fields-optionally-enclosed-by=字符:设置字符括住CHAR、VARCHAR和TEXT等字符型字段,只能为单个字符
+--fields-escaped-by=字符:设置转义字符,默认值为反斜线“\”
+--lines-terminated-by=字符串:设置每行数据结尾的字符,可以为单个或多个字符,默认值为“\n”
+--ignore-lines=n:表示可以忽略前n行
 ####################### 备份还原 #######################
 
 ####################### 日志 #######################
-错误日志: 记录MySQL服务启动,运行或停止服务时出现的问题
-查询日志: 记录建立的客户端连接和执行的预计
-二进制日志: 记录所有更改数据的语句,可以用于数据复制
-慢查询日志: 记录所有执行时间超过long_query_time的所有查询或不使用索引的查询
+错误日志:记录MySQL服务启动,运行或停止服务时出现的问题
+查询日志:记录建立的客户端连接和执行的语句
+二进制日志:记录所有更改数据的语句,可以用于数据复制
+慢查询日志:记录所有执行时间超过long_query_time的所有查询或不使用索引的查询
 
-# 错误日志
-SHOW VARIABLES LIKE 'log_error' 定位文件
+# 查询日志 #
+SHOW VARIABLES LIKE 'general_log';              -- 查看日志是否开启
+SET GLOBAL general_log=on;                          -- 开启日志功能
 
-# 慢查询日志
+SHOW VARIABLES LIKE 'general_log_file';        -- 看看日志文件保存位置
+SET GLOBAL general_log_file='/usr/local/mysql/data/general.log'; -- 设置日志文件保存位置
+
+SHOW VARIABLES LIKE 'log_output';               -- 看看日志输出类型table或file
+SET GLOBAL log_output='table';                           -- 表示将日志存入数据库,这样日志信息就会被写入到mysql.slow_log表中
+SET GLOBAL log_output='file';                              -- 表示将日志存入文件,默认值是FILE
+
+# 开启查询日志(在my.ini|my.cnf文件中添加如下内容)
+general_log=1
+general_log_file=/usr/local/mysql/data/general.log
+
+# 错误日志 #
+SHOW VARIABLES LIKE 'log_error'
+
+# 开启错误日志(在my.ini|my.cnf文件中添加如下内容)
+log_error=/usr/local/mysql/mysql-error.log
+
+# 慢查询日志 #
 SHOW VARIABLES LIKE '%long_query%'
 SHOW VARIABLES LIKE '%slow_query%'
 SHOW VARIABLES LIKE '%log_queries_not_using_indexes%'
-  修改慢查询日志输出方式
+
+SET slow_query_log='ON'
+SET GLOBAL long_query_time=2;
+# 修改慢查询日志输出方式
 SHOW VARIABLES LIKE 'log_output';
-SET  global log_output='table';
+SET GLOBAL log_output='table';
 DESC mysql.slow_log;
 
-# 查询日志
-general_log=on
-general_log_file=/usr/local/mysql/data/general_log
-
-# 二进制日志
+# 二进制日志 #
 log-bin[=name]
 binlog_format:参数决定了二进制日志文件的内容格式,其取值可以是statement,row或者是mixed
 max_binlog_size:指定了单个二进制日志文件的最大值,如果超过该值,则产生新的二进制日志文件,后缀名+1,并记录到.index文件中,默认是1G
@@ -708,40 +812,76 @@ binlog_cache_size：对InnoDB来说,所有未提交的事务的二进制日志�
 binlog_do_db/binlog_ignore_db:表示需要写入和忽略哪些库的二进制日志的写入,默认是空,表示所有数据库的二进制日志都要写入
 log_slave_update:参数用来将从master上取得并执行的二进制日志写入到自己的二进制日志文件中去，通常在需要搭建master=>slave=>slave (一主多从，多主多从)架构的复制时，需要设置该参数
 
-# 刷新日志
+备份二进制日志:
+FLUSH LOGS; # 生成新的二进制日志文件,备份之前的二进制日志
+恢复二进制日志:
+mysqlbinlog binlog.[0-10]* | mysql -uroot -p test
+先将多个二进制日志文件导出再导入
+mysqlbinlog binlog.000001 >> /tmp/statements.sql
+mysqlbinlog binlog.000002 >> /tmp/statements.sql
+mysql -uroot -pServer2008 -e "source /tmp/statements.sql"
+
+# 刷新日志(生成新的bin log文件)
 FLUSH LOGS
 mysqladmin -u root -p flush-logs
 mysqladmin refresh
+SHOW MASTER STATUS;
+
+RESET master; # 重置master删除所有binlog文件
+PURGE MASTER LOGS TO 'mysql-bin.010'; # 删除mysql-bin.010之前的所有日志
+PURGE MASTER LOGS BEFORE '2020-04-14 22:46:26'; # 删除2020-04-14 22:46:26之前产生的所有日志
+PURGE MASTER LOGS BEFORE DATE_SUB(NOW(), INTERVAL 3 DAY); # 清除3天前的 binlog
 
 # 查看是否开启binlog日志
-SHOW VARIABLES LIKE 'log_%';
+SHOW VARIABLES LIKE 'log_bin%';
 log_bin                         ON
 log_bin_basename      /data/mysql/mysql-bin
 log_bin_index              /data/mysql/mysql-bin.index
 
-开启binlog日志(在my.ini|my.cnf文件中添加如下内容):
-# Binary Logging
+# 开启binlog日志(在my.ini|my.cnf文件中添加如下内容)
+# 开启binlog日志
 server-id=1
 # 日志文件的名字以及存储路径(NOTE:日志路径在根目录否则服务启动失败)
-log-bin=D:\program\green\64\mysql-5.7.19-winx64\mysql-bin.log
+log-bin=/usr/local/mysql/mysql-bin.index
 # 设置日志格式
 binlog-format=mixed
 
-SHOW BINARY LOGS;
-mysqlbinlog filename
+# 临时开启binlog
+SET sql_log_bin={0|1}
 
-# 删除所有二进制日志文件
+# 查看所有binlog日志列表
+SHOW BINARY LOGS;
+SHOW MASTER LOGS;
+
+# 查看master状态即最后(最新)一个binlog日志的编号名称,及其最后一个操作事件pos结束点(Position)值
+SHOW MASTER STATUS;
+
+# 刷新log日志,自此刻开始产生一个新编号的binlog日志文件
+FLUSH LOGS
+
+# 重置(清空)所有binlog日志
 RESET MASTER;
+
+# 查看binlog日志内容(以表格形式)
+SHOW BINLOG EVENTS IN 'mysql-bin.000002';
 
 # 删除指定的二进制日志文件
 PURGE MASTER|BINARY LOGS TO 'filename' 将删除文件名编号比指定文件名编号小的所有日志文件
 PURGE MASTER|BINARY LOGS BEFORE '20130330' 将删除指定日期以前的所有日志文件
 
+# mysqlbinlog命令部分参数
+mysqlbinlog filename
+-d  //指定库的binlog
+-r  //相当于重定向到指定文件
+--start-position--stop-position //按照指定位置精确解析binlog日志（精确），如不接--stop-positiion则一直到binlog日志结尾
+--start-datetime--stop-datetime //按照指定时间解析binlog日志（模糊，不准确），如不接--stop-datetime则一直到binlog日志结尾
+
 # 使用二进制日志还原数据库
 mysqlbinlog --stop-date='2013-03-30' filename|mysql --user --ppass
 
-# 开启/停止二进制日志功能
-SET sql_log_bin={0|1}
+# 查看二进制日志
+mysqlbinlog --no-defaults mysql-bin.000001
+mysqlbinlog -vv --no-defaults mysql-bin.000001 # binlog_format=STATEMENT
 ####################### 日志 #######################
 
 ####################### explain语句解释 #######################
@@ -767,12 +907,15 @@ extra:       与关联操作有关的信息
 作用: 和表级别的共享锁和排他锁互斥,和行级别没有关系！
 
 # Record Locks-行锁
-InnoDB 中,表都以索引的形式存在,每一个索引对应一颗B+树,这里的行锁锁的就是B+中的索引记录。共享锁和排他锁，就是将锁加在这里
+单个行记录上的锁
+InnoDB中,表都以索引的形式存在,每一个索引对应一颗B+树,这里的行锁锁的就是B+中的索引记录。共享锁和排他锁，就是将锁加在这里
 
 # Gap Locks-间隙锁
+锁定一个范围,但不包括记录本身
 锁住的是索引记录间的空隙,是为了解决幻读问题被引入的。有一点需要注意，间隙锁和间隙锁本身之间并不冲突，仅仅和插入这个操作发生冲突
 
-# Next-Key lock
+# Next-Key lock:Gap Lock+Record Lock
+锁定一个范围,并且锁定记录本身
 是行锁（Record）和间隙锁的并集.在RR级别下,InnoDB使用next-key锁进行树搜索和索引扫描
 NOTE: 加锁的基本单位是next-key lock
 
@@ -811,48 +954,46 @@ Lock Tables....READ不允许对表进行更新操作(新增、删除也不行),�
 Lock Tables....WRITE允许对被锁住的表进行增删改查,但不允许对其他表进行访问
 
 # 查询MySQL是否存在lock tables锁状态
-show status like "%lock%";
-show OPEN TABLES where In_use > 0;
+SHOW STATUS LIKE "%lock%";
+SHOW OPEN TABLES WHERE In_use > 0;
 
 # 排他锁
 SELECT col FROM table WHERE ID=1 FOR UPDATE;
 
 # 共享锁
 SELECT col FROM table WHERE ID=1 LOCK IN SHARE MODE;
-####################### 锁 #######################
 
-####################### 配置文件 #######################
-[mysqld]
-# GENERAL
-datadir=/usr/local/mysql/data
-socket=/usr/local/mysql/mysql.sock
-pid_file=/usr/local/mysql/mysql.pid
-user=mysql
-port=3306
-default_storage_engine=InnoDB
-# INNODB
-innodb_buffer_pool_size=
-innodb_log_file_size=
-innodb_file_per_table=1
-inno_flush_method=0_DIRECT
-# MYISAM
-key_buffer_size=
-# LOGGING
-log_error=/usr/local/mysql/mysql-error.log
-slow_query_log=/usr/local/mysql/mysql-slow.log
-# OTHER
-tmp_table_size=32M
-max_heap_table_size=32M
-query_cache_type=0
-query_cache_size=0
-max_connections=
-thread_cache=
-table_cache=
-open_files_limit=65535
-[client]
-socket=/usr/local/mysql/mysql.sock
-port=3306
-####################### 配置文件 #######################
+# 打印锁信息到错误日志
+mysqladmin debug
+
+# 查询谁阻塞谁等待以及等待多久
+SELECT r.trx_id AS waiting_trx_id,r.trx_mysql_thread_id AS waiting_thread,
+              TIMESTAMPDIFF(SECOND,r.trx_wait_started,CURRENT_TIMESTAMP) AS wait_time,
+               r.trx_query AS waiting_query,
+               l.lock_table AS waiting_table_lock,
+               b.trx_id AS blocking_trx_id,b.trx_mysql_thread_id AS blocking_thread,
+               SUBSTRING(p.host,1,INSTR(p.host,':')-1) AS blocking_host,
+               SUBSTRING(p.host,INSTR(p.host,':')+1) AS blocking_port,
+               IF(p.command="Sleep",p.time,0) AS idle_in_trx,
+               b.trx_query AS blocking_query
+FROM INFORMATION_SCHEMA.INNODB_LOCK_WAITS AS w
+INNER JOIN INFORMATION_SCHEMA.INNODB_TRX AS b ON b.trx_id=w.blocking_trx_id
+INNER JOIN INFORMATION_SCHEMA.INNODB_TRX AS r ON r.trx_id=w.requesting_trx_id
+INNER JOIN INFORMATION_SCHEMA.INNODB_LOCKS AS l ON w.requested_lock_id=l.lock_id
+LEFT JOIN INFORMATION_SCHEMA.PROCESSLIST AS p ON p.id=b.trx_mysql_thread_id
+ORDER BY wait_time DESC;
+
+# 多少查询被哪些线程阻塞
+SELECT CONCAT('thread ',b.trx_mysql_thread_id,' from ',p.host) AS who_blocks,
+            IF(p.command='Sleep',p.time,0) AS idle_in_trx,
+            MAX(TIMESTAMPDIFF(SECOND,r.trx_wait_started,NOW())) AS max_wait_time,
+            COUNT(*) AS num_waiters
+FROM INFORMATION_SCHEMA.INNODB_LOCK_WAITS AS w
+INNER JOIN INFORMATION_SCHEMA.INNODB_TRX AS b ON b.trx_id=w.blocking_trx_id
+INNER JOIN INFORMATION_SCHEMA.INNODB_TRX AS r ON r.trx_id=w.requesting_trx_id
+LEFT JOIN INFORMATION_SCHEMA.PROCESSLIST AS p ON p.id=b.trx_mysql_thread_id
+GROUP BY who_blocks ORDER BY num_waiters DESC;
+####################### 锁 #######################
 
 ####################### 用户权限 #######################
 特别需要注意,在MySQL中账号由两部分组成:
@@ -910,7 +1051,7 @@ mysqlbinlog d:\Mysql-binlog\mysql-bin.000043 --start-position 710 --stop-positio
 
 ####################### MySQL查询缓存 #######################
 # 开启缓存
-SET GLOBAL query_cache_size=600000;  --设置缓存内存大小
+SET GLOBAL query_cache_size=600000; --设置缓存内存大小
 SET GLOBAL query_cache_type=ON;       --开启查询缓存
 
 # 关闭缓存
@@ -1000,17 +1141,37 @@ NOTE:
 查找资料时候看到其他文章说innodb_flush_log_at_trx_commit和sync_binlog 两个参数是控制MySQL 磁盘写入策略以及数据安全性的关键参数，当两个参数都设置为1的时候写入性能最差，推荐做法是innodb_flush_log_at_trx_commit=2，sync_binlog=500 或1000
 
 # innodb_buffer_pool_size
-推荐将数据全然保存在 innodb_buffer_pool_size ，即按存储量规划 innodb_buffer_pool_size 的容量。这样你能够全然从内存中读取数据。最大限度降低磁盘操作
+推荐将数据全然保存在innodb_buffer_pool_size,即按存储量规划innodb_buffer_pool_size的容量。这样你能够全然从内存中读取数据。最大限度降低磁盘操作
 SHOW GLOBAL STATUS LIKE 'innodb_buffer_pool_pages_%';
-发现 Innodb_buffer_pool_pages_free 为 0，则说明 buffer pool 已经被用光，须要增大 innodb_buffer_pool_size
+发现Innodb_buffer_pool_pages_free为0则说明buffer pool已经被用光,须要增大innodb_buffer_pool_size
 
 # 慢查询日志
 记录全部查询。这在用 ORM 系统或者生成查询语句的系统非常实用。注意不要在生产环境用。否则会占满你的磁盘空间。
 log=/var/log/mysql.log
 
-记录运行时间超过 1 秒的查询：
-long_query_time=1
-log-slow-queries=/var/log/mysql/log-slow-queries.log
+配置示例:
+slow_query_log=1 # 表示开启慢查询
+slow_query_log_file=/var/lib/mysql/slow-query.log # 表示慢查询日志存放的位置;注意:slow_query_log_file 的路径不能随便写,否则MySQL服务器可能没有权限将日志文件写到指定的目录中
+long_query_time=2 # 表示查询>=2秒才记录日志
+log_queries_not_using_indexes=1 # 记录没有使用索引的SQL语句
+
+# 分析慢查询日志
+获取返回记录集最多的10个sql
+mysqldumpslow -s r -t 10 /var/lib/mysql/slow-query.log
+获取访问次数最多的10个sql
+mysqldumpslow -s c -t 10 /var/lib/mysql/slow-query.log
+获取按照时间排序的前10条里面含有左连接的查询语句
+mysqldumpslow -s t -t 10 -g "left join" /var/lib/mysql/slow-query.log
+
+# 导入导出限制(设置为空字符串为不限制)
+secure_file_priv=/home
+
+# 脏页比例
+innodb_io_capacity不要让它经常接近75%
+脏页比例是通过Innodb_buffer_pool_pages_dirty/Innodb_buffer_pool_pages_total得到的,具体的命令参考下面的代码:
+SELECT VARIABLE_VALUE INTO @a FROM performance_schema.global_status WHERE VARIABLE_NAME='Innodb_buffer_pool_pages_dirty';
+SELECT VARIABLE_VALUE INTO @b FROM performance_schema.global_status WHERE VARIABLE_NAME='Innodb_buffer_pool_pages_total';
+SELECT @a/@b;
 ####################### mysql.ini #######################
 
 ####################### MySQL优化 #######################
@@ -1024,7 +1185,110 @@ log-slow-queries=/var/log/mysql/log-slow-queries.log
 IN关键字适合主表大子表小
 EXIST关键字适合主表小子表大
 
+# 开启profiling
+SELECT @@profiling;
+SET profiling = 1;
+
+# 查看执行的SQL列表
+SHOW PROFILES;
+
+# 查询指定ID的执行详细信息
+SHOW PROFILE FOR QUERY Query_ID;
+
+# 获取CPU、Block IO等信息
+SHOW PROFILE block io,cpu FOR QUERY Query_ID;
+SHOW PROFILE cpu,block io,memory,swaps,context switches,source FOR QUERY Query_ID;
+SHOW PROFILE ALL FOR QUERY Query_ID;
 ####################### MySQL优化 #######################
+
+####################### 分表分区 #######################
+NOTE:不论创建何种分区,如果表中存在主键或唯一索引时,分区列必须是唯一索引一个组成部分
+# 对于RANGE分区的查询,优化器只能对YEAR(),TO_DAYS(),TO_SECONDS(),UNIX_TIMESTAMP()这类函数进行进行优化选择
+# 查看表分区
+SELECT table_name,partition_name,table_rows FROM information_schema.PARTITIONS WHERE table_name='t' AND table_schema=DATABASE()\G;
+
+1. RANGE分区:按照每年每月分区
+CREATE TABLE sales (
+money INT UNSIGNED NOT NULL,
+date DATETIME
+)ENGINE=INNODB
+PARTITION BY RANGE(TO_DAYS(date))(
+PARTITION p201001 VALUES LESS THAN (TO_DAYS('2010-02-01')),
+PARTITION p201002 VALUES LESS THAN (TO_DAYS('2010-03-01')),
+PARTITION p201003 VALUES LESS THAN (TO_DAYS('2010-04-01'))
+);
+2. LIST分区
+CREATE TABLE t(
+a INT,
+b INT
+)ENGINE=INNODB
+PARTITION BY LIST(b)(
+PARTITION p0 VALUES IN (1,3,5,7,9),
+PARTITION P1 VALUES IN (0,2,4,6,8)
+);
+
+3. HASH分区(PARTITIONS num表示分区数量)
+CREATE TABLE t_hash(
+a INT,
+b DATETIME
+)ENGINE=innodb
+PARTITION BY HASH(YEAR(b))
+PARTITIONS 4;
+
+CREATE TABLE t_linear_hash(
+a INT,
+b DATETIME
+)ENGINE=innodb
+PARTITION BY LINEAR HASH(YEAR(b))
+PARTITIONS 4;
+
+4. KEY分区
+CREATE TABLE t_key(
+a INT,
+b DATETIME
+)ENGINE=innodb
+PARTITION BY KEY(b)
+PARTITIONS 4;
+
+以上四种分区,分区条件必须是整形,如果不是整形需要通过函数转化为整形
+4. RANGE COLUMNS分区
+CREATE TABLE t_columns_range(
+a INT,
+b DATETIME
+)ENGINE=INNODB
+PARTITION BY RANGE COLUMNS(b)(
+PARTITION p0 VALUES LESS THAN ('2009-01-01'),
+PARTITION p1 VALUES LESS THAN ('2010-01-01')
+);
+或者使用字符串分区:
+CREATE TABLE customers_1(
+first_name VARCHAR(25),
+last_name VARCHAR(25),
+street_1 VARCHAR(30),
+street_2 VARCHAR(30),
+city VARCHAR(15),
+renewal DATE
+)
+PARTITION BY LIST COLUMNS(city)(
+PARTITION pRegion_1 VALUES IN ('Oskarshamn','Hogsby','Monsteras'),
+PARTITION pRegion_2 VALUES IN ('Vimmerby','Hultsfred','Vastervik'),
+PARTITION pRegion_3 VALUES IN ('Nossjo','Eksjo','Vetlanda'),
+PARTITION pRegion_4 VALUES IN ('Uppvidinge','Alvesta','Vaxjo')
+);
+多列分区:
+CREATE TABLE rcx(
+a INT,
+b INT,
+c CHAR(3),
+d INT
+)
+PARTITION BY RANGE COLUMNS(a,d,c)(
+PARTITION p0 VALUES LESS THAN (5,10,'ggg'),
+PARTITION p1 VALUES LESS THAN (10,20,'mmm'),
+PARTITION p2 VALUES LESS THAN (15,30,'sss'),
+PARTITION p3 VALUES LESS THAN (MAXVALUE,MAXVALUE,MAXVALUE)
+);
+####################### 分表分区 #######################
 
 ####################### GEO #######################
 /* Function structure for function `func_calc_distance` */

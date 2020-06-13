@@ -398,9 +398,48 @@ tail -F linuxidc_log
 使用zless，zcat，zgrep等命令查看压缩包的内容，甚至不必显式提取压缩文件
 zcat linuxidc_log.zip | more
 
-# 使用!$重新使用上一个命令中的结果
+# 获取命令最后的参数
 ls m.linuxidc.com
 cd !$
+
+mv /path/to/错误的文件 /some/other/place
+mv /path/to/对的文件 !$
+
+# 获取命令的第n个参数
+!:n
+!: 代表最后一个参数
+
+tar -cvf afolder afolder.tar
+!:0 !:1 !:3 !:2
+
+# 获取所有参数
+!:1-$
+
+zip -cvf afolder.tar afolder
+tar !:1-$
+
+# 获取倒数第n条命令的参数
+!-n:$
+
+mv /path/to/wrongfile /some/other/place
+ls !-2:$
+
+# 获取最后一个参数对应的路径
+!$:h
+
+tar -cvf system.tar /etc/afile
+cd !$:h
+
+# 获取当前行第1个元素
+!#:1
+
+cp /path/to/some/file !#:1.bak
+
+# 替换命令中的字符串
+!!:gs
+
+echo my f key doef not work
+!!:gs/does/did/
 ***************** 开发 *****************
 
 ***************** Daemon Service *****************
@@ -422,12 +461,19 @@ systemctl [command] [unit]
            mask 注销
            unmask 取消注销
            is-active 目前有没有正在运行中
-           is-enable 开机时有没有预设要启用这个unit
+           is-enabled 开机时服务是否被设为开机自动启用
 查看系统上所有的服务
 systemctl [command] [--type=TYPE] [--all]
            list-units 依据unit列出目前有启动的unit,若加上--all才会列出没启动的
            list-units-files 依据/usr/lib/systemd/system/内的文件,将所有文件列表说明(查看启动项)
            --type=TYPE unit type,主要有service,socket,target等
+
+查看系统中所有的单元
+systemctl list-unit-files
+查看正在运行的单元
+systemctl list-units
+查看系统当前所有的服务
+systemctl list-unit-files --type=service
 
 查看目前的模式
 systemctl [command] [unit.target]
@@ -447,6 +493,12 @@ systemctl list-dependencies [unit] [--reverse]
           --reverse 反向追踪谁使用这个unit
 
 systemctl list-sockets
+
+# 查看系统启动时间
+systemd-analyze
+
+# 查看每个服务的启动耗时
+systemd-analyze blame
 
 # 查看登录信息
 journalctl [-nrpf] [--since TIME] [--until TIME] _optional
@@ -961,6 +1013,18 @@ diff [-bBi] from-file to-file
 # 文件(字节)比对
 cmp [-l] file1 file2
      -l 将所有不同点的字节处都列出来。因为cmp预设仅会输出第一个发现的不同点
+
+# 查看所有进程允许打开的最大文件描述符(File Descriptor)数量
+cat /proc/sys/fs/file-max
+
+# 查看所有进程已经打开的文件描述符(File Descriptor)数量以及允许的最大数量
+cat /proc/sys/fs/file-nr
+
+# 查看单个进程允许打开的最大文件描述符(File Descriptor)数量
+ulimit -n
+
+#查看某个进程打开的文件描述符(File Descriptor)
+ls -l /proc/{pid}/fd/
 ***************** 文件,目录 *****************
 
 ***************** 软件安装,卸载,更新 *****************
@@ -1033,7 +1097,7 @@ rpm -e -vv --test RPM软件包名称    -vv输出完整调试信息 --test模拟
 rpmbuild --rebuild   将后面的SRPM进行编译,打包
          --recompile 将后面的SRPM进行编译,打包,安装
 
-# YUM查询,安装,升级和移除功能
+# yum查询,安装,升级和移除功能
 yum [option] [查询工作项目] [相关参数]
 [option]:
 -y 当yum要等待用户输入时,这个选项可以自动提供yes响应
@@ -1047,6 +1111,7 @@ provides 从文件去搜索软件类似rpm -qf功能
 yum install 后面接要安装的软件
 yum update  后面接要升级的软件,若要整个系统都升级,就直接update即可
 yum remove  移除软件
+yum list installed | grep mysql 查看已经安装的软件
 
 yum clean packages 将已下载的软件文件删除
 yum clean headers  将下载的软件文件头删除
@@ -1286,6 +1351,19 @@ get                       下载文件
 # 基于SSH复制文件
 scp root@10.171.33.221:/home/lewis/dump.tar.gz /srv/nfs_share/
 
+scp的基本语法使用：scp -sercure copy （remote file copy program）
+-P 指定端口,默认22,可忽略
+-p 表示拷贝前后保持文件或目录属性
+-r 递归,表示拷贝目录
+-l 限制速度
+推push
+scp -P22 -rp /root/test.txt root@39.108.140.0:/root/
+拉pull
+scp -p22 -rp root@39.108.140.0:/root/test.txt ./
+
+# 远程复制目录
+scp -r /usr/local/mycat/ root@192.168.100.21:/usr/local/
+
 # 追踪网络或插槽文件
 netstat -[atunlp]
         -a 将目前系统上所有的联机、监听、Socket数据都列出来
@@ -1474,6 +1552,9 @@ ctrl+R                  重做被撤销的操作
 :w filename             另存为filename
 :q                      退出
 :q!                     强行退出,放弃保存修改
+:!cmd                不退出vim执行cmd命令
+:r!cmd              不退出vim执行cmd命令并将cmd输出内容插入当前文本
+:shell                切换到shell(并没有退出vim),用exit退出shell
 
 # 向后搜索
 /test
@@ -1911,3 +1992,23 @@ get xxx.txt 下载xxx文件
 put xxx.txt 上传xxx文件
 quit/bye/exit 退出sftp
 ***************** SFTP *****************
+
+***************** 二进制文件 *****************
+# 分析二进制可执行文件的依赖
+ldd /bin/pwd
+
+# 查看二进制文件的16进制编码
+hexdump -C /bin/pwd | head
+
+# 打印二进制文件中可显示的字符
+strings /bin/pwd | head
+
+# 查看ELF格式的文件信息
+readelf -h /bin/pwd
+
+# 查看目标文件或者可执行的目标文件的构成的GCC工具
+objdump -d /bin/pwd | head
+
+# 列出目标文件的符号
+nm hello | tail
+***************** 二进制文件 *****************

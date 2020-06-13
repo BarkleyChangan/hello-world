@@ -108,6 +108,9 @@
     y. 换行符使用Unix格式
     Editor -> Code Style -> Line separator: Unix and OS X(\n)
 
+    z. 使用javac的方式编译代码
+    Build,Execution,Deployment -> Compiler -> Java Compiler -> Use compiler:Javac
+
 5. 快捷键
    alt + enter         万能纠错
    alt + r                执行

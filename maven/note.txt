@@ -89,31 +89,16 @@ mvn clean install-U              -U参数强行让Maven检查更新
 mvn idea:idea                      将项目转换成IDEA项目
 
 # 依赖范围scope
-  compile:  
-    编译:   Y
-    测试:   Y
-    运行时: Y
-    例子:   sping-core
-  test:    
-    编译:   N
-    测试:   Y
-    运行时: N
-    例子:   JUnit
-  provided:
-    编译:   Y
-    测试:   Y
-    运行时: N
-    例子:   servlet-api
-  runtime:
-    编译:   N
-    测试:   Y
-    运行时: Y
-    例子:   JDBC驱动
-  system:必须通过systemPath元素显示的指定依赖文件
-    编译:   Y
-    测试:   Y
-    运行时: N
-    例子:   本地的,Maven仓库之外的类库文件
+compile:
+编译:Y    测试:Y    运行时:Y    例子:sping-core
+test:
+编译:N    测试:Y    运行时:N    例子:JUnit
+provided:
+编译:Y    测试:Y    运行时:N    例子:servlet-api
+runtime:
+编译:N    测试:Y    运行时:Y    例子:JDBC驱动
+system:必须通过systemPath元素显示的指定依赖文件
+编译:Y    测试:Y    运行时:N    例子:本地的或Maven仓库之外的类库文件
     <dependency>
         <groupId>javax.sql</groupId>
         <artifactId>jdbc-stdext</artifactId>
@@ -121,7 +106,49 @@ mvn idea:idea                      将项目转换成IDEA项目
         <scope>system</scope>
         <systemPath>${java.home }/lib/rt.jar</systemPath>
     </dependency>
-    import:(Maven 2.0.9版本以上)
+    <dependency>
+        <groupId>org.hamcrest</groupId>
+        <artifactId>hamcrest-core</artifactId>
+        <version>1.5</version>
+        <scope>system</scope>
+        <systemPath>${basedir}/WebContent/WEB-INF/lib/hamcrest-core-1.3.jar</systemPath>
+    </dependency>
+    <dependency>
+        <groupId>coupon-pojo</groupId>
+        <artifactId>coupon-pojo</artifactId>
+        <version>1.0</version>
+        <scope>system</scope>
+        <systemPath>${project.basedir}/lib/coupon-pojo-1.0.jar</systemPath>
+    </dependency>
+如项目打包成war,则在<build>标签下的<plugins>中新增如下配置:
+<plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-war-plugin</artifactId>
+    <version>2.3</version>
+    <configuration>
+        <warName>${project.artifactId}</warName>
+        <webResources>
+            <resource>
+                <directory>lib/</directory>
+                <targetPath>WEB-INF/lib</targetPath>
+                <includes>
+                    <include>**/*.jar</include>
+                </includes>
+            </resource>
+        </webResources>
+    </configuration>
+</plugin>
+如果工程打包成jar,需要在pom.xml中添加如下配置:
+<resources>
+    <resource>
+        <directory>lib</directory>
+        <targetPath>BOOT-INF/lib/</targetPath>
+        <includes>
+            <include>**/*.jar</include>
+        </includes>
+    </resource>
+</resources>
+import:(Maven 2.0.9版本以上)
 
 # 传递依赖范围
             compile     test      provided      runtime    
