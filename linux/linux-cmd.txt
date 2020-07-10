@@ -378,6 +378,10 @@ lsusb [-t]
 
 # 刷新DNS缓存
 sudo /etc/init.d/networking restart
+
+# 将本机时间与时间服务器的时间进行同步
+yum install ntpdate
+ntpdate ntp7.aliyun.com
 ***************** 系统 *****************
 
 ***************** 开发 *****************
@@ -1701,7 +1705,37 @@ sh [-nvx] scripts.sh
     -n 不要执行script,仅查询语法的问题
     -v 再执行script前,先将scripts的内容输出到屏幕上
     -x 将使用到的script内容显示到屏幕上,这是很有用的参数
-    -c string：命令从-c后的字符串读取。
+    -c string：命令从-c后的字符串读取
+
+# 系统变量
+$SHELL  默认Shell
+$HOME  当前用户家目录
+$IFS  内部字段分隔符
+$LANG  默认语言
+$PATH  默认可执行程序路径
+$PWD  当前目录
+$UID  当前用户ID
+$USER  当前用户
+$HISTSIZE  历史命令大小，可通过HISTTIMEFORMAT变量设置命令执行时间
+$RANDOM  随机生成一个0至32767的整数
+$HOSTNAME  主机名
+
+# 特殊变量
+$0  # 脚本自身名字
+$?  # 返回上一条命令是否执行成功，0为执行成功，非0则为执行失败
+$#  # 位置参数总数
+$*  # 所有的位置参数被看做一个字符串
+$@  # 每个位置参数被看做独立的字符串
+$$  # 当前进程PID
+$!  # 上一条运行后台进程的PID
+
+# Shell格式
+#！/bin/bash	脚本使用的解释器，通常用幻数“#！”指定
+# Autho:	脚本作者
+# Create_date	脚本创作时间
+# Mail:		脚本作者联系方式
+# Description:	脚本作用解释
+# Version:	脚本的版本
 ***************** Shell *****************
 
 ***************** Crontab *****************

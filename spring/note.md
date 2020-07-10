@@ -33,5 +33,14 @@
   通过上面的配置,Spring将会使用TaskScheduler子类ThreadPoolTaskScheduler,内部线程数为pool-size数量,这个线程数将会直接设置ScheduledExecutorService线程数量。
   ```
 
+* 使用SpEL表达式
+
+  ```jsp
+  <%@ taglib prefix="s" uri="http://www.springframework.org/tags" %>
+  
+  <s:eval expression="T(com.post.common.util.MailOrderUtil).getMailStatus(mailOrder.mailStatus)" var="mailStatus" />
+  ${mailStatus }
+  ```
+
   
 

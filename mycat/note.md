@@ -8,6 +8,13 @@
   2. 数据分片
   3. 都数据源整合
 
+* 环境准备
+
+     1. 安装配置MySQL数据库: <http://dev.MySQL.com/get/MySQL-community-release-el6-5.noarch.rpm>
+     2. 安装MySQL仓库: `yum localinstall mysql-community-release-el6-5.noarch.rpm`
+     3. 安装MySQL5.6: `yum install mysql-community-server`
+     4. 配置Java环境: `yum -y list java*`
+
 * 安装
 
   1. 解压: `tar -zxvf Mycat-server-1.6-RELEASE-20161028204710-linux.tar.gz`
@@ -27,15 +34,23 @@
      a. server.xml文件
 
      ```xml
+     <system>
+     	<property name="utf8mb4"></property>
+     </system>
      <user name="mycat">
      	<property name="password">111111</property>
-     	<property name="schemas">TESTDB</property>
+  	<property name="schemas">TESTDB</property>
+         <property name="readOnly">true</property>
+         <!-- 限制前端整体的连接数量,0或不设置表示不限制 -->
+      <property name="benchmark">111111</property>
+         <!-- 开启密码加密 -->
+         <property name="usingDecrypt">1</property>
      </user>
      ```
-
+     
      b. schema.xml文件
      先备份: `cp schema.xml schema.xml.bak`
-
+     
      ```xml
      # 删除schema节点中的所有子节点
      <schema name="TESTDB" checkSQLschema="false" sqlMaxLimit="100" dataNode="dn1">
@@ -60,13 +75,13 @@
      	<writeHost host="hostS1" url="192.168.100.22:3306" user="root" password="Server2008"></writeHost>
      </dataHost>
      
-     # 以上两种方式第一种当写挂了读不可用,第二种可以继续使用,事务内部的一切操作都会走写节点,所以都节点不要加事务
+  # 以上两种方式第一种当写挂了读不可用,第二种可以继续使用,事务内部的一切操作都会走写节点,所以都节点不要加事务
      # 强制走从:
-     /*!mycat:db_type=slave*/SELECT * FROM travel;
+  /*!mycat:db_type=slave*/SELECT * FROM travel;
      /*#mycat:db_type=slave*/SELECT * FROM travel;
-     # 强制走写:
+  # 强制走写:
      /*!mycat:db_type=master*/SELECT * FROM travel;
-     /*#mycat:db_type=master*/SELECT * FROM travel;
+  /*#mycat:db_type=master*/SELECT * FROM travel;
      ```
 
      ***schema.xml配置文件***
@@ -127,7 +142,7 @@
 
      ​    4. balance: 0:不开启读写分离机制,所有读操作都发送到当前可用的writeHost上
 
-     ​                        1: 全部的readHost与stand by writeHost参与SELECT语句的负载均衡,简单说当双柱双从模式(M1->S1,M2->S2,并且M1与M2互为主备),正常情况下M1,S1,S2都参与SELECT语句的负载均衡
+     ​                        1: 全部的readHost与stand by writeHost参与SELECT语句的负载均衡,简单说当双主双从模式(M1->S1,M2->S2,并且M1与M2互为主备),正常情况下M1,S1,S2都参与SELECT语句的负载均衡
 
      ​                        2: 所有读操作都随机的在writeHost、readHost上分发
 
@@ -172,13 +187,13 @@
      ​        5. weight: 权重,配置在readHost中作为读节点的权重
 
      ​        6. usingDecrypt: 是否对密码加密,默认为0 `java -cp Mycat-server-1.6-RELEASE.jar io.mycat.util.DecryptUtil 1:host:user:password`    1为db端加密标志
-
+     
      ***server.xml配置文件***
-
+     
      dml    insert,update,select,delete    0000
-
+     
      ***双主双备配置***:
-
+     
      ```
      # NOTE:balance="1"
      <schema name="TESTDB" checkSQLschema="false" sqlMaxLimit="100" dataNode="dn1">
@@ -225,9 +240,15 @@
 * 登录
 
      ````mysql
+     mysql -h127.0.0.1 -umycat -p111111 -P9066 [-dmycat]
+     -h 后面是主机,即MyCat安装的主机IP地址
+     -u server.xml中配置的逻辑库用户名
+     -p server.xml中配置的逻辑库密码
+     -P 端口号
+     -d server.xml中配置的逻辑库
+     
      # 登录后台管理窗口(9066管理窗口端口号)
      mysql -umycat -p111111 -h192.168.100.21 -P9066
-     
      # 登录数据窗口(8066数据窗口端口号)
      mysql -umycat -p111111 -h192.168.100.21 -P8066
      
@@ -364,41 +385,69 @@
      # NOTE:使用9066登录
      mysql -umycat -p111111 -h192.168.100.21 -P9066
      
+     # 更新配置文件,不用重启即可进行配置文件更新
+     reload @@config
+     reload @@config_all
+     
+     rollback @@config
+     
+     # 开启和关闭SQL监控分析(1.5版本新增)
+     reload @@sqlstat=open
+     reload @@sqlstat=close
+     
+     # 设置慢SQL时间阈值
+     reload @@sqlslow=
+     
      # 查看所有命令
      show @@help;
-     # 更新配置文件(热部署,执行时服务不可用)
-     reload @@config;
+     
      # 显示MyCat数据库列表
      show @@database;
+     
      # 显示MyCat节点列表
      show @@datanode;
      show @@datanode where schema=mycat;
+     
      # 报告心跳状态
      show @@heartbeat;
+     
      # MyCat版本
      show @@version;
+     
      # 获取MyCat前端连接状态
      show @@connection;
+     
      # 杀掉连接
      kill @@connection id1,id2,id3;
+     
      # 查看后端连接状态
      show @@backend;
+     
      # 查看MyCat缓存
      show @@cache;
+     
      # 查看数据源状态
      show @@datasource;
-     # 配置了多主,可以切换(index:dataHost的writeHost index位标,从0开始,执行时服务不可用)
+     
+     # 配置了多主,可以切换
      switch @@datasource dn1:index;
-     # 显示系统日志
+     dn1:schema中配置的dataHost中的name
+     index:schema中配置的dataHost的writeHost index位标,即按照从上到下的配置顺序,从0开始
+     
+     # 显示系统日志(limit后接正整数,该数值用于限定每次显示的日志条数最大数量)
      show @@syslog limit=10;
-     # 清除缓存
-     reload @@user_stat;
+     
      # 显示统计信息
-     show @@sql;
-     show @@sql.show;
-     show @@sql.sum;
+     show @@sql; 显示在MyCat中执行过的SQL语句
+     show @@sql.show; 显示慢SQL语句
+     show @@sql.sum; 显示SQL语句的整体执行情况、读写比例等
+     
+     # 重置SQL监控分析的数据(用来将客户端执行show @@sql;show @@sql.sum;show @@slow.success;命令之后所缓存的信息清空)
+     reload @@user_stat
+     
      # 设置慢SQL阈值
      reload @@sysslow=0;
+     
      # 显示执行计划
      explain2 datanode=dn1 sql=SELECT * FROM mytbl;
      ```

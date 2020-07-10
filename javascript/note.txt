@@ -196,3 +196,75 @@ onsole.profileEnd();
 宏队列:dom事件回调,ajax回调,定时器回调
 
 ####################### 宏队列,微队列 #######################
+
+####################### 浏览器兼容处理 #######################
+# 滚动高度
+var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+
+# 日期时间
+new Date("2020-06-29".replace(/-/g, "/"));
+
+# IE条件注释
+<!--[if !IE]>除IE外都可识别<![endif]-->
+<!--[if IE]>所有的IE可识别<![endif]-->
+<!--[if IE 6]>仅IE6可识别<![endif]-->
+<!--[if lt IE 6]>IE6以及IE6以下版本可识别<![endif]-->
+<!--[if gte IE 6]>IE6以及IE6以上版本可识别<![endif]-->
+<!--[if IE 7]>仅IE7可识别<![endif]-->
+<!--[if lt IE 7]>IE7以及IE7以下版本可识别<![endif]-->
+<!--[if gte IE 7]>IE7以及IE7以上版本可识别<![endif]-->
+<!--[if IE 8]>仅IE8可识别<![endif]-->
+<!--[if IE 9]>仅IE9可识别<![endif]-->
+
+<!-- 
+    ! NOT运算符
+    lt 小于运算符
+    lte 小于或等于运算符
+    gt 大于运算符
+    gte 大于或等于运算符
+    & AND运算符
+    | OR运算符
+    () 子表达式运算符 用于与布尔运算符创建更复杂的表达式
+-->
+
+# 事件
+var handler = {}
+ //绑定事件
+ handler.on = function(target, type, handler) {
+ 	if(target.addEventListener) {
+ 		target.addEventListener(type, handler, false);
+ 	} else {
+ 		target.attachEvent("on" + type,
+ 			function(event) {
+ 				return handler.call(target, event);
+ 		    }, false);
+ 	}
+ };
+ //取消事件监听
+ handler.remove = function(target, type, handler) {
+ 	if(target.removeEventListener) {
+ 		target.removeEventListener(type, handler);
+ 	} else {
+ 		target.detachEvent("on" + type,
+ 	    function(event) {
+ 			return handler.call(target, event);
+ 		}, true);
+     }
+ };
+handler.preventDefault = function(event) {
+    event = event || window.event;
+    if (event.preventDefault) {
+        event.preventDefault();
+    } else {
+        event.returnValue = false;
+    }
+}
+handler.stopPropagation = function(event) {
+    event = event || window.event;
+    if (event.stopPropagation) {
+        event.stopPropagation();
+    } else {
+        event.cancelBubble = false;
+    }
+}
+####################### 浏览器兼容处理 #######################

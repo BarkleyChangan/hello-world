@@ -166,6 +166,12 @@ compressionMinSize：表示压缩响应的最小值，只有当响应报文大�
 建议和注意事项:
 -Xms和-Xmx选项设置为相同堆内存分配，以避免在每次GC 后调整堆的大小，堆内存建议占内存的60%~80%；非堆内存是不可回收内存，大小视项目而定;线程栈大小推荐256k
 
+在startup脚本中添加配置:
+# windows
+set JAVA_OPTS=-server -Xms1024m -Xmx2048m -XX:PermSize=256m -XX:MaxPermSize=512m
+# Linux
+JAVA_OPTS="-server -Dfile.encoding=UTF-8 -Xms=512m -Xmx1024m -XX:PermSize=128m -XX:MaxPermSize=256m"
+
 以下给出1G内存环境下Java JVM的参数设置参考:
 JAVA_OPTS="-server -Xms800m -Xmx800m  -XX:PermSize=64M -XX:MaxNewSize=256m -XX:MaxPermSize=128m -Djava.awt.headless=true "
 JAVA_OPTS="-server -Xms768m -Xmx768m -XX:PermSize=128m -XX:MaxPermSize=256m -XX:NewSize=192m -XX:MaxNewSize=384m"

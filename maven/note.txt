@@ -20,6 +20,15 @@
         <url>https://maven.aliyun.com/repository/public</url>
     </mirror>
 </mirrors>
+<!--setting.xml中添加如下配置-->
+<mirror>
+    <id>aliyun</id>  
+    <!-- 中心仓库的 mirror(镜像) -->
+    <mirrorOf>central</mirrorOf>
+    <name>Nexus aliyun</name>
+    <!-- aliyun仓库地址 以后所有要指向中心仓库的请求，都会指向aliyun仓库-->
+    <url>http://maven.aliyun.com/nexus/content/groups/public</url>
+</mirror>
 
 # 设置MAVEN_OPTS环境变量
 -Xms512m -Xmx1024m
@@ -172,17 +181,22 @@ runtime     runtime     -         -             runtime
   2. 找到profiles标签
   3. 加入如下配置
   <profile>   
-    <id>jdk1.7</id>    
-    <activation>   
-        <activeByDefault>true</activeByDefault>    
-        <jdk>1.7</jdk>   
-    </activation>    
-    <properties>   
-        <maven.compiler.source>1.7</maven.compiler.source>    
-        <maven.compiler.target>1.7</maven.compiler.target>    
-        <maven.compiler.compilerVersion>1.7</maven.compiler.compilerVersion>   
-    </properties>   
-  </profile>
+      <id>jdk1.8</id>    
+      <activation>   
+          <activeByDefault>true</activeByDefault>    
+          <jdk>1.8</jdk>   
+      </activation>    
+      <properties>   
+          <maven.compiler.source>1.8</maven.compiler.source>    
+          <maven.compiler.target>1.8</maven.compiler.target>    
+          <maven.compiler.compilerVersion>1.8</maven.compiler.compilerVersion>   
+      </properties>   
+    </profile> 
+  </profiles>
+  <!-- 使配置好的profiles标签中内容生效 -->
+  <activeProfiles>
+    <activeProfile>jdk1.8</activeProfile>
+  </activeProfiles>
 
 # eclipse中安装Maven插件
 Help -> Install New Software... -> 点击Work with:旁边的Add按钮 -> 

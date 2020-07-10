@@ -192,13 +192,6 @@ show warnings;
 # type列 这一列表示关联类型或访问类型，即MySQL决定如何查找表中的行。
 依次从最优到最差分别为：system > const > eq_ref > ref > fulltext > ref_or_null > index_merge > unique_subquery > index_subquery > range > index > ALL
 
-# 使用show profiles命令查看查询的详细耗时
-set profiling=1;
-执行SQL语句;
-set profiling=0;
-show profiles;
-show profile cpu, block io for query 1;
-
 # 区分大小写比较
 SELECT BINARY 'a'='A';
 
@@ -793,16 +786,26 @@ SHOW VARIABLES LIKE 'log_error'
 log_error=/usr/local/mysql/mysql-error.log
 
 # 慢查询日志 #
-SHOW VARIABLES LIKE '%long_query%'
-SHOW VARIABLES LIKE '%slow_query%'
+SHOW VARIABLES LIKE '%slow_query_log%'; # 是否开启慢查询,on为开启,off为关闭
+SHOW VARIABLES LIKE '%log-slow-queries%'; # 旧版(5.6以下版本)MySQL数据库慢查询存储路径,可以不设置该参数,系统则会给一个缺省的文件:host_name-slow.log
+SHOW VARIABLES LIKE '%long_query_time%'; # 慢查询阀值,当查询时间多于设置的阀值时,记录日志,单位为秒
 SHOW VARIABLES LIKE '%log_queries_not_using_indexes%'
 
-SET slow_query_log='ON'
-SET GLOBAL long_query_time=2;
+# 临时开启满查询功能
+SET GLOBAL slow_query_log='ON';
+SET GLOBAL long_query_time=1;
+
+# 永久性开启慢查询
+[mysqld]
+slow_query_log=ON
+slow_query_log_file=/usr/local/mysql/data/chenyanbindeMacBook-Pro-slow.log
+long_query_time=1
+
 # 修改慢查询日志输出方式
 SHOW VARIABLES LIKE 'log_output';
 SET GLOBAL log_output='table';
 DESC mysql.slow_log;
+
 
 # 二进制日志 #
 log-bin[=name]
@@ -1190,7 +1193,20 @@ SELECT @@profiling;
 SET profiling = 1;
 
 # 查看执行的SQL列表
-SHOW PROFILES;
+SHOW PROFILE和SHOW PROFILES语句可以展示当前会话（退出session后，profiling重置为0）中执行语句的资源使用情况
+SHOW PROFILES:以列表形式显示最近发送到服务器上执行的语句的资源使用情况，显示的记录数由变量：profiling_history_size控制，默认15条
+SHOW PROFILE:只是最近一条语句执行的消息资源占用信息，默认实现Status和Duration两列
+
+SELECT @@profiling;
+SHOW VARIABLES LIKE '%profil%';
+
+# 使用SHOW PROFILES命令查看查询的详细耗时
+set profiling=1;
+执行SQL语句;
+set profiling=0;
+
+show profiles;
+show profile cpu, block io for query 1;
 
 # 查询指定ID的执行详细信息
 SHOW PROFILE FOR QUERY Query_ID;
