@@ -1,46 +1,46 @@
 * 官网地址
   [ZooKeeper官网地址](https://zookeeper.apache.org)
-  
+
 * 本地模式安装
   1. 安装JDK
   2. 解压到指定目录
      `tar -zxvf apache-zookeeper-3.4.11.tar.gz`
   3. 新建用户
      ```
-     useradd zookepper
+     useradd zookeeper
      passwd zookeeper
      ```
   4. 修改配置
      a. 在conf路径下修改zoo_sample.cfg文件名: `mv zoo_sample.cfg zoo.cfg`
      b. 打开zoo.cfg文件修改dataDir路径为: /usr/local/zookeeper-3.4.11/data
-          (可选)打开zoo.cfg文件新增dataLogDir路径为: /usr/local/zookeeper-3.4.11/log
+     ​     (可选)打开zoo.cfg文件新增dataLogDir路径为: /usr/local/zookeeper-3.4.11/log
      c. 创建data这个目录: `mkdir data`
-         创建log这个目录(可选): `mkdir log`
+     ​    创建log这个目录(可选): `mkdir log`
      d. 在data目录下新建myid文件,并设置服务器号(集群安装)
      e. 集群模式配置参数: zoo.cfg文件新增配置项
-         参数解读: server.A=B:C:D
-         A: myid文件中配置的服务器号
-         B: 当前服务器IP
-         C: Leader的端口,这个服务器与集群中的Leader服务器交换信息的端口
-         D: ZooKeeper服务器之间内部通信端口,如果集群中的Leader服务器挂了,需要一个端口来重新进行选举,选出一个新的Leader,而这个端口就是用来执行选举时服务器相互通信用的端口
-         配置示例:
+     ​    参数解读: server.A=B:C:D
+     ​    A: myid文件中配置的服务器号
+     ​    B: 当前服务器IP
+     ​    C: Leader的端口,这个服务器与集群中的Leader服务器交换信息的端口
+     ​    D: ZooKeeper服务器之间内部通信端口,如果集群中的Leader服务器挂了,需要一个端口来重新进行选举,选出一个新的Leader,而这个端口就是用来执行选举时服务器相互通信用的端口
+     ​    配置示例:
      
          ########## Cluster ##########
          server.2=192.168.100.20:2888:3888
          server.3=192.168.100.21:2888:3888
          server.4=192.168.100.22:2888:3888
-  
+
 * 操作ZooKeeper
   1. 启动服务器 `./zkServer.sh start`
-  
+
   2. 停止服务器 `./zkServer.sh stop`
-  
+
   3. 查看服务器状态 `./zkServer.sh status`
-  
+
   4. 启动客户端 `./zkCli.sh -server ip:port`
-  
+
   5. 退出客户端 `quit`
-  
+
   6. 四字命令: `echo ruok | nc 127.0.0.1 2181` 
      安装nc命令: `yum -y install nmap-ncat`
      a. ruok: 测试服务是否处于正确状态,如果确实如此则返回imok,否则不做任何回应
@@ -70,7 +70,7 @@
      k. mntr: 列出集群的健康状态。包括"接收/发送"的包数量、操作延迟、当前服务模式、节点总数、Watch总数、临时节点总数
      l. crst: 重置当前这台服务器所有连接/会话的统计信息
      m. srst: 重置服务器状态
-  
+
 * 配置文件zoo.cfg参数设置
   1. tickTime: 通信心跳数,ZooKeeper服务器与客户端心跳时间,单位:毫秒
      它用于心跳机制,并且设置最小的session超时时间为两倍心跳时间(2*tickTime)
@@ -82,11 +82,11 @@
   7. maxClientCnxns: 最大的并发连接数限制,设置为0或者不设置该参数,表示不进行连接数的限制
   8. minSessionTimeout: 最小的会话超时时间,默认值 minSession=2*tickTime
   9. maxSessionTimeout: 最大的会话超时时间,默认值 maxSession=20*tickTime
-  
+
 * ZooKeeper内部原理
   1. 选举机制: ZooKeeper虽然在配置文件中没有指定Master和Slave,但是Zookeeper工作时是有一个节点为Leader,其他则为Follower,Leader是通过内部机制选举产生的
   2. 半数机制: 集群中半数以上机器存活则集群可用,所以ZooKeeper适合安装奇数台服务器
-  
+
 * 节点类型
   Znode = Path + nodeValue + Stat
   * 持久型(Persistent): 客户端和服务器断开连接后,创建的节点不删除
@@ -95,7 +95,7 @@
   * 短暂型(Ephemeral): 客户端和服务器断开连接后,创建的节点被删除
     1. 临时目录节点
     2. 临时顺序编号目录节点
-  
+
 * 节点属性
   ```
   cZxid: 数据节点创建时的事务ID
@@ -110,7 +110,7 @@
   dataLength: 数据内容长度
   numChildren: 数据节点当前子节点的个数
   ```
-  
+
 * 客户端命令行操作
   1. 显示所有操作命令: `help`
   2. 新增节点: `create [-s] [-e] path value` -s: 创建有序节点 -e: 创建临时节点
@@ -125,7 +125,7 @@
   11. 监听子节点增减的变化: `ls\ls2 path [watch]`
   12. 监听节点状态变化: `stat path [watch]`
   13. 客户端的Znode视图与ZooKeeper同步: `sync`
-  
+
 * ZooKeeper的ACL权限控制
   ACL权限控制: `scheme:id:permission`
   a. scheme权限模式:授权的策略
@@ -180,16 +180,16 @@
      ```
      
   4. 重启zookeeper
-  
+
   5. 重启后添加超管用户
      `addauth digest super:admin`
-  
+
 * Watcher特性
   1. 一次性: Watcher是一次性的,一旦被触发就会移除,再次使用时需要重新注册
   2. 客户端顺序回调: Watcher回调是顺序串行化执行的,只有回调客户端才能看到最新的数据状态。一个Watcher回调逻辑不应该太多,以免影响别的Watcher执行
   3. 轻量级: WatchEvent是最小的通信单元,结构上只包含通知状态、事件类型和节点路径,并不会告诉数据节点变化前后的具体内容
   4. 时效性: Watcher只有在当前Session彻底失效时才会无效,若在Session有效期内快速重连成功,则Watcher依然存在,仍可接收通知
-  
+
 * Watch捕获相应事件
 
   |            注册方式             | Created | ChildrenChanged | Changed | Deleted |
@@ -200,7 +200,7 @@
 
 * 一致性协议:zab协议
   ZooKeeper Atomic Broadcast(ZooKeeper原子广播),ZooKeeper是通过zab协议来保证分布式事务的最终一致性
-  
+
 * Observer角色及其配置
 
   Observer角色特点:

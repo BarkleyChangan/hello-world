@@ -1,11 +1,11 @@
-# redis安装
+# redis-5.0.8安装
 1. 安装gcc
-yum install gcc -y
+yum install gcc-c++ -y
 gcc -v
-yum install tcl -y
+yum install tcl -y(可选)
 
 2. 解压并安装redis
-tar -zxvf redis-4.0.11.tar.gz
+tar -zxvf redis-5.0.8.tar.gz
 make distclean
 make
 make test
@@ -13,15 +13,22 @@ make install PREFIX=/usr/local/redis
 
 3. 拷贝配置文件
 cp redis.conf /usr/local/redis/bin/redis.conf
-修改: daemonize yes
+
+修改配置文件中几个关键参数:vim redis.conf
+bind 127.0.0.1           --> #bind 127.0.0.1
+protected-mode yes --> protected-mode no
+daemonize no          --> daemonize yes
+# 设置redis密码
+#requirepass foobared --> requirepass <yourpassword>
 
 4. 启动redis
 cd /usr/local/redis/bin
-前台启动(关闭终端自动停止): ./redis-server redis.conf
+前台启动(关闭终端自动停止):./redis-server redis.conf
 后台启动:1. 修改redis.conf文件: daemonize yes
-               2. ./redis-server & redis.conf
+              2. ./redis-server & redis.conf
+查看是否启动成功:ps aux | grep redis
 客户端连接: ./redis-cli -p 6379
-ping
+停止:./redis-cli shutdown
 
 ps -ef | grep redis
 lsof -i :6379
@@ -37,6 +44,15 @@ iptables -I INPUT -p tcp --dport 6379 -j ACCEPT
 service iptables save
 service iptables restart
 service iptables status(查看开放端口)
+
+firewall-cmd --zone=public --add-port=6379/tcp --permanent
+firewall-cmd --reload
+firewall-cmd --list-all
+
+7. 输入密码
+auth foobared
+set mykey lisi
+get mykey
 
 # 五种数据类型
 1. String 512M

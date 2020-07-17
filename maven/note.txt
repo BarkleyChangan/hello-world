@@ -26,7 +26,7 @@
     <!-- 中心仓库的 mirror(镜像) -->
     <mirrorOf>central</mirrorOf>
     <name>Nexus aliyun</name>
-    <!-- aliyun仓库地址 以后所有要指向中心仓库的请求，都会指向aliyun仓库-->
+    <!-- aliyun仓库地址 以后所有要指向中心仓库的请求,都会指向aliyun仓库 -->
     <url>http://maven.aliyun.com/nexus/content/groups/public</url>
 </mirror>
 
