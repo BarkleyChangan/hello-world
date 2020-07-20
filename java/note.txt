@@ -253,6 +253,9 @@ IO密集型:   线程数=CPU核心数 * (1 + IO 耗时/ CPU 耗时)
 # 乘法和除法使用移位操作符
 val << 3; -> val * 8
 val >> 1; -> val / 2
+
+# 设置JDK生成的代理类落盘
+System.setProperty("sun.misc.ProxyGenerator.saveGeneratedFiles", "true");
 ####################### Java基础 #######################
 
 ####################### JDK8 #######################

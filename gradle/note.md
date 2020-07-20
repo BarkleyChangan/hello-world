@@ -10,8 +10,19 @@
   `gradle -v`
 
 * 运行
-  `gradle -q hello`
-
+  
+创建一个名为 build.gradle 的脚本，脚本内容如下:
+  
+  ```build.gradle
+  task hello{
+  	doLast{
+  		println 'Hello world'
+  	}
+  }
+  ```
+  
+  使用`gradle -q hello`命令执行上述脚本
+  
 * Gradle Wrapper
   是对Gradle的一层包装,方便在团队中统一管理Gradle的版本,项目开发中通常使用的Wrapper 这种方式,使用Wrapper之后就不需要采用配置Gradle的构建环境的方式,使用Wrapper启用Gradle的时候,Wrapper会检查Gradle有没有下载关联,如果没有下载则从配置的地址下载并进行构建,这就一定程度上方便开发人员构建项目
   Gradle提供了内置的Wrapper Task来生成Wrapper所需的目录文件,在相应的目录执行`gradle wrapper`命令即可生成,生成的目录如下:
@@ -110,4 +121,9 @@
   gradle help --task projects
   ```
   
-  
+* 闭包
+
+  1. 定义一个方法,参数closure用于接收闭包
+  2. 闭包的执行就是花括号里面代码的执行
+  3. 闭包接收的参数就是闭包参数closure参数中的i,如果是一个参数默认就是it变量
+  4. Groovy 的闭包有三个属性:thisObject、owner、delegate,当在一个闭包中调用定义的方法时,由这三个属性来确定该方法由哪个对象来执行,默认owner和delegate是相等的,其中delegate是可以被修改的,Gradle 中闭包的很多功能都是通过修改delegate来实现的

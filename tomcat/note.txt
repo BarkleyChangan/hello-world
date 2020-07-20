@@ -223,3 +223,13 @@ NOTE:密钥口令:111111
 3. 将数字证书安装到浏览器中,以IE8浏览器为例进行证书安装说明,安装步骤如下:
 安全 -> 安全报告 -> 查看证书 -> 安装证书 -> 将所有的证书放入下列存储 -> 受信任的根证书颁发机构
 ####################### Https #######################
+
+####################### 问题 #######################
+1.Tomcat启动卡住问题
+重启tomcat会被卡住，他会一直卡在(通过./catalina.sh run方法可以查看输出到标准输出流的日志)
+INFO:Deploying web application directory /home/tutor/apache-tomcat-7.0.73/webapps/manager .....
+解决方法1:
+将$JAVA_HOME/jre/lib/security/Java.security内,将securerandom.source的内容改为file:/dev/./urandom
+解决方法2:
+在服务器启动时也可以加上参数-Djava.security.egd=file:/dev/./urandom
+####################### 问题 #######################

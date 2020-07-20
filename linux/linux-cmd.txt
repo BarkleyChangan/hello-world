@@ -1097,6 +1097,12 @@ rpm -e RPM软件包名称(不带有版本信息)
 rpm -e --nodeps RPM包名称(不带有版本信息)
 rpm -e -vv --test RPM软件包名称    -vv输出完整调试信息 --test模拟删除软件包的全过程
 
+# 查看rpm包安装名称
+rpm -qpi ./jdk-8u211-linux-x64.rpm
+
+# 查看对应名称的软件安装生成了那些文件
+rpm -ql jdk1.8
+
 # SRPM
 rpmbuild --rebuild   将后面的SRPM进行编译,打包
          --recompile 将后面的SRPM进行编译,打包,安装

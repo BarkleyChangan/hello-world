@@ -126,6 +126,7 @@
    alt + F8               debug时计算表达式
 
    ctrl + e               打开最近修改的文件
+   ctrl + shift + e   最近修改的代码位置
    ctrl + o              查看类的结构
    ctrl + u              调试:查看表达式的值
    ctrl + w              关闭当前的tab
@@ -139,6 +140,7 @@
    ctrl + alt + b        需要看一个类/方法的实现类/方法
    ctrl + alt + h        查看某个方法的调用链关系
    ctrl + alt + 左方向键  debug时跳回来
+   ctrl + alt +v         快速抽取变量
 
    ctrl + shift + enter  向上开始新的一行
    ctrl + shift + h         查找方法在哪里被调用
@@ -152,7 +154,8 @@
    ctrl + shift + alt + n 使用symbol来查找
 
    shift + enter     向下开始新的一行
-   shift + shift     查找文件
+   shift + shift      查找文件
+   shift + F6         重命名
 
 6. 代码模板
    psvm                  main方法
