@@ -185,6 +185,7 @@
     15. 查看Nginx版本及其编译选项
         nginx -V
     16. 配置HTTPS网站(使用OpenSSL将自己作为CA为自己颁发证书)
+        https://help.aliyun.com/document_detail/98728.html?spm=5176.2020520163.0.0.30ec56a7olb1X8
         mkdir /usr/local/nginx/conf/ssl
         cd /usr/lcoal/nginx/conf/ssl
         # 生成服务器RSA私钥
@@ -675,6 +676,12 @@ ip addr add 10.4.7.102/24 dev eth0 label eth0:2
 检查是否配置成功:
 ip add | grep -E "101|102"
 
+二十七、显示定义个default_server
+server{
+    listen 80 default_server;
+    server_name _;
+    return 403; # 403 forbidden
+}
 ####################### nginx优化 #######################
 worker_processes 设置为cpu内核数量或内核数量的整数倍,在不确定时还可以指定其值为auto
 
@@ -759,7 +766,7 @@ server {
     }
 }
 
-####################### nginx.conf #######################
+####################### nginx优化 #######################
 
 ####################### 常见问题 #######################
 # nginx做反向代理时出现302错误
@@ -768,3 +775,16 @@ server {
 # 响应头中添加后端服务器地址
 add_header Kss-Upstream $upstream_addr;
 ####################### 常见问题 #######################
+
+####################### nginx升级 #######################
+# 安装第三方echo模块
+wget https://github.com/openresty/echo-nginx-module/archive/v0.61.tar.gz
+tar -zxvf v0.61.tar.gz
+./configure --prefix=/etc/nginx --add-module=/root/temp/echo-nginx-module-0.61
+make && make install
+进入/etc/nginx/sbin目录下执行./nginx -V，如果能看到configure arguments: --prefix=/etc/nginx --add-module=/root/temp/echo-nginx-module-0.61，那么就代表编译安装成功了
+
+# 知识补充
+--add-module=第三方模块源代码路径    用于添加第三方模块,--add-module=/usr/local/nginx/third_module/echo-nginx-module-0.60代表添加了echo模块
+--with-模块名                                       表示启用的nginx模块,如--with-http_ssl_module代表启用了http_ssl_module模块
+####################### nginx升级 #######################

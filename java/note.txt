@@ -256,6 +256,10 @@ val >> 1; -> val / 2
 
 # 设置JDK生成的代理类落盘
 System.setProperty("sun.misc.ProxyGenerator.saveGeneratedFiles", "true");
+
+# 获取当前类所在jar包
+String file = Feature.class.getProtectionDomain().getCodeSource().getLocation().getFile();
+System.out.println(URLDecoder.decode(file,"UTF-8"));
 ####################### Java基础 #######################
 
 ####################### JDK8 #######################
@@ -476,7 +480,36 @@ application/x-www-form-urlencoded:<form encType=””>中默认的encType,form�
 
 上传文件之时使用的：
 multipart/form-data:需要在表单中进行文件上传时,就需要使用该格式
+
+# 禁止缓存当前文档内容
+response.setDateHeader("expries", -1);
+response.setHeader("Cache-Control", "no-cache");
+response.setHeader("Pragma", "no-cache");
 ####################### Web #######################
+
+####################### 响应头 #######################
+# X-Frame-Options
+用来给浏览器指示允许一个页面可否在<frame>,<iframe>或者<object>中展现的标记
+DENY:表示该页面不允许在frame中展示,即使在相同域名的页面中嵌套也不允许
+SAMEORIGIN:表示该页面可以在相同域名页面的frame中展示
+ALLOW-FROM url:表示该页面可以在指定来源的frame中展示
+示例:
+add_header X-Frame-Options:ALLOW-FROM https://tongji.baidu.com;
+add_header X-Frame-Options:SAMEORIGIN;
+
+# X-Content-Type-Options
+提示标志,被服务器用来提示客户端一定要遵循在Content-Type首部中对MIME类型的设定,而不能对其进行修改。这就禁用了客户端的MIME类型嗅探行为,也就是意味着网站管理员确定自己的设置没有问题
+示例:
+add_header X-Content-Type-Options:nosniff;
+
+# X-XSS-Protection
+0:禁用XSS保护
+1:启用XSS保护
+1:mode=block:启用XSS保护,并在检查到XSS攻击时,停止渲染页面(例如IE8中,检查到攻击时整个页面会被一个#替换)
+示例:
+add_header X-Xss-Protection:1;
+add_header X-Xss-Protection:mod=block;
+####################### 响应头 #######################
 
 ####################### EL表达式 #######################
 # 判断值是否为null,空串,集合元素个数为0

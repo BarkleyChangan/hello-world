@@ -535,15 +535,24 @@ html{font-size:100*40/750vw;}
 @media only screen and (min-width:768px) and (max-width:992px){}
 @media only screen and (min-width:992px) and (max-width:1200px){}
 @media only screen and (min-width:1200px){}
+
+# 禁用a标签所有后代元素的鼠标事件
+a[href] * {
+  pointer-events: none;
+}
 ####################### CSS3 #######################
 
 ####################### Mobile #######################
-
-####################### Mobile #######################
-# touch-action
+# 禁用touch事件
+html {
+  touch-action:manipulation;
+}
 设置触摸屏用户如何操纵元素的区域(例如，浏览器内置的缩放功能)
-auto: 当触控事件发生在元素上时,由浏览器来决定进行哪些操作,比如对viewport进行平滑、缩放等
-none: 当触控事件发生在元素上时,不进行任何操作
+auto:当触控事件发生在元素上时,由浏览器来决定进行哪些操作,比如对viewport进行平滑、缩放等
+none:当触控事件发生在元素上时,不进行任何操作
+manipulation:规定浏览器只允许进行滚动和持续缩放操作,任何其它被touch-action:auto支持的行为不被支持
+####################### Mobile #######################
+
 ####################### 垂直水平居中 #######################
 # 文本水平居中
 text-align:center;

@@ -231,5 +231,6 @@ INFO:Deploying web application directory /home/tutor/apache-tomcat-7.0.73/webapp
 解决方法1:
 将$JAVA_HOME/jre/lib/security/Java.security内,将securerandom.source的内容改为file:/dev/./urandom
 解决方法2:
-在服务器启动时也可以加上参数-Djava.security.egd=file:/dev/./urandom
+将catalina.sh文件修改:JAVA_OPTS="$JAVA_OPTS -Djava.protocol.handler.pkgs=org.apache.catalina.webresources"下新增
+JAVA_OPTS="$JAVA_OPTS -Djava.security.egd=file:/dev/./urandom"
 ####################### 问题 #######################

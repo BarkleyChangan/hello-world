@@ -112,6 +112,11 @@ MySQL数据目录:
     |- t.frm    // 数据表元数据文件,不管是使用独立表空间还是系统表空间,每个表都对应有一个
     |- t.ibd    // 数据库表独立表空间文件,如果使用的是独立表空间,则一个表对应一个ibd文件,否则保存在系统表空间文件中
 
+# optimize,analyze,alter table三种重建表之间的区别:
+alter table t engine=InnoDB(就是recreate)默认的是Oline DDL过程
+analyze table t不是重建表,仅仅是对表的索引信息做重新统计,没有修改数据,期间加MDL读锁
+optimize table t等于上两步的操作
+
 # 连接字符串
 jdbc:mysql://localhost:3306/test_db?characterEncoding=utf8&useSSL=false&useServerPrepStmts=true&cachePrepStmts=true&fserverTimezone=Asia/Shanghai&rewriteBatchedStatements=true&autoReconnect=true
 

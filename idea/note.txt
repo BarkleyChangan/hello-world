@@ -111,6 +111,9 @@
     z. 使用javac的方式编译代码
     Build,Execution,Deployment -> Compiler -> Java Compiler -> Use compiler:Javac
 
+    a1. 构建/运行操作委托给maven
+    Build,Execution,Deployment -> Build Tools -> Maven -> Runner -> Delegate IDE build/run actions to Maven(选中)
+
 5. 快捷键
    alt + enter         万能纠错
    alt + r                执行

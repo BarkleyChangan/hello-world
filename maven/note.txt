@@ -223,7 +223,10 @@ http://mvnrepository.com/
 1.打出所有依赖
 mvn dependency:tree > ~/dependency.txt
 2.只打出指定groupId和artifactId的依赖关系
+mvn dependency:tree -Dverbose 此处一定不要省略-Dverbose参数,要不然是不会显示被忽略的包的
 mvn dependency:tree -Dverbose -Dincludes=groupId:artifactId
+mvn dependency:analyze-only 检测那些声明了但是没被使用的依赖,如有有一些是你自己声明的那尽量去掉
+mvn dependency:analyze-duplicate 分析重复定义的依赖,清理那些重复定义的依赖
 3.vm启动脚本加入。在tomcat启动脚本中可见加载类的详细信息
 -XX:+TraceClassLoading
 -verbose

@@ -1,4 +1,4 @@
-一、rpm安装
+一、rpm安装(服务器不用此安装方法)
 # 解决MySQL 5.5.48依赖问题
 yum -y install glibc.i686
 yum -y install libncurses.so.5
@@ -80,13 +80,17 @@ yum install -y cmake make gcc gcc-c++ bison ncurses ncurses-devel
 mysql-5.7.26.tar.gz
 boost_1_59_0.tar.gz
 
+mysql-5.7.28-linux-glibc2.12-x86_64.tar.gz
+
 # 解压
 cd /usr/local/src
 
 tar -zxvf mysql-5.7.26.tar.gz
 tar -zxvf boost_1_59_0.tar.gz
-
 mv boost_1_59_0 mysql-5.7.26/
+
+tar -zxvf mysql-5.7.28-linux-glibc2.12-x86_64.tar.gz
+mv mysql-5.7.28-linux-glibc2.12-x86_64 mysql-5.7.28
 
 # 创建MySQL用户和用户组
 groupadd -r mysql
@@ -244,9 +248,31 @@ GRANT USAGE ON *.* TO 'itshop'@'192.168.57.12' IDENTIFIED BY '123456';
 GRANT ALL PRIVILEGES ON my_db.* TO 'itshop'@'192.168.57.12';
 GRANT SELECT,INSERT,UPDATE,DELETE ON my_db.* to itshop@'%' IDENTIFIED BY '123456';
 *******************************************************************************
-
 # MySQL相关路径说明
 /var/lib/mysql/        MySQL数据库文件的存放路径    /var/lib/mysql/localhost.localdomain.pid
 /usr/share/mysql    配置文件目录                               MySQL.server命令以及配置文件
 /usr/bin                   相关命令目录                               mysqladmin,mysqldump等命令
 /etc/init.d/mysql    MySQL服务相关脚本
+
+*******************************************************************************
+Centos下完全卸载MySQL
+一、yum方式安装的MySQL
+1.yum remove mysql mysql-server mysql-libs compat-mysql51
+2.rm -rf /var/lib/mysql
+3.rm /etc/my.cnf
+查看是否还有mysql软件:rpm -qa|grep mysql
+
+二、rpm方式安装的MySQL
+1.查看系统中是否以rpm包安装的mysql
+rpm -qa | grep -i mysql
+rpm -e MySQL-server-5.6.17-1.el6.i686
+rpm -e MySQL-client-5.6.17-1.el6.i686
+删除MySQL服务:
+chkconfig --list | grep -i mysql
+chkconfig --del mysql
+删除分散MySQL文件夹:
+whereis mysql 或者 find / -name mysql
+清空相关mysql的所有目录以及文件:
+rm -rf /usr/lib/mysql
+rm -rf /usr/share/mysql
+rm -rf /usr/my.cnf

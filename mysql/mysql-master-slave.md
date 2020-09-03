@@ -10,17 +10,25 @@ MySQL配置主从复制
    binlog-ignore-db=mysql
    binlog-ignore-db=performance_schema
    binlog-ignore-db=sys
-   # 设置需要复制的数据库
+   # 设置需要复制的数据库,如果不配置默认为全部数据库
    binlog-do-db=test_db
    # 设置logbin格式
    binlog_format=STATEMENT # now()
                  ROW       # 
-              MIXED     # @@hostname获取当前主机名称
+                 MIXED     # @@hostname获取当前主机名称
    # 不区分大小写
    lower_case_table_names=1
+   # bin-log日志保存天数
+   expire-logs-days=30
    ```
    
-   修改完配置文件后需要重启MySQL,并查看主库状态: `SHOW MASTER STATUS`
+   修改完配置文件后需要重启MySQL,并查看主库状态:
+   
+    `SHOW MASTER STATUS`
+   
+   `SHOW VARIABLES LIKE 'log_bin';`
+   
+   `SHOW VARIABLES LIKE 'server_id';`
    
 2. 从机my.cnf配置文件修改:
 
@@ -62,6 +70,9 @@ GRANT REPLICATION SLAVE,REPLICATION CLIENT ON *.* TO slave@'%' IDENTIFIED BY '12
 5. 在从机上设置主机
 
    ```mysql
+   # 在从机上测试链接主机
+   mysql -h 192.168.100.21 -uroot -p
+   
    CHANGE MASTER TO MASTER_HOST='192.168.100.21',
    MASTER_USER='slave',
    MASTER_PASSWORD='123456',
