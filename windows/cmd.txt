@@ -72,6 +72,13 @@ ipconfig /flushdns
 
 # 查看序列号SN
 wmic bios get serialnumber
+
+# win10关闭任务栏窗口预览功能
+打开注册表:regedit
+定位到:HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced,创建一个名称ExtendedUIHoverTime的32位DWORD值,其值设置为9000
+定位到:HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband,创建一个名称NumThumbnails的32位DWORD值,其值设置为0
+最后保存注册表设置之后,重新启动计算机
+
 ####################### 常用工具快捷命令 #######################
 calc 启动计算器
 charmap 启动字符映射表

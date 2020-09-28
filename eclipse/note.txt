@@ -1,94 +1,88 @@
-1. jdk编译版本
-   Window -> Preferences -> Java -> Java Compiler -> Compiler compliance level: 1.8
+1.jdk编译版本
+Window -> Preferences -> Java -> Java Compiler -> Compiler compliance level: 1.8
 
-2. Java运行环境jre
-   Window -> Preferences -> Java -> Installed JREs -> Add
+2.Java运行环境jre
+Window -> Preferences -> Java -> Installed JREs -> Add
 
-3. Web Server配置
-   Window -> Preferences -> Server -> Runtime Environments -> Add
+3.Web Server配置
+Window -> Preferences -> Server -> Runtime Environments -> Add
 
-4. Tomcat配置
-   Window -> Preferences -> Server -> Runtime Environments -> Add -> 选择Apache Tomcat v9.0 -> Browse:D:\Program\Green\64\apache-tomcat-9.0.1
-                                  JRE:jdk1.8.0_144(选择自己安装的jdk版本) -> Finish
-   双击Server(删除Tomcat已部署的项目并右键Server -> Clean):
-   a. Open launch configuration -> Arguments(参数配置):
-      -Xms128M -Xmx512M -XX:PermSize=512m -XX:MaxPermSize=1024m
-   b. Server Location -> Use Tomcat installation (takes control of Tomcat installation)
-      Server Path: ...
-      Deploy path: ...
-   c. Server Options -> Publish module contexts to separate XML files
-                        Modules auto reload by default
+4.Tomcat配置
+Window -> Preferences -> Server -> Runtime Environments -> Add -> 选择Apache Tomcat v9.0 -> Browse:D:\Program\Green\64\apache-tomcat-9.0.1
+    JRE:jdk1.8.0_144(选择自己安装的jdk版本) -> Finish
+    双击Server(删除Tomcat已部署的项目并右键Server -> Clean):
+    a.Open launch configuration -> Arguments(参数配置):
+    -Xms128M -Xmx512M -XX:PermSize=512m -XX:MaxPermSize=1024m
+    b. Server Location -> Use Tomcat installation (takes control of Tomcat installation)
+    Server Path: ...
+    Deploy path: ...
+    c.Server Options -> Publish module contexts to separate XML files
+    Modules auto reload by default
 
-5. 设置字符集:
-   Window -> Preferences -> General -> Content TypeS -> Text -> JSP
-   Window -> Preferences -> General -> Content Types -> Text -> Java Properties File
-   Window -> Preferences -> General -> Workspace面板 -> 
-             Text file encoding -> UTF-8
-             New text file line delimiter -> Unix
-   Window -> Preferences -> Web -> JSP Files -> ISO 10646/Unicode(UTF-8)
+5.设置字符集:
+Window -> Preferences -> General -> Content TypeS -> Text -> JSP
+Window -> Preferences -> General -> Content Types -> Text -> Java Properties File Window -> Preferences -> General -> Workspace面板 -> Text file encoding -> UTF-8 New text file line delimiter -> Unix
+Window -> Preferences -> Web -> JSP Files -> ISO 10646/Unicode(UTF-8)
 
-6. 关闭悬浮提示
-   Window -> Preferences -> Java -> Editor -> Hovers -> 去掉勾选Combined Hover 
+6.关闭悬浮提示
+Window -> Preferences -> Java -> Editor -> Hovers -> 去掉勾选Combined Hover 
 
-7. 修改eclipse.ini配置运行内存
-  -Xms256m
-  -Xmx1024m
-  -XX:PermSize=512m
-  -XX:MaxPermSize=1024m
+7.修改eclipse.ini配置运行内存
+-Xms256m
+-Xmx1024m
+-XX:PermSize=512m
+-XX:MaxPermSize=1024m
 
-8. 代码提示
-   Window -> Preferences  -> Java  -> Editor  -> Content Assist -> Auto Activation triggers for Java: .abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ
+8.代码提示
+Window -> Preferences  -> Java  -> Editor  -> Content Assist -> Auto Activation triggers for Java: .abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ
 
-9. 关联jar包以及源文件，doc文件
-    windows -> preferences -> java -> installed jres 目录选中你的安装jres单击edit在选中所有的jre system libraries 单击source attachment 将location path 指向src.zip的目录位置保存退出即可
+9.关联jar包以及源文件，doc文件
+windows -> preferences -> java -> installed jres 目录选中你的安装jres单击edit在选中所有的jre system libraries 单击source attachment 将location path 指向src.zip的目录位置保存退出即可
 
-10. 格式化代码长度
-   a. 修改java类文件行长度:
-   Window -> Preferences -> Java-> Code Style -> Formatter -> Edit/Show -> Line Wrapping -> Maximum line width:300
-   b. 修改html、jsp、js的代码行长度
-   Window -> Preferences -> MyEclipse -> Files and Editors -> Html -> Html Source -> Line width -> 加个0
+10.格式化代码长度
+a.修改java类文件行长度:
+Window -> Preferences -> Java-> Code Style -> Formatter -> Edit/Show -> Line Wrapping -> Maximum line width:300
+b.修改html、jsp、js的代码行长度
+Window -> Preferences -> MyEclipse -> Files and Editors -> Html -> Html Source -> Line width -> 加个0
 
-11. 设置New中显示的菜单
-   windows -> Perspective -> Customize Perspective... -> Shortcuts ->
-        取消勾选EJB、JavaEE、JPA
-        Maven -> 全部勾选
-        Java -> Annotation、Class、Enum、Interface、Java Project、Package、Source Folder 
-                                  
-12. Maven配置
-        6.1 配置Maven
-        Window -> Preferences -> Maven -> Installations -> Add:
-        Installation home: D:\Program\Green\64\apache-maven-3.5.2
-        Installation name: apache-maven-3.5.2
+11.设置New中显示的菜单
+windows -> Perspective -> Customize Perspective... -> Shortcuts -> 取消勾选EJB、JavaEE、JPA Maven -> 全部勾选 Java -> Annotation、Class、Enum、Interface、Java Project、Package、Source Folder
 
-        6.2 配置Maven仓库位置
-        Window -> Preferences -> Maven-> User Settings
-        User Settings: D:\Program\Green\64\apache-maven-3.5.2\conf\settings.xml
-        重构索引，即将仓库中的内容让eclipse加载一下
+12.Maven配置、
+    6.1Maven设置
+    Window -> Preferences -> Maven -> Installations -> Add:
+    Installation home: D:\Program\Green\64\apache-maven-3.5.2
+    Installation name: apache-maven-3.5.2
 
-        6.3 重构索引，即将仓库中的内容让eclipse加载一下
-        Show View->Other->Maven Repositories->在Local Repository上右键点击Rebuild Index
-        这样就能在eclipse local Repository中查看我们本地仓库的内容了
-        
-13. Maven插件安装
-    Helper -> Install New Software... -> 点击Work With:字段边上的Add按钮,
-        Name: m2e
-        Location: http://m2eclipse.sonatype.org/sites/m2e
-        Name: m2e-extras
-        Location: http://m2eclipse.sonatype.org/sites/m2e-extras
+    6.2配置Maven仓库位置
+    Window -> Preferences -> Maven-> User Settings
+    User Settings: D:\Program\Green\64\apache-maven-3.5.2\conf\settings.xml
+    重构索引，即将仓库中的内容让eclipse加载一下
 
-14. Sping插件下载地址
-   http://download.springsource.com/release/TOOLS/update/3.9.0.RELEASE/e4.7/springsource-tool-suite-3.9.0.RELEASE-e4.7.0-updatesite.zip
+    6.3 重构索引，即将仓库中的内容让eclipse加载一下
+    Show View->Other->Maven Repositories->在Local Repository上右键点击Rebuild Index
+    这样就能在eclipse local Repository中查看我们本地仓库的内容了
 
-15. Hibernate插件下载地址(在线安装)
-   http://download.jboss.org/jbosstools/updates/stable/
+13.Maven插件安装
+Helper -> Install New Software... -> 点击Work With:字段边上的Add按钮,
+Name: m2e
+Location: http://m2eclipse.sonatype.org/sites/m2e
+Name: m2e-extras
+Location: http://m2eclipse.sonatype.org/sites/m2e-extras
 
-16. SVN插件安装
-    Help -> Install New Software… -> Add.. --> 输入Name -> 输入地址：http://subclipse.tigris.org/update_1.8.x
-    注意: 采用下面两种方法来提升安装更新的速度：
-    a. Windows -> Preferences -> Install/Update -> Available Software Sites，将里面不用的信息删除，将本次更新不需要的停用（选中之后然后点右边的Disable按钮）。
-    b. 在线安装插件的Install窗口,将下面的Contact all update sites during install to find required software前面的选项去掉
+14.Sping插件下载地址
+http://download.springsource.com/release/TOOLS/update/3.9.0.RELEASE/e4.7/springsource-tool-suite-3.9.0.RELEASE-e4.7.0-updatesite.zip
 
-17. 热部署
+15.Hibernate插件下载地址(在线安装)
+http://download.jboss.org/jbosstools/updates/stable/
+
+16.SVN插件安装
+Help -> Install New Software… -> Add.. --> 输入Name -> 输入地址:http://subclipse.tigris.org/update_1.8.x
+注意: 采用下面两种方法来提升安装更新的速度：
+a. Windows -> Preferences -> Install/Update -> Available Software Sites，将里面不用的信息删除，将本次更新不需要的停用（选中之后然后点右边的Disable按钮）。
+b. 在线安装插件的Install窗口,将下面的Contact all update sites during install to find required software前面的选项去掉
+
+17.热部署
 a. Tomcat安装目录下,修改conf/server.xml中在Host标签中添加reloadable="true"
 b. Tomcat安装目录下,在conf/web.xml文件的servlet标签中添加如下内容:
 <init-param>
@@ -97,12 +91,19 @@ b. Tomcat安装目录下,在conf/web.xml文件的servlet标签中添加如下内
 </init-param>
 c. 重新挂载项目,然后以调试的方式启动就可以热部署了
 
-18. Tab键改为4个空格
+18.Tab键改为4个空格
 Windows -> Preferences -> General -> Editors -> Text Editors -> 选中Insert spaces for tabs
 Windows -> Preferences -> General -> Java -> Code Style -> Formatter -> 点击Editor...按钮 -> 选择Indentation选项卡 -> 在General Settings里选择Spaces only
 
-19. 设置当行代码120个宽度
+19.设置当行代码120个宽度
 Windows -> Preferences -> General -> Java -> Code Style -> Formatter -> 点击Editor...按钮 -> 选择Line Wrapping选项卡 -> 在General Settings里设置Maximum line width
 
-20. 换行符使用Unix格式
+20.换行符使用Unix格式
 Windows -> Preferences -> General -> Workspace -> 在New text file line delimiter的Other选择Unix
+
+21.WebLogic配置
+Windows -> Preferences -> Servers -> Runtime Environments -> Add -> WebLogic -> Oracle WebLogic Server 12c ->
+    BEA home directory:D:\program\install\32\WebLogic\Oracle_Home
+    Configured JDK:jdk1.8.0_162
+    -> Next -> Administration password:Server2008
+    看到:The server started in RUNNING mode表示启动成功

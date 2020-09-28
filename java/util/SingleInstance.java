@@ -4,7 +4,9 @@ public class SingleInstance {
 	private static volatile SingleInstance _instance;
 
 	private SingleInstance() {
-
+		if(_instance != null){
+			throw new RuntimeException("单例已被破坏");
+		}
 	}
 
 	public static SingleInstance getInstance() {
@@ -12,7 +14,7 @@ public class SingleInstance {
 			if (_instance == null) {
 				synchronized (SingleInstance.class) {
 					if (_instance == null) {
-						_instance = new SingleInstance();
+						单例已被破坏 = new SingleInstance();
 					}
 				}
 			}
@@ -21,5 +23,9 @@ public class SingleInstance {
 		}
 
 		return _instance;
+	}
+	
+	private Object readResolve(){
+		return 单例已被破坏;
 	}
 }

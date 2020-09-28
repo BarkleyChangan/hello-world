@@ -118,7 +118,7 @@ analyze table t不是重建表,仅仅是对表的索引信息做重新统计,没
 optimize table t等于上两步的操作
 
 # 连接字符串
-jdbc:mysql://localhost:3306/test_db?characterEncoding=utf8&useSSL=false&useServerPrepStmts=true&cachePrepStmts=true&fserverTimezone=Asia/Shanghai&rewriteBatchedStatements=true&autoReconnect=true
+jdbc:mysql://localhost:3306/test_db?characterEncoding=utf8&useSSL=false&useServerPrepStmts=true&cachePrepStmts=true&serverTimezone=Asia/Shanghai&rewriteBatchedStatements=true&autoReconnect=true
 
 # 修改参数
 SET @@global.read_buffer_size=524288;
@@ -1337,3 +1337,16 @@ SELECT * FROM users_location WHERE
     ) * 6380 ASC 
     LIMIT 10 ';
 ####################### GEO #######################
+
+####################### 锁 #######################
+SELECT b.trx_mysql_thread_id AS 'blocked_thread_id',b.trx_query AS 'blocked_sql_text',c.trx_mysql_thread_id AS 'blocker_thread_id',c.trx_query AS 'blocker_sql_text',(UNIX_TIMESTAMP() - UNIX_TIMESTAMP(c.trx_started)) AS 'blocked_time'
+FROM information_schema.innodb_lock_waits a
+INNER JOIN information_schema.innodb_trx b ON a.requesting_trx_id = b.trx_id 
+INNER JOIN information_schema.innodb_trx c ON a.blocking_trx_id = c.trx_id
+WHERE (UNIX_TIMESTAMP() - UNIX_TIMESTAMP(c.trx_started)) > 4;
+
+SELECT * FROM INFORMATION_SCHEMA.INNODB_TRX\G;
+SELECT * FROM INFORMATION_SCHEMA.INNODB_LOCKS\G;
+SELECT * FROM INFORMATION_SCHEMA.INNODB_LOCK_WAITS\G;
+SELECT ENGINE,ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,EVENT_ID,OBJECT_NAME,INDEX_NAME,LOCK_TYPE,LOCK_MODE,LOCK_STATUS,LOCK_DATA FROM performance_schema.data_locks;
+####################### 锁 #######################
