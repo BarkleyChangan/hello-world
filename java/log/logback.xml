@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="UTF-8" ?>
 <!-- logback中一共有5种有效级别，分别是TRACE、DEBUG、INFO、WARN、ERROR，优先级依次从低到高 -->
+<!-- 当设置scan=true后,Logback会起一个ReconfigureOnChangeTask的任务来监视配置文件的变化 -->
 <configuration scan="true" scanPeriod="60 seconds" debug="false">
     <property name="DIR_NAME" value="spring-helloworld"/>
     <!-- 将记录日志打印到控制台 -->

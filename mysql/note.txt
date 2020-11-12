@@ -50,6 +50,17 @@ SET character_set_connection = charset_name;
 character_set_client：服务器是怎样认为客户端发送过来的请求是采用何种字符集编码的
 character_set_connection：服务器在运行过程中会采用何种字符集编码请求中的字符
 character_set_result：服务器会将响应使用何种字符集编码后再发送给客户端的
+
+# 查看binlog文件
+show binary logs; # 查看binlog列表
+show master status; # 查看最新的binlog
+mysqlbinlog mysql-bin.000002 | more
+show binlog events in 'mysql-bin.000001'; # 查看当前 Binlog 文件对应的详细事件信息
+show global variables like '%binlog_format%'; # 查询当前 Binlog 日志使用格式
+
+# 使用binlog恢复数据
+mysqlbinlog --start-position=0 --stop-position=500 bin-log.000003 > /root/back.sql;
+上面命令的作用就是将0 -500位点的数据恢复到自定义的SQL文件中
 ####################### CMD命令 #######################
 
 ####################### 用户管理 #######################

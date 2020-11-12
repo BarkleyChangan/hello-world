@@ -325,6 +325,7 @@ jstack [option] [server-id@]remote-hostname-or-ip
 堆内存 = 年轻代 + 年老代 + 永久代
 年轻代 = Eden区 + 两个Survivor区（From和To）
 jstat [ option vmid [interval [s|ms] [count]] ]
+常用命令(每1秒打印一次jvm的内存信息,打印10次):jstat -gc PID 1000 10
 vmid: 本地虚拟机进程VMID与LVMID一直;远程虚拟机进程VMID格式为:[protocol:][//]lvmid[@hostname[:port]/servername]
            -class                 监视类装载、卸载数量、总空间及类装载所耗费的时间
            -gc                      监视Java堆状况,包括Eden区、2个Survivor区、老年代、永久代等容量、已用空间、GC时间合计等信息
@@ -369,11 +370,13 @@ jmap -heap pid 查看进程堆内存使用情况
 jmap -histo[:live] pid 查看堆内存中的对象数目、大小统计直方图
 jmap -histo:live 'pid of java' > /tmp/jmap00
 jmap -dump:format=b,file=dumpFileName pid把进程内存使用情况dump到文件中
+常用命令:
+jmap -dump:live,format=b,file=dump.hprof PID
+jmap -dump:format=b,file=/tmp/dump.dat 21711
 
 # Java Heap Analysis Tool虚拟机堆转储快照分析工具(内置微型HTTP/HTML服务器)
 jhat
 示例:
-jmap -dump:format=b,file=/tmp/dump.dat 21711
 jhat -port 9998 /tmp/dump.dat 注意:如果dump文件太大,可能需要加上-J-Xmx512m参数指定最大堆内存
 jhat -J-Xmx512m -port 9998 /tmp/dump.dat 然后就可以在浏览器中输入主机地址:9998查看了
 在线分析dump文件网址:https://console.perfma.com/

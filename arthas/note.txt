@@ -1,0 +1,9 @@
+# 下载
+curl -O https://arthas.aliyun.com/arthas-boot.jar
+
+# 启动
+java -jar -Dfile.encoding=UTF-8 arthas-boot.jar
+
+# watch功能
+https://arthas.aliyun.com/doc/watch.html
+watch xxx.xxx.controller method "{params,returnObj}" -x 2
