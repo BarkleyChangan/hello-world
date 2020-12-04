@@ -61,4 +61,14 @@ public class SpringContextUtil implements ApplicationContextAware {
         Environment environment = applicationContext.getEnvironment();
         return environment.getProperty(name);
     }
+
+    public static void main(String[] args) {
+        System.out.println("isAopProxy" + AopUtils.isAopProxy(bean));
+        System.out.println("isCGLIBProxy=" + AopUtils.isCGLIBProxy(bean));
+        System.out.println("isJdkProxy=" + AopUtils.isJdkDynamicProxy(bean));
+
+        // 获取当前代理类
+//        ((IStockProcessService) AopContext.currentProxy()).openAccount(aname, money);
+//        ((IStockProcessService) AopContext.currentProxy()).openStockInAnotherDb(aname, 11);
+    }
 }

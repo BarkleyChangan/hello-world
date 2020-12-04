@@ -1,3 +1,4 @@
+官方文档:http://www.searchdoc.cn/rdbms/mysql/dev.mysql.com/doc/refman/5.7/en/introduction.com.coder114.cn.html
 ####################### CMD命令 #######################
 # 启动MySQL服务
 net start mysql
@@ -864,6 +865,24 @@ server-id=1
 log-bin=/usr/local/mysql/mysql-bin.index
 # 设置日志格式
 binlog-format=mixed
+
+# 查看binlog日志列表
+show master logs;
+
+# 刷新binlog(重新生成一个binlog日志文件=)
+flush logs;
+
+# 重置(清空)binlog文件
+reset master;
+
+# 查看binlog日志
+语法:./mysqlbinlog binlog日志文件
+/usr/local/mysql/bin
+./mysqlbinlog /usr/local/mysql/log_bin_data/mysql-bin.000002
+
+# 将binlog日志转换普通文件
+语法：./mysqlbinlog --no-defaults --base64-output=DECODE-ROWS -v binlog日志文件 > 导出文件路径
+./mysqlbinlog --no-defaults --base64-output=DECODE-ROWS -v /usr/local/mysql/log_bin_data/mysql-bin.000002 > /mysql_data_back/bin-log.sql
 
 # 临时开启binlog
 SET sql_log_bin={0|1}

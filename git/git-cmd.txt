@@ -292,8 +292,15 @@ git stash pop
 # 重新应用被暂存的变更
 git stash apply --index
 
-# 从储藏中创建分支
+# 从储藏上新建一个分支
 git stash branch testchanges
+
+# 只储藏我们没有add到暂存区的内容
+git stash --keep-index
+
+# 将新创建并且还没有被git管理的文件也储藏
+git stash -u
+git stash --include-untracked
 ***************** 储藏 *****************
 
 ***************** 分支 *****************
