@@ -196,6 +196,9 @@ SHOW STATUS LIKE '%lock%'
 SHOW GLOBAL STATUS LIKE "table_locks%";
 SHOW STATUS LIKE 'innodb_row_lock%';
 
+Table_locks_immediate:立即获得表锁请求的次数
+Table_locks_waited:无法立即获得对表锁的请求的次数，需要等待。这个值过高说明性能可能出现了问题，并影响连接的释放
+
 # 检查InnoDB的状态
 show engine innodb status;
 Log sequence number:当前的LSN
@@ -235,6 +238,19 @@ SHOW STATUS LIKE 'Com_update';
 
 # 删除操作的次数
 SHOW STATUS LIKE 'Com_delete';
+
+# 查看最大连接数
+SHOW VARIABLES LIKE "max_connections";
+
+# 查看已使用最大连接数
+SHOW VARIABLES LIKE 'max_used_connections';
+
+# 增加当前会话的mysql最大连接数
+SET GLOBAL max_connections = 1000;
+
+# 永久增加mysql最大连接数
+vim /etc/my.cnf
+max_connections = 1000
 
 # 禁用/启用索引
 ALTER TABLE tablename DISABLE KEYS;

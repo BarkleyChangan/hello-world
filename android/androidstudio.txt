@@ -95,3 +95,8 @@ allprojects {
 
 12.更改AndroidStudio使其默认开启不会打开上次编辑的项目
 Settings -> Appearance & Behavior -> System Settings -> Reopen last project on startup(取消勾选)
+
+13.Could not install Gradle distribution from 'https://services.gradle.org/distributions/gradle-6.5-bin.zip'
+关闭Android Studio,清空目录C:\Users\chang\.gradle\wrapper\dists\gradle-6.5-bin\6nifqtx7604sqp1q6g8wikw7p下的文件
+从https://services.gradle.org/distributions/gradle-6.5-bin.zip地址下载文件后,并移动文件到C:\Users\chang\.gradle\wrapper\dists\gradle-6.5-bin\6nifqtx7604sqp1q6g8wikw7p目录
+重启Android Studio,点击按钮Sync Project with Gradle Files
