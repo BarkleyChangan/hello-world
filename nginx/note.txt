@@ -80,6 +80,22 @@
        useBodyEncodingForURI="true"
 
 四、安装nginx
+安全地配置nginx，主要是以低权限用户运行nginx，这样即使出现漏洞，攻击者也难以反弹shell:
+groupadd nologin
+-M 不指定家目录
+-s 指定shell ，nologin代表该用户无法用于登录，但是可以指定以此用户执行命令，详情在后面
+-g 指定组
+useradd nginx-nologin -M -s /sbin/nologin -g nologin
+chown -R nginx-nologin:nologin /usr/local/nginx
+chmod -R 755 /usr/local/nginx
+#su即使用另一个用户执行命令，-s指定了shell，-c是命令内容
+#检查配置是否正确
+su -s /bin/bash -c "/usr/local/nginx/sbin/nginx -c /usr/local/nginx/conf/nginx.conf" nginx-nologin
+#重载配置文件
+su -s /bin/bash -c "/usr/local/nginx/sbin/nginx -s reload" nginx-nologin
+#停止
+su -s /bin/bash -c "/usr/local/nginx/sbin/nginx -s quit" nginx-nologin
+
     1. 下载Nginx
        wget http://nginx.org/download/nginx-1.16.1.tar.gz
     2. 安装需要编译的插件
