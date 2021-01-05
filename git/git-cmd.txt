@@ -270,6 +270,9 @@ git blame file_name
 
 # 查看操作日志
 git reflog
+
+# 搜索generate_create_sql.py这个文件下get_yaml_config这个函数的变更
+git log -L :get_yaml_config:generate_create_sql.py
 ***************** 日志 *****************
 
 ***************** 储藏 *****************
@@ -491,6 +494,11 @@ git bisect reset
 
 # 显示每一个文件中每一行代码的作者
 git blame [file_name]
+
+# 查找之前某一个版本的代码
+-n 显示行号
+-p 查找引用
+git grep -n -p get_yaml_config 9caf1ecda6
 ***************** 查看状态信息 *****************
 
 ***************** 标签 *****************

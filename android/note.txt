@@ -1,7 +1,12 @@
-/data/app:   存放第三方apk文件
-/system/app: 存放系统apk文件
-/data/data/packagename: 与应用对应的文件,在应用安装时自动生成,应用卸载时自动删除
-/storage/sdcard: sk卡的文件夹
+# APP安装过程
+1拷贝xxx.apk到/data/app/xxx.apk
+2在/data/data目录下创建一个包名文件夹
+3Android中注册表:简单的xml文件,在/data/system/package.list和package.xml存放应用的包名和签名信息
+
+/data/app:存放第三方apk文件
+/system/app:存放系统apk文件
+/data/data/packagename:与应用对应的文件,在应用安装时自动生成,应用卸载时自动删除
+/storage/sdcard:sk卡的文件夹
 
 # SharedPrefrence存储:
 /data/data/packagename/shared_prefs/xxx.xml
@@ -144,3 +149,35 @@ protected void onDestroy() {
     super.onDestroy();
     mHandler.removeCallbacksAndMessages(null);
 }
+
+########## adb相关命令 ##########
+# 安装软件
+adb install [-r] [-s] xxx.apk
+-r重新安装
+-s安装到sd卡
+
+# 卸载app
+adb unstall [-k] <包名>
+-k只删除程序,不删除所用数据与缓存目录
+
+# 取出手机中的文件
+adb pull xxx.xxx
+
+# 发送文件到手机
+adb push xxx.xxx
+
+# 进入手机终端
+adb shell
+
+# 列出所有链接设备
+adb devices
+
+# 重启
+adb:reset adb
+
+# 杀死adb
+adb kill-server
+
+# 启动adb
+adb start-server
+########## adb相关命令 ##########

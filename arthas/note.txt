@@ -7,3 +7,6 @@ java -jar -Dfile.encoding=UTF-8 arthas-boot.jar
 # watch功能
 https://arthas.aliyun.com/doc/watch.html
 watch xxx.xxx.controller method "{params,returnObj}" -x 2
+
+# 教程
+https://www.cnblogs.com/goodAndyxublog/p/12424734.html

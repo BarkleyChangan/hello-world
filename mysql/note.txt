@@ -1391,6 +1391,12 @@ INNER JOIN information_schema.innodb_trx b ON a.requesting_trx_id = b.trx_id
 INNER JOIN information_schema.innodb_trx c ON a.blocking_trx_id = c.trx_id
 WHERE (UNIX_TIMESTAMP() - UNIX_TIMESTAMP(c.trx_started)) > 4;
 
+锁排查可以用的视图和数据字典:
+开启参数:innodb_status_output_locks=1;以支持使用show engine innodb status查看锁详情
+SHOW ENGINE innodb STATUS;
+SELECT * FROM performance_schema.data_lock_waits;
+SELECT * FROM performance_schema.data_locks;
+SELECT * FROM performance_schema.metadata_locks; 
 SELECT * FROM INFORMATION_SCHEMA.INNODB_TRX\G;
 SELECT * FROM INFORMATION_SCHEMA.INNODB_LOCKS\G;
 SELECT * FROM INFORMATION_SCHEMA.INNODB_LOCK_WAITS\G;

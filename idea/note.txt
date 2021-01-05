@@ -192,11 +192,14 @@ File -> Other Settings -> Default Settings -> Build,Execution,Deployment -> Buil
 File -> Invalidate Cache/Restart...
 
 10. 插件
-https://plugins.jetbrains.com/   Gsonformat
+https://plugins.jetbrains.com/
+Gsonformat
+HexView
 VisualVM Launcher
 findbugs
 Alibaba Java Coding Guidelines
 Maven Helper
+.ignore
 lombok:
 IDEA:Settings->Build,Execution,Deployment->Compiler->Annotation Processors->springmvcdemo->选中Enable annotation processing
 开启该项是为了让Lombok注解在编译阶段起到作用
