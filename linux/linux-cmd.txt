@@ -1593,17 +1593,30 @@ set shiftwidth=4
 
 ***************** Shell *****************
 # 快捷键
-ctrl+u 删除光标前的指令串
-ctrl+k 删除光标后的指令串
+ctrl+Insert 复制命令行内容
+shift+Insert 粘贴命令行内容
 ctrl+a 将光标移动到指令串最前面
 ctrl+e 将光标移动到指令串最后面
-ctrl+w 删除光标前的单词
+ctrl+f 光标向右移动一个字符(相当于方向键右键)
+ctrl+b 光标向左移动一个字符(相当于方向键左键)
+ctrl+u 剪切(删除)光标前的字符
+ctrl+k 剪切(删除)光标后的字符
+ctrl+w 剪切(删除)光标前的一个单词
 ctrl+y 粘贴使用ctrl+w,ctrl+u,ctrl+k快捷键擦除的文本
+ctrl+c 中断终端正在执行的任务或者删除整行
+ctrl+h 删除光标所在处的前一个字符(相当于退格键)
+ctrl+d 退出当前Shell命令行
+ctrl+r 搜索命令行使用过的历史命令记录
+ctrl+g 从执行Ctrl+r的搜索历史命令模式退出
 ctrl+p 查看上一个命令
 ctrl+n 显示下一个命令
 ctrl+r 搜索历史命令
 ctrl+s 冻结终端
 ctrl+q 解冻终端
+ctrl+l 清除屏幕所有内容,并在屏幕最上面开始一个新行,等同clear命令
+ctrl+z 暂停执行在终端运行的任务
+esc+.(点) 获取上一条命令的最后的部分(空格分隔)
+esc+t 颠倒光标所在处及其相邻单词的位置
 
 #! /bin/bash
 

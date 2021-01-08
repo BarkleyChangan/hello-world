@@ -248,6 +248,18 @@ CTRL+ SHIFT + A或者help -> find action…打开:搜索registry
 g.项目中使用:
 View -> Tool Windows -> JRebel -> 勾选第一个复选框
 
+在线激活插件:
+a.打开Activate JRebel面板
+b.选择Team URL(Connect to online licensing service)并输入https://jrebel.qekang.com/{GUID}
+c.选中I agree with terms & conditions of the License Agreement
+d.File -> Settings -> JRebel & XRebel -> 点击Work offline
+e.File -> Settings -> Build,Execution,Deployment -> Compiler -> 勾选Build project automatically
+f.ctrl+shift+A,搜索registry
+  ctrl+shift+Alt+/,选择Registry
+勾选compiler.automake.allow.when.app.running
+g.View -> Tool Windows -> JRebel -> 勾选第一个复选框
+h.修改代码按快捷键ctrl+shift+F9,运行后会提示有变化是否重新加载,选yes
+
 14.创建JavaEE项目
 File -> New -> Project -> Java Enterprise -> Additional Libraries and Frameworks: 选中Web Application
 在WEB-INF下新建lib文件夹,在添加jar包后在lib文件夹上右键-> Add as Library
