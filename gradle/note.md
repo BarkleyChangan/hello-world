@@ -158,11 +158,17 @@ gradle --stop
 
   %GRADLE_USER_HOME%\.gradle目录下,新增下`init.gradle`文件
   
-* gradle.properties  
+* 加速Gradle构建  
 
   ```
-  # 并行构建
+  1.并行构建:在gradle.properties文件中添加如下代码
   org.gradle.parallel=true
+  2.启动Gradle daemon:在gradle.properties文件中添加如下代码
+org.gradle.daemon=true
+  3.调整Java虚拟机参数加速编译:在gradle.properties文件中添加如下代码
+  org.gradle.jvmargs=-Xms256m -Xmx1024m
+  4.多模块加速构建:在gradle.properties文件中添加如下代码
+  org.gradle.configureondemand=true
   ```
-
+  
   
