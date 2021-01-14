@@ -10,12 +10,12 @@ import java.util.Set;
 
 /**
  * @author Barkley.Chang
- * @className:JacksonUtil
- * @description: TODO
+ * @className: JacksonJsonUtil
+ * @description: Jackson Json工具类
  * @date 2020-01-19 09:41
  */
-public final class JacksonUtil {
-    private JacksonUtil() {
+public final class JacksonJsonUtil {
+    private JacksonJsonUtil() {
     }
 
     private static ObjectMapper mapper = null;

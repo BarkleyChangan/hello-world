@@ -354,7 +354,14 @@ timedatectl [command]
              set-timezone 设定时区位置
              set-time 设定时间
              set-ntp  设定网络校时系统
-timedatectl set-time "2015-09-01 12:02"
+timedatectl status 显示系统当前时间和日期
+timedatectl list-timezones 查看所有可用的时区
+timedatectl set-timezone "Asia/Shanghai" 设置本地时区
+timedatectl set-ntp false 禁用时间同步
+timedatectl set-time "2015-09-01 12:02:00"
+timedatectl set-ntp false 使用时间同步(无法修改时间设定)
+timedatectl set-time "2015-09-01 12:02:00"
+
 
 # 将正确的时间写入BIOS
 hwclock -w
