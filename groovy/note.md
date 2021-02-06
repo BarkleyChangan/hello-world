@@ -25,5 +25,13 @@
 
   owner:代表闭包定义处的类或闭包对象
 
-  delegate:代表任意对象,默认值为owner
+  delegate:代表任意对象,默认值为owner  
+  
+* 编译命令  
 
+  ```
+  # -d classes 用于将编译得到的 class 文件拷贝到 classes 文件夹下
+  groovyc -d classes test.groovy
+  ```
+
+  

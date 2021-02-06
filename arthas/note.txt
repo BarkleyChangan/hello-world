@@ -10,3 +10,7 @@ watch xxx.xxx.controller method "{params,returnObj}" -x 2
 
 # 教程
 https://www.cnblogs.com/goodAndyxublog/p/12424734.html
+
+# 卸载
+rm -rf ~/.arthas
+rm -rf ~/logs/arthas
