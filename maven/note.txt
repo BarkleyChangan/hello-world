@@ -216,8 +216,12 @@ mvn install -Pproduction -X
 # Maven仓库
 http://mvnrepository.com/
 
-# option=true
+# <optional>true</optional>
 当某个依赖的<optional>被定义为true后,该依赖便只能在本项目中传递,不会被传递到引用该依赖的父项目中,父项目需要主动引用才行
+
+# <scope>import</scope>
+dependencyManagement放到单独的专门用来管理依赖的pom中，然后在需要使用依赖的模块中通过import scope依赖，就可以引入dependencyManagement
+注意:import scope只能用在dependencyManagement里面
 
 # jar包冲突问题处理
 1.打出所有依赖

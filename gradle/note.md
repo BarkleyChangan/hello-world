@@ -1,32 +1,47 @@
 * 下载
-  <https://services.gradle.org/distributions/gradle-4.1-all.zip>
-
+  <https://services.gradle.org/distributions>
 * 配置环境变量
 
   1. GRADLE_HOME:具体指的是Gradle的解压目录
-  2. 添加将GRADLE_HOME\bin配置到Path中
-
+  2. 添加将GRADLE_HOME\bin配置到Path中  
+  3. ***NOTE:***GRADLE_USER_HOME:D:\repository-maven # 本地Maven仓库配置
 * 查看版本
-  `gradle -v`
-
+  `gradle -v`  
 * 运行
   
 
 创建一个名为 build.gradle 的脚本，脚本内容如下:
 
   ```build.gradle
-  task hello{
+task hello{
   	doLast{
   		println 'Hello world'
-  	}
-  }
+    }
+}
   ```
 
-  使用`gradle -q hello`命令执行上述脚本
+  使用`gradle -q hello`命令执行上述脚本  
 
+* 执行周期  
+  
+  gradle构建的生命周期主要分为三个阶段:Initialization、Configuration、Execution
+  
+  1. Initialization:Gradle支持单个或多个工程的构建，在此阶段Gradle决定哪些工程将参与到当前构建的过程中，并为每一个这样的工程创建一个Project实例，一般情况下，参与构建的工程信息将在settings.gradle中定义
+  2. Configuration:在此阶段，配置Project实例。所有工程的构建脚本都将被执行。Task、Configuraion和许多其他对象将被创建和配置
+  3. Execution:在之前的Configuration阶段，Task的一个子集被创建并配置，这些子集来自于作为参数传入Gradle命令的Task名字，在Execution阶段，这一子集将被依次执行
+  
+* 三个基本对象  
+  1. Gradle对象:当我们执行gradle xxx或者什么的时候，gradle会从默认的**配置脚本**中构造出一个Gradle对象。在整个执行过程中，只有这么一个对象。Gradle对象的数据类型就是Gradle。我们一般很少去定制这个默认的配置脚本
+  2. Project对象:每一个build.gradle会转换成一个Project对象
+  3. Settings对象:每一个settings.gradle都会转换成一个Settings对象
+  
 * 基本命令
 
 ```gradle
+# 显示包含多少个子Project
+gradle projects
+# 显示某个Project包含哪些Task信息
+gradle project-path:tasks # project-path是目录名,后面必须跟冒号;cd到某个Project目录,则不需指定project-path
 # 列出项目中所有可用的task
 gradle -q tasks [--all]
 # 在执行时排除任务
@@ -171,4 +186,90 @@ org.gradle.daemon=true
   org.gradle.configureondemand=true
   ```
   
+* 国内镜像加速  
+
+  ```
+  # 1.国内访问国外仓库地址很慢，第一种方法是在每个项目中设置repositories
+  repositories {
+      mavenLocal() // 先从maven本地仓库加载依赖
+      'maven(http://maven.aliyun.com/nexus/content/groups/public/)'
+      mavenCentral()
+  }
+  # 2.更推荐的方式是类似的Maven的settings.xml全局的配置，在配置的GRADLE_USER_HOME路径下，添加init.gradle文件，以下配置文件中使用了阿里云的Gradle代理，支持jcenter、google、maven仓库
+  gradle.projectsLoaded {
+      rootProject.allprojects {
+          buildscript {
+              repositories {
+                  def JCENTER_URL = 'https://maven.aliyun.com/repository/jcenter'
+                  def GOOGLE_URL = 'https://maven.aliyun.com/repository/google'
+                  def NEXUS_URL = 'http://maven.aliyun.com/nexus/content/repositories/jcenter'
+                  all { ArtifactRepository repo ->
+                      if (repo instanceof MavenArtifactRepository) {
+                          def url = repo.url.toString()
+                          if (url.startsWith('https://jcenter.bintray.com/')) {
+                              project.logger.lifecycle "Repository ${repo.url} replaced by $JCENTER_URL."
+                              println("buildscript ${repo.url} replaced by $JCENTER_URL.")
+                              remove repo
+                          }
+                          else if (url.startsWith('https://dl.google.com/dl/android/maven2/')) {
+                              project.logger.lifecycle "Repository ${repo.url} replaced by $GOOGLE_URL."
+                              println("buildscript ${repo.url} replaced by $GOOGLE_URL.")
+                              remove repo
+                          }
+                          else if (url.startsWith('https://repo1.maven.org/maven2')) {
+                              project.logger.lifecycle "Repository ${repo.url} replaced by $REPOSITORY_URL."
+                              println("buildscript ${repo.url} replaced by $REPOSITORY_URL.")
+                              remove repo
+                          }
+                      }
+                  }
+                  jcenter {
+                      url JCENTER_URL
+                  }
+                  google {
+                      url GOOGLE_URL
+                  }
+                  maven {
+                      url NEXUS_URL
+                  }
+              }
+          }
+          repositories {
+              def JCENTER_URL = 'https://maven.aliyun.com/repository/jcenter'
+              def GOOGLE_URL = 'https://maven.aliyun.com/repository/google'
+              def NEXUS_URL = 'http://maven.aliyun.com/nexus/content/repositories/jcenter'
+              all { ArtifactRepository repo ->
+                  if (repo instanceof MavenArtifactRepository) {
+                      def url = repo.url.toString()
+                      if (url.startsWith('https://jcenter.bintray.com/')) {
+                          project.logger.lifecycle "Repository ${repo.url} replaced by $JCENTER_URL."
+                          println("buildscript ${repo.url} replaced by $JCENTER_URL.")
+                          remove repo
+                      }
+                      else if (url.startsWith('https://dl.google.com/dl/android/maven2/')) {
+                          project.logger.lifecycle "Repository ${repo.url} replaced by $GOOGLE_URL."
+                          println("buildscript ${repo.url} replaced by $GOOGLE_URL.")
+                          remove repo
+                      }
+                      else if (url.startsWith('https://repo1.maven.org/maven2')) {
+                          project.logger.lifecycle "Repository ${repo.url} replaced by $REPOSITORY_URL."
+                          println("buildscript ${repo.url} replaced by $REPOSITORY_URL.")
+                          remove repo
+                      }
+                  }
+              }
+              jcenter {
+                  url JCENTER_URL
+              }
+              google {
+                  url GOOGLE_URL
+              }
+              maven {
+                  url NEXUS_URL
+              }
+          }
+      }
+  }
+  ```
+
   

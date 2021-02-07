@@ -273,3 +273,7 @@ File -> Settings ->Subversion ->General -> Use command line client 选中
 1.使用command line方式需要指定svn.exe的路径,例如:D:\tools\TortoiseSVN\bin\svn.exe
 2.注意,安装TortoiseSVN时路径中不要带空格,例如:C:\Program Files\TortoiseSVN\bin\svn.exe就会报错
 3.安装TortoiseSVN选择全部安装组件,否则可能没有svn.exe
+
+16. 启动Tomcat以后再Server的Output窗口乱码
+打开文件:D:\program\green\apache-tomcat-9.0.37\conf\logging.properties
+设置:java.util.logging.ConsoleHandler.encoding = GBK
