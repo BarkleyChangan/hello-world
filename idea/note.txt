@@ -102,8 +102,8 @@
     w. Tab键改为4个空格
     Editor -> Code Style -> Java -> 选中Tabs and Indents选项卡 -> 取消勾选Use tab character
 
-    x. 设置当行代码120个宽度
-    Editor -> Code Style -> Hard wrap at 120 columns 选中Wrap on typing
+    x. 设置当行代码160个宽度
+    Editor -> Code Style -> Hard wrap at 160 columns 选中Wrap on typing
 
     y. 换行符使用Unix格式
     Editor -> Code Style -> Line separator: Unix and OS X(\n)
@@ -113,6 +113,9 @@
 
     a1. 构建/运行操作委托给maven
     Build,Execution,Deployment -> Build Tools -> Maven -> Runner -> Delegate IDE build/run actions to Maven(选中)
+
+    b1. import不要有通配符
+    Settings -> Editor -> Code Style -> Java -> Packages to Use Improt With '*'(删除里面的内容)
 
 5. 快捷键
    alt + enter         万能纠错

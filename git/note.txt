@@ -654,3 +654,19 @@ github.global.ssl.fastly.Net 151.101.229.194
 Windows:ipconfig /flushdns
 Linux:sudo /etc/init.d/networking restart
 ***************** Git问题处理 *****************
+
+***************** Git提交规范 *****************
+<type>[optional scope]: <description>
+# 空行
+[optional body]
+# 空行
+[optional footer]
+
+REFACTOR:重构代码
+FEAT:新功能
+FIX:bug修复
+DOCS:文档,主要用来描述文档的变更
+STYLE:主要是代码风格相关的提交,比如格式化等
+TEST:测试相关的提交
+CHORE:构建过程或辅助工具的变动
+***************** Git提交规范  *****************

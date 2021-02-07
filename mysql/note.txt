@@ -478,6 +478,16 @@ SET SESSION optimizer_trace="enabled=off";
 # 驱动表和被驱动表
 1.当连接查询没有where条件时，左连接查询时前面的表是驱动表，后面的表是被驱动表右连接查询时相反;内连接查询时,哪张表的数据较少哪张表就是驱动表
 2.当连接查询有where条件时,带where条件的表是驱动表,否则是被驱动表
+
+# 占位符
+SET @skip=1;
+SET @rownum=5;
+PREPARE stmt FROM 'SELECT * FROM t2 LIMIT ?,?';
+EXECUTE stmt USING @skip,@rownum;
+
+# 分页获取总行数
+SELECT * FROM t2 WHERE id IN (SELECT * FROM (SELECT id FROM t2 LIMIT 1,5) AS a);
+SELECT FOUND_ROWS();
 ####################### 数据表基本操作 #######################
 
 ####################### 函数 #######################

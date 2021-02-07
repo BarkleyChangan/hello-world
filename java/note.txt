@@ -260,6 +260,16 @@ System.setProperty("sun.misc.ProxyGenerator.saveGeneratedFiles", "true");
 # 获取当前类所在jar包
 String file = Feature.class.getProtectionDomain().getCodeSource().getLocation().getFile();
 System.out.println(URLDecoder.decode(file,"UTF-8"));
+
+String path = Program.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+        System.out.println(path);
+        JarFile jarFile = new JarFile(new File(path));
+        Enumeration<JarEntry> entries = jarFile.entries();
+        while (entries.hasMoreElements()) {
+            JarEntry jarEntry = entries.nextElement();
+            String innerPath = jarEntry.getName();
+            System.out.println(innerPath);
+        }
 ####################### Java基础 #######################
 
 ####################### JDK8 #######################
