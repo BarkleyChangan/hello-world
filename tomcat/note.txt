@@ -233,4 +233,8 @@ INFO:Deploying web application directory /home/tutor/apache-tomcat-7.0.73/webapp
 解决方法2:
 将catalina.sh文件修改:JAVA_OPTS="$JAVA_OPTS -Djava.protocol.handler.pkgs=org.apache.catalina.webresources"下新增
 JAVA_OPTS="$JAVA_OPTS -Djava.security.egd=file:/dev/./urandom"
+或者:
+if [[ "$JAVA_OPTS" != *-Djava.security.egd=* ]]; then
+    JAVA_OPTS="$JAVA_OPTS -Djava.security.egd=file:/dev/./urandom"
+fi
 ####################### 问题 #######################

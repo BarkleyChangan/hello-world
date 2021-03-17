@@ -611,4 +611,73 @@ div {
     margin: 50px auto;
     width: 400px
 }
+
+# 文本超长显示省略号
+1.单行文本
+width: 200px;
+white-space: nowrap;
+overflow: hidden;
+text-overflow: ellipsis;
+2.多行文本
+width: 200px;
+overflow: hidden;
+text-overflow: ellipsis;
+display: -webkit-box;
+-webkit-line-clamp: 2;
+-webkit-box-orient: vertical;
+
+# 指定可替换元素的内容（也就是图片）该如何适应它的父容器的高宽
+object-fit: cover;
+object-position: 50% 50%; (可选)
+
+# 平滑滚动
+scroll-behavior: smooth;
+
+# 点击交互优化
+cursor: pointer;            // 可点击
+cursor: not-allowed;    // 不可点击
+cursor: wait;                // loading
+cursor: pointer;            // 按钮可点击
+cursor: not-allowed;    // 按钮禁止点击
+cursor: text;                 // 输入框
+cursor: zoom-in/zoom-out; // 图片查看器可放大可缩小
+
+# 点击区域扩大化
+.btn::before{
+    content:"";
+    position:absolute;
+    top:-10px;
+    right:-10px;
+    bottom:-10px;
+    left:-10px;
+}
+
+# 图片错误兜底显示默认图
+<img src="test.png" alt="图片描述" onerror="this.classList.add('error');">
+img.error {
+    position: relative;
+    display: inline-block;
+}
+img.error::before {
+    content: "";
+    /** 定位代码 **/
+    background: url(error-default.png);
+}
+img.error::after {
+    content: attr(alt);
+    /** 定位代码 **/
+}
+
+# 给需要点击一次选中的信息
+.g-select-all {
+    user-select: all;
+}
+
+# 选中样式
+::selection伪类(只能控制color,background,text-shadow)
+
+# 禁止选中文本
+-webkit-user-select: none; /* Safari */
+-ms-user-select: none;      /* IE 10 and IE 11 */
+user-select: none;             /* Standard syntax */
 ####################### 特殊效果 #######################

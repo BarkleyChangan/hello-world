@@ -26,7 +26,7 @@ public final class UrlUtil {
         String result = "";
 
         try {
-            result = URLEncoder.encode(url, charSet).replaceAll("\\+", "%20");
+            result = URLEncoder.encode(url, charSet).replaceAll("\\+", "%2B");
         } catch (Exception e) {
             e.printStackTrace();
         }

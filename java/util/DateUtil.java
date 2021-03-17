@@ -1,4 +1,4 @@
-package com.post.sample.util;
+package com.sxpost.icbcapi.util;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -41,7 +41,7 @@ public class DateUtil {
     /**
      * 根据指定的日期格式获取SimpleDateFormat对象 (默认为yyyy-MM-dd HH:mm:ss)
      *
-     * @param datePattern
+     * @param dateTimePattern
      * @return SimpleDateFormat
      */
     public static SimpleDateFormat getSimpleDateTimeFormat(String dateTimePattern) {
@@ -109,7 +109,7 @@ public class DateUtil {
     /**
      * 根据默认的日期时间格式yyyy-MM-dd HH:mm:ss获取Date对象
      *
-     * @param strDate
+     * @param strDateTime
      * @return Date
      */
     public static Date getDateTime(String strDateTime) {
@@ -148,7 +148,6 @@ public class DateUtil {
      * 根据默认的日期格式yyyy-MM-dd获取格式化后的日期字符串
      *
      * @param date
-     * @param pattern
      * @return String
      */
     public static String dateToString(Date date) {
@@ -163,8 +162,7 @@ public class DateUtil {
     /**
      * 根据默认的日期时间格式yyyy-MM-dd HH:mm:ss获取格式化后的日期时间字符串
      *
-     * @param date
-     * @param pattern
+     * @param dateTime
      * @return String
      */
     public static String dateTimeToString(Date dateTime) {

@@ -117,6 +117,9 @@
     b1. import不要有通配符
     Settings -> Editor -> Code Style -> Java -> Packages to Use Improt With '*'(删除里面的内容)
 
+    c1. Stream链式调用多行对齐
+    Settings -> Editor -> Code Style -> Java -> Wrapping and Braces -> Chained method calls -> Align when multiline(选中)
+
 5. 快捷键
    alt + enter         万能纠错
    alt + r                执行

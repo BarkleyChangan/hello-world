@@ -107,5 +107,61 @@
      }
      ```
 
-     
+* SpringMVC配置字符过滤器
+```
+  <filter>
+      <filter-name>encoding</filter-name>
+      <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+      <init-param>
+            <param-name>encoding</param-name>
+            <param-value>utf-8</param-value>
+      </init-param>
+      <init-param>
+           <param-name>forceEncoding</param-name>
+           <param-value>true</param-value>
+      </init-param>
+  </filter>
+  <filter-mapping>
+      <filter-name>encoding</filter-name>
+      <url-pattern>/*</url-pattern>
+  </filter-mapping>
+```
+
+* SpringMVC处理中文乱码
+```
+<!-- 1.引入依赖 -->
+<dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+      <version>2.9.9</version>
+</dependency>
+<dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>2.9.9</version>
+</dependency>
+
+<!-- 2.springmvc.xml中配置 -->
+<mvc:annotation-driven>
+    <mvc:message-converters>
+    	<bean class="org.springframework.http.converter.StringHttpMessageConverter">
+    		<property name="supportedMediaTypes">
+                <list>
+                    <value>text/plain;charset=UTF-8</value>
+                    <value>text/html;charset=UTF-8</value>
+                </list>
+    		</property>
+    	</bean>
+    	<bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+            <property name="supportedMediaTypes">
+                <list>
+                	<value>application/json;charset=UTF-8</value>
+                </list>
+            </property>
+    	</bean>
+    </mvc:message-converters>
+</mvc:annotation-driven>
+```
+
+
 
