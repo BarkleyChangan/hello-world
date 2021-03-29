@@ -272,4 +272,38 @@ org.gradle.daemon=true
   }
   ```
 
+* dependencies定义依赖包的工作范围
+
+  1. compileOnly:表示依赖包只被用来编译代码，并不用在程序的运行
+  2. implementation:表示依赖包被用在编译和运行时
+  3. runtimeOnly:只在运行时使用
+  4. testCompileOnly:仅在test的编译时使用
+  5. testImplementation:在test的编译和运行时使用
+  6. testRuntimeOnly:在test的运行时使用
+
+  示例:
+
+  ```
+  # 动态依赖
+  dependencies {
+      implementation 'org.springframework:spring-web:5.+'
+  }
+  # 项目作为依赖
+  dependencies {
+      implementation project(':shared')
+  }
+  ```
+
+* 配置编译参数
+
+  ```
+  compileJava {
+      options.incremental = true
+      options.fork = true
+      options.failOnError = false
+      options.release = 7
+  }
+  注意:gradle必须要在JDK8以上才能运行，但是我们可以指定gradle去使用Java6或者Java7去编译源代码
+  ```
+
   

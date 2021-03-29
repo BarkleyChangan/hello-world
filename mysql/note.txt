@@ -51,6 +51,30 @@ SET character_set_connection = charset_name;
 character_set_client：服务器是怎样认为客户端发送过来的请求是采用何种字符集编码的
 character_set_connection：服务器在运行过程中会采用何种字符集编码请求中的字符
 character_set_result：服务器会将响应使用何种字符集编码后再发送给客户端的
+SHOW VARIABLES LIKE 'character_set_client';
+SHOW VARIABLES LIKE 'character_set_connection';
+SHOW VARIABLES LIKE 'character_set_results';
+
+1.实例级别:
+[server]
+character_set_server=utf8mb4
+collation_server=utf8mb4_general_ci
+show variables like 'character_set_server';
+show variables like 'collation_server';
+2.库级别:
+alter database test_db character set = 'utf8';
+alter database test_db character set = 'utf8';
+show variables like 'character_set_database';
+show variables like 'collation_database';
+3.表级别:
+alter table test character set = 'utf8';
+show create table test;
+4.列级别:
+alter table test modify column name  varchar(32) COLLATE latin1_bin;
+show create table test;
+5.客户端链接级别:
+jdbc:mysql://127.0.0.1:3306/test?characterEncoding=utf8
+mysql -h 127.0.0.1 -P 3306 -u root  --default-character-set=utf8mb4  -p
 
 # 查看binlog文件
 show binary logs; # 查看binlog列表
@@ -1437,3 +1461,24 @@ SELECT * FROM INFORMATION_SCHEMA.INNODB_LOCKS\G;
 SELECT * FROM INFORMATION_SCHEMA.INNODB_LOCK_WAITS\G;
 SELECT ENGINE,ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,EVENT_ID,OBJECT_NAME,INDEX_NAME,LOCK_TYPE,LOCK_MODE,LOCK_STATUS,LOCK_DATA FROM performance_schema.data_locks;
 ####################### 锁 #######################
+
+####################### MVCC #######################
+MVCC(Multiversion Concurrency Control)中文全程叫多版本并发控制，是现代数据库（如MySql）引擎实现中常用的处理读写冲突的手段，目的在于提高数据库高并发场景下的吞吐性能
+MySQL的InnoDB存储引擎默认事务隔离级别是RR(可重复读)，是通过"行级锁+MVCC"一起实现的，正常读的时候不加锁，写的时候加锁。而MCVV的实现依赖：隐藏字段、Read View、Undo log
+另外MVCC只在Read Committed和Repeatable Read两个隔离级别下工作，其他两个隔离级别和MVCC不兼容:Read Uncommitted总是读取最新的记录行，不需要MVCC的支持；Serializable 则会对所有读取的记录行都加锁，单靠MVCC无法完成
+查看事务版本号:SELECT TRX_ID FROM INFORMATION_SCHEMA.INNODB_TRX;
+隐藏字段（Innodb 为每行额外添加了3个字段）:
+1.DB_TRX_ID：大小为6个字节。指插入或更新该行的最后一个事务的事务标识符，也就是事务ID。此外，删除在内部被视为更新，在该更新中，该行中的特殊位被设置为将其标记为已删除
+2.DB_ROLL_PTR：大小为7个字节。表示指向该行回滚段的指针。回滚指针指向写入回滚段的撤消日志记录。如果行已更新，则撤消日志记录将包含在更新行之前重建行内容所必需的信息
+3.DB_ROW_ID：大小为6个字节。包含一个行ID，该行ID随着插入新行而单调增加。如果InnoDB自动生成聚集索引，则该索引包含行ID值。否则，DB_ROW_ID列不会出现在任何索引中
+
+Read View:
+InnoDB支持MVCC多版本，其中RC（Read Committed）和RR（Repeatable Read）隔离级别是利用consistent read view（一致读视图）方式支持的。所谓consistent read view就是在某一时刻给事务系统trx_sys打snapshot（快照），把当时trx_sys状态（包括活跃读写事务数组）记下来，之后的所有读操作根据其事务ID（即trx_id）与snapshot中的trx_sys的状态作比较，以此判断read view对于事务的可见性。
+RR隔离级别（除了Gap锁之外）和RC隔离级别的差别是创建snapshot时机不同。RR隔离级别是在事务开始时刻，确切地说是第一个读操作创建read view的；RC隔离级别是在语句开始时刻创建read view的（详见官方文档）
+Read View中保存的trx_sys状态主要包括:
+1.trx_ids:为活跃事务id列表，即Read View初始化时当前未提交的事务列表。所以当进行RR读的时候，trx_ids中的事务对于本事务是不可见的（除了自身事务，自身事务对于表的修改对于自己当然是可见的）
+2.low_limit_id:当前最大的事务id+1，事务id>=low_limit_id，对于当前Read View都是不可见的。理解起来就是在创建Read View视图的时候，之后创建的事务对于该事务肯定是不可见的
+3.up_limit_id:当前已经提交的事务id+1，事务id<up_limit_id，对于当前Read View都是可见的。理解起来就是在创建Read View视图的时候，之前已经提交的事务对于该事务肯定是可见的
+4.creator_trx_id:创建当前read view的事务版本号；
+一旦一个Read View被创建，这三个参数将不再发生变化，理解这点很重要，其中low_limit_id和up_limit_id分别是trx_Ids数组的上下界（注意：从单词上来区分的话很容易弄反）
+####################### MVCC #######################

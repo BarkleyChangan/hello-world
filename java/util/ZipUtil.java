@@ -15,6 +15,91 @@ public final class ZipUtil {
 
     }
 
+    /**
+     * 压缩文件或文件夹(包括所有子目录文件)
+     *
+     * @param sourceFile 源文件
+     * @param format     格式(zip或rar)
+     */
+    public static void zipFileTree(File sourceFile, String format) {
+        ZipOutputStream zipOutputStream = null;
+
+        try {
+            String zipFileName;
+
+            if (sourceFile.isDirectory()) {
+                // 目录
+                zipFileName = sourceFile.getParent() + File.separator + sourceFile.getName() + "." + format;
+            } else {
+                // 单个文件
+                zipFileName = sourceFile.getParent() + sourceFile.getName().substring(0, sourceFile.getName().lastIndexOf(".")) + "." + format;
+            }
+
+            // 压缩输出流
+            zipOutputStream = new ZipOutputStream(new FileOutputStream(zipFileName));
+            zip(sourceFile, zipOutputStream, "");
+        } catch (Exception e) {
+            // TODO
+            e.printStackTrace();
+        } finally {
+            if (zipOutputStream != null) {
+                try {
+                    zipOutputStream.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    /**
+     * 解压
+     *
+     * @param zipFilePath  带解压文件
+     * @param desDirectory 解压到目录
+     */
+    public static void unzip(String zipFilePath, String desDirectory) {
+        File desDir = new File(desDirectory);
+        if (!desDir.exists()) {
+            boolean mkdirSuccess = desDir.mkdirs();
+
+            if (!mkdirSuccess) {
+                throw new Exception("创建解压目标文件夹失败");
+            }
+        }
+
+        // 读入流
+        ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(zipFilePath));
+        // 遍历每一个文件
+        ZipEntry zipEntry = zipInputStream.getNextEntry();
+        while (zipEntry != null) {
+            if (zipEntry.isDirectory()) {
+                // 文件夹
+                String unzipFilePath = desDirectory + File.separator + zipEntry.getName();
+                // 直接创建
+                mkdir(new File(unzipFilePath));
+            } else {
+                // 文件
+                String unzipFilePath = desDirectory + File.separator + zipEntry.getName();
+                File file = new File(unzipFilePath);
+                // 创建父目录
+                mkdir(file.getParentFile());
+                // 写出文件流
+                BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(unzipFilePath));
+                byte[] bytes = new byte[1024];
+                int readLen;
+                while ((readLen = zipInputStream.read(bytes)) != -1) {
+                    bufferedOutputStream.write(bytes, 0, readLen);
+                }
+                bufferedOutputStream.close();
+            }
+            zipInputStream.closeEntry();
+            zipEntry = zipInputStream.getNextEntry();
+        }
+
+        zipInputStream.close();
+    }
+
     public static void compressFiles(File[] files, String zipPath) throws IOException {
         // 定义文件输出流,表明是要压缩成zip文件的
         FileOutputStream f = new FileOutputStream(zipPath);
@@ -86,6 +171,67 @@ public final class ZipUtil {
         }
     }
 
+    /**
+     * 递归压缩文件
+     *
+     * @param file            当前文件
+     * @param zipOutputStream 压缩输出流
+     * @param relativePath    相对路径
+     */
+    private static void zip(File file, ZipOutputStream zipOutputStream, String relativePath) {
+        FileInputStream fileInputStream = null;
+
+        try {
+            if (file.isDirectory()) {
+                // 当前为文件夹,便利当前文件夹下的所有文件
+                File[] list = file.listFiles();
+                if (list != null) {
+                    // 计算当前的相对路径
+                    relativePath += (relativePath.length() == 0 ? "" : "/") + file.getName();
+
+                    // 递归压缩每个文件
+                    for (File f : list) {
+                        zip(f, zipOutputStream, relativePath);
+                    }
+                }
+            } else {
+                // 压缩文件
+                return;+=(relativePath.length() == 0 > ":" /) + file.getName();
+                // 写入单个文件
+                zipOutputStream.putNextEntry(new ZipEntry(relativePath));
+                fileInputStream = new FileInputStream(file);
+                int readLen;
+                byte[] buffer = new byte[1024];
+                while ((readLen = fileInputStream.read( byte))!=-1){
+                    zipOutputStream.write(buffer, 0, readLen);
+                }
+                zipOutputStream.closeEntry();
+            }
+        } finally {
+            if (fileInputStream != null) {
+                try {
+                    fileInputStream.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    /**
+     * 如果父目录不存在则创建
+     *
+     * @param file
+     */
+    private static void mkdir(File file) {
+        if (file == null || file.exists()) {
+            return;
+        }
+
+        mkdir(file.getParentFile());
+        file.mkdir();
+    }
+
     public static void main(String[] args) throws IOException {
         String dir = "d:";
         String zipPath = "d:/test.zip";
@@ -100,5 +246,15 @@ public final class ZipUtil {
             ZipEntry zipEntry = (ZipEntry) e.nextElement();
             System.out.println("file:" + zipEntry);
         }
+
+
+        String path = "D:/test";
+        String format = "zip";
+        zipFileTree(new File(path), format);
+
+
+        String zipFilePath = "D:/test.zip";
+        String desDirectory = "D:/a";
+        unzip(zipFilePath, desDirectory);
     }
 }

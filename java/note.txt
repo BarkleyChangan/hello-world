@@ -614,7 +614,7 @@ jstat -gcutil 2815 1000
 dmesg | grep -i kill | less
 ####################### Java问题排查 #######################
 
-####################### 垃圾收集器 #######################
+####################### 垃圾收集器GC #######################
 # 查看当前JVM使用的垃圾收集器
 java -XX:+PrintCommandLineFlags -version
 
@@ -644,7 +644,15 @@ G1收集器的特点:
 并发标记
 最终标记
 筛选回收
-####################### 垃圾收集器 #######################
+
+-XX:+UseSerialGC = Serial New (DefNew) + Serial Old
+-XX:+UseParNewGC = ParNew + SerialOld
+-XX:+UseConc(urrent)MarkSweepGC = ParNew + CMS + Serial Old
+-XX:+UseParallelGC = Parallel Scavenge + Parallel Old (1.8默认) 【PS + SerialOld】
+-XX:+UseParallelOldGC = Parallel Scavenge + Parallel Old
+-XX:+UseG1GC = G1
+查看默认GC:java +XX:+PrintCommandLineFlags -version
+####################### 垃圾收集器GC #######################
 
 ####################### Linux下安装JDK #######################
 https://www.oracle.com/java/technologies/javase-jdk8-downloads.html

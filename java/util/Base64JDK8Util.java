@@ -32,7 +32,7 @@ public final class Base64JDK8Util {
     }
 
     /**
-     * /都被替换为 _,+都被替换为 -
+     * 标准的Base64编码中可能出现字符+和/字符，不能直接用在URL中，需要对其进行处理，把字符+和/分别变成-和_
      *
      * @return
      */
@@ -65,5 +65,12 @@ public final class Base64JDK8Util {
         System.out.println("================================");
         System.out.println(enc3.encodeToString("中华人民共和国12中华人民共和国中华人民4共和国中华人民共和国中华人民共和国中华人民共和国中华人民共和国中华人民共和国".getBytes
                 ("UTF-8")));
+
+        // URL安全的Base64编码
+        String safeEncoder = getUrlEncoder().encodeToString("但愿人长久 千里共婵娟".getBytes());
+        System.out.println("safeEncoder:" + safeEncoder);
+        // URL安全的Base64解码
+        Stirng safeDecoder = new String(getUrlDecoder().decode(safeEncoder));
+        System.out.println("safeDecoder:" + safeDecoder);
     }
 }

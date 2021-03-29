@@ -135,4 +135,30 @@ public final class StringUtil {
 
         return result;
     }
+
+    public static String leftPad(String str) {
+        if (str == null) {
+            return "";
+        }
+
+        Stream.rep
+
+        if (str.length() <= 10) {
+            str = ("0000000000").substring(0, 10 - str.length()) + str;
+        }
+
+        return str;
+    }
+
+    public static String getOrDefault(String msg, String... args) {
+        if (msg != null) {
+            return msg;
+        }
+
+        if (args != null && args.length > 0) {
+            return args[0];
+        }
+
+        return "";
+    }
 }

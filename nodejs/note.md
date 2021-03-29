@@ -7,6 +7,7 @@
    4. 验证安装是否成功
         `node -v`
         `npm -v`
+   
 * 模块化
     exports, require, module, __filename, __dirname
     1. 引入模块
@@ -16,32 +17,54 @@
     2. 暴露模块
         使用module.exports来向外部暴露变量和方法
     3. 包名全部为小写
+    
 * 全局变量
     global
+    
 * NPM(Node Package Manager)
     CommonJS包规范是理论,NPM是其中一种实践
     `npm -v` 查看版本
     `npm` 帮助说明
     `npm search 包名` 搜索模块包
     `npm init` 创建package.json 不能含有大写字母
-    `npm install 包名` 在当前目录安装包
-    `npm install 包名 -g` 全局模式安装包(全局安装的包一般都是一些工具)
-    `npm install jquery@1` 安装最新jQuery的1.x.x版本
-    `npm install` 安装当前项目所依赖的包
-    `npm install 包名 --save` 安装包并添加到依赖中
-    `npm remove 包名` 移除包
+    `npm config get prefix` 获取npm所在目录的路径
+
+    1. 全局安装
+       * `npm install -g 模块名`
+       * 安装命令行工具，例如 grunt CLI的时候，使用全局安装
+    2. 本地安装
+       * `npm install 模块名`:安装好后不写入package.json中
+       * `npm install 模块名 --save`:安装好后写入package.json的dependencies中(生产环境依赖)
+       * `npm install 模块名 --save-dev`:安装好后写入package.json的devDepencies中(开发环境依赖)  
+    3.  删除全局模块 `npm uninstall -g 模块名`
+    4. 删除本地模块
+   * `npm uninstall 模块名`:删除模块,但不删除模块留在package.json中的对应信息
+       * `npm uninstall 模块名 --save`:删除模块,同时删除模块留在package.json中dependencies下的对应信息
+       * `npm uninstall 模块名 --save-dev`:删除模块,同时删除模块留在package.json中devDependencies下的对应信息
+   
 * 配置CNPM
-    `npm install -g cnpm --registry=https://registry.npm.taobao.org`  
+    `npm install -g cnpm --registry=https://registry.npm.taobao.org` 
+    
+    检查安装结果: `node -v`
+    
+​						  `npm -v`
+    
+    ​						  `cnpm -v`
+    
     `npm list --depth=0 -global`
     安装完以后注意配置path环境变量`D:\program\install\64\nodejs\node_global` 
     如果出现如下错误:  
-    ```markdown
-    cnpm : 无法加载文件 C:\Users\93457\AppData\Roaming\npm\cnpm.ps1，因为在此系统上禁止运行脚本。有关详细信息 。。。 
+    
+```markdown
+    cnpm:无法加载文件 C:\Users\93457\AppData\Roaming\npm\cnpm.ps1，因为在此系统上禁止运行脚本。有关详细信息 。。。 
     ```
     以管理员身份运行Windows PowerShell,并输入如下指令:  
     `set-ExecutionPolicy RemoteSigned`  
     输入: A
          检查是否设置正确: `get-ExecutionPolicy`
+    
+    使用cnpm命令安装模块:`cnpm install 模块名`
+    
 * Browserify
     下载安装: 1. 全局: npm install browserify -g
     ​                  2. 局部: npm install browserify --save-dev
