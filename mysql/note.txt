@@ -898,9 +898,6 @@ show master logs;
 # 刷新binlog(重新生成一个binlog日志文件=)
 flush logs;
 
-# 重置(清空)binlog文件
-reset master;
-
 # 查看binlog日志
 语法:./mysqlbinlog binlog日志文件
 /usr/local/mysql/bin
