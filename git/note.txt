@@ -234,23 +234,23 @@ git checkout commit_id		回退到指定commit id的提交	能		能		否
 ***************** 日志 *****************
 # 查看提交历史
 git log
-		选项				说明
-		-p 					用 -p 选项展开显示每次提交的内容差异，用 -2 则仅显示最近的两次更新：git log -p -2;单词层面的对比：git log -p --word-diff
-		--stat      		显示每次更新的文件修改统计信息。
-		--shortstat			只显示 --stat 中最后的行数修改添加移除统计。
-		--name-only			仅在提交信息后显示已修改的文件清单。
-		--name-status		显示新增、修改、删除的文件清单。
-		--abbrev-commit		仅显示 SHA-1 的前几个字符，而非所有的 40 个字符。
-		--relative-date		使用较短的相对时间显示（比如，“2 weeks ago”）。
-		--graph				显示 ASCII 图形表示的分支合并历史。
-		--pretty			使用其他格式显示历史提交信息。可用的选项包括 oneline，short，full，fuller 和 format（后跟指定格式）。
-		-(n)				仅显示最近的 n 条提交
-		--since, --after	仅显示指定时间之后的提交。
-		--until, --before	仅显示指定时间之前的提交。
-		--author 			仅显示指定作者相关的提交。
-		--committer 		仅显示指定提交者相关的提交。
-		--grep 				仅显示含指定关键字的提交
-		-S 					仅显示添加或移除了某个关键字的提交
+	选项			说明
+	-p 			用 -p 选项展开显示每次提交的内容差异，用 -2 则仅显示最近的两次更新：git log -p -2;单词层面的对比：git log -p --word-diff
+	--stat      		显示每次更新的文件修改统计信息
+	--shortstat		只显示 --stat 中最后的行数修改添加移除统计
+	--name-only		仅在提交信息后显示已修改的文件清单
+	--name-status		显示新增、修改、删除的文件清单
+	--abbrev-commit	仅显示 SHA-1 的前几个字符，而非所有的 40 个字符
+	--relative-date		使用较短的相对时间显示（比如，“2 weeks ago”）
+	--graph			显示 ASCII 图形表示的分支合并历史
+	--pretty			使用其他格式显示历史提交信息。可用的选项包括 oneline，short，full，fuller 和 format（后跟指定格式）
+	-(n)			仅显示最近的 n 条提交
+	--since, --after		仅显示指定时间之后的提交
+	--until, --before		仅显示指定时间之前的提交
+	--author 		仅显示指定作者相关的提交
+	--committer 		仅显示指定提交者相关的提交
+	--grep 			仅显示含指定关键字的提交
+	-S 			仅显示添加或移除了某个关键字的提交
 
 # git可以为你的 SHA-1 值生成出简短且唯一的缩写
 git log --pretty=oneline --abbrev-commit
@@ -322,6 +322,12 @@ git merge --no-ff -m 'merge no fast forward' feature-A
 
 # 查看分支
 git branch
+
+# 查看所有远端分支
+git branch -r
+
+# 基于远程分支创建新的可追溯的分支
+git branch --track <new-branch> <remote-branch>
 
 # 查看本地仓库和远程仓库分支关系
 该指令作用为,将本地master分支相关联的远程分支设置为远程master分支,执行该指令后通过git branch -vv查看分支的关联情况,可见已顺利建立关联:
@@ -653,6 +659,15 @@ github.global.ssl.fastly.Net 151.101.229.194
 2.刷新DNS缓存
 Windows:ipconfig /flushdns
 Linux:sudo /etc/init.d/networking restart
+
+# 从一个提交(commit)里移除一个文件
+git checkout HEAD^ myfile
+git add -A
+git commit --amend
+
+# 删除最后一次提交
+git reset HEAD^ --hard
+git push -f [remote] [branch]
 ***************** Git问题处理 *****************
 
 ***************** Git提交规范 *****************

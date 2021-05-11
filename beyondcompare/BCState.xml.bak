@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Produced by Beyond Compare 4 from Scooter Software -->
+<BCState Version="1" MinVersion="1">
+	<TBcState>
+		<FirstStartup Value="False"/>
+		<FormPositions>
+			<TViewFrame Value="38;38;1670;916;3;144"/>
+		</FormPositions>
+	</TBcState>
+	<TCheckForUpdatesState>
+		<Build Value="25118"/>
+		<CheckID Value="47567073473109"/>
+		<LastChecked Value="2021-03-26 14:11:38"/>
+	</TCheckForUpdatesState>
+	<TTextCompareState>
+		<MRUFonts>
+			<_0 Value="Courier New;9"/>
+		</MRUFonts>
+	</TTextCompareState>
+</BCState>

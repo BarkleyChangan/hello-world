@@ -2088,3 +2088,37 @@ program-txt是awk命令行中的awk代码，一般使用单引号包围
 -f program-file表示将awk代码写在文件中，然后使用-f选项去执行该文件
 -e program-text也用于指定awk代码，如果要结合文件和命令行一起使用，必须使用-e和-f，不能使用(1)
 ***************** awk *****************
+
+***************** 小技巧 *****************
+# 删除乱码文件
+ls -i
+find . -inum 132395 -exec rm {} \;
+
+# 获取公网IP地址
+curl ip.sb
+curl ifconfig.me
+
+# 历史命令使用技巧
+!!:重复执行上条命令
+!N:重复执行history历史中第N条命令，N可以通过history查看
+!pw:重复执行最近一次，以pw开头的历史命令，这个非常有用，小编使用非常高频
+!$:表示最近一次命令的最后一个参数
+
+# 快速搜索历史命令
+ctrl+r
+
+# 时间戳转换
+date -d@1234567890 +"%Y-%m-%d %H:%M:%S"
+
+# 获取时间戳
+date +%s
+
+# 实时查看日志时出现Failed立刻停止
+tail -f test.log | sed '/Failed/ q'
+
+# 安全擦除硬盘数据
+dd if=/dev/urandom of=/dev/sda
+
+# 快速生成大文件
+dd if=/dev/zero of=file.img bs=1M count=1024
+***************** 小技巧 *****************

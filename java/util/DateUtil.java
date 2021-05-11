@@ -180,4 +180,16 @@ public class DateUtil {
     public static void remove() {
         tlSimpleDateFormat.remove();
     }
+
+    /**
+     * 获取当前微秒
+     *
+     * @param currentTimeMillis 当前毫秒数
+     * @return
+     */
+    public static long getMicTime(long currentTimeMillis) {
+        long cutime = currentTimeMillis * 1000;    // 微秒
+        long nanoTime = System.nanoTime();         // 纳秒
+        return cutime + (nanoTime - nanoTime / 1000000 * 1000000) / 1000;
+    }
 }

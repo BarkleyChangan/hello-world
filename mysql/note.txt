@@ -154,7 +154,7 @@ analyze table t不是重建表,仅仅是对表的索引信息做重新统计,没
 optimize table t等于上两步的操作
 
 # 连接字符串
-jdbc:mysql://localhost:3306/test_db?characterEncoding=utf8&useSSL=false&useServerPrepStmts=true&cachePrepStmts=true&serverTimezone=Asia/Shanghai&rewriteBatchedStatements=true&autoReconnect=true
+jdbc:mysql://localhost:3306/test_db?characterEncoding=utf8&useSSL=false&useServerPrepStmts=true&cachePrepStmts=true&serverTimezone=Asia/Shanghai&rewriteBatchedStatements=true&autoReconnect=true&zeroDateTimeBehavior=convertToNull
 
 # 修改参数
 SET @@global.read_buffer_size=524288;

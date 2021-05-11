@@ -1,0 +1,46 @@
+# 打印变量名称
+let x = 2;
+console.log(x) // 2
+console.log({x}) // {x: 2}
+
+# 格式化日志
+%s:字符串
+%i或%d:整数
+%f:浮点数
+%c:CSS样式
+%o:可扩展DOM元素
+%O:可扩展JavaScript对象
+
+# 分组日志
+const label = 'The Millenium Falcon Crew';
+console.group(label);
+console.log('Leia');
+console.log('Han');
+console.log('Chewie');
+console.log('Ben');
+console.groupEnd(label);
+
+# 统计方法被调用次数
+console.count('Chocula');
+
+# 统计方法被调用时间
+console.time('go');
+for(let i = 0; i < 200000; i+=1) {
+  let x = Math.random()*2000;
+}
+console.timeEnd('go');
+
+# 处理当前文档
+$_存储最后一条控制台命令的结果。所以如果你之前输入了2+2并按回车键，你在输入$_将为你直接提供4
+$0 到 $4 是你通过Elements 选项卡选中元素的堆栈，$0 为当前你选择的元素
+$() 通过选择器选择页面中的元素
+$$()返回与给定选择器匹配的元素数组。此命令等同于document.querySelectorAll()
+$x() 允许您通过XPATH选择DOM元素
+copy() 将您提供的所有内容复制到剪贴板
+clear() 清除控制台
+getEventListeners(node) 返回在指定对象上注册的事件监听器
+monitorEvents(node, events) 监视并记录对象上发生的事件
+monitor(method) 每当调用方法时，都会创建一个日志
+DEMO:
+monitorEvents(window, ['resize', 'scroll']);
+monitorEvents($0, 'key');

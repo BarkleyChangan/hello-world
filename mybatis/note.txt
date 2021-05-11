@@ -1,0 +1,16 @@
+# 打印sql日志
+<setting name="logImpl" value="STDOUT_LOGGING"/>
+SLF4J、LOG4J、LOG4J2、JDK_LOGGING、COMMONS_LOGGING、STDOUT_LOGGING、NO_LOGGING
+
+# 打印SQL详细信息
+在log4j.properties配置文件中添加如下配置:
+log4j.logger.com.hrh.mybatis.mapper.ManagerMapper=TRACE
+
+# 针对特定方法进行详细输出
+log4j.logger.com.hrh.mybatis.mapper.ManagerMapper.list=TRACE
+
+# 对 mapper 包下的所有类进行详细输出
+log4j.logger.com.hrh.mybatis.mapper=TRACE
+
+# SQL语句将会在DEBUG日志级别下记录（JDK日志则为FINE）。返回的结果集则会在TRACE日志级别下记录
+log4j.logger.com.hrh.mybatis.mapper.ManagerMapper=DEBUG

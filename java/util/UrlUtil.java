@@ -1,4 +1,4 @@
-package com.post.util;
+package com.hnpost.icbcapi.util;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -26,7 +26,7 @@ public final class UrlUtil {
         String result = "";
 
         try {
-            result = URLEncoder.encode(url, charSet).replaceAll("\\+", "%2B");
+            result = URLEncoder.encode(url, charSet).replaceAll("\\+", "%20");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -57,10 +57,16 @@ public final class UrlUtil {
     public static void main(String[] args) throws UnsupportedEncodingException {
         // encodeURIComponent("aa+aa aa")
         // "aa%2Baa%20aa"
-
+        String charSet = "UTF-8";
         // aa%2Baa+aa
-        System.out.println(URLEncoder.encode("aa+aa aa", "UTF-8"));
+        String str1 = URLEncoder.encode("aa+aa aa", charSet);
         // aa%2Baa%20aa
-        System.out.println(encode("aa+aa aa", "UTF-8"));
+        String str2 = UrlUtil.encode("aa+aa aa", charSet);
+        System.out.println("aa+aa aa ===> " + str1);
+        System.out.println("aa+aa aa ===> " + str2);
+        System.out.println("=======================");
+        System.out.println(UrlUtil.decode(str1, charSet));
+        System.out.println(UrlUtil.decode(str2, charSet));
+        System.out.println();
     }
 }

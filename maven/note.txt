@@ -236,3 +236,25 @@ mvn dependency:analyze-duplicate 分析重复定义的依赖,清理那些重复�
 -verbose
 4.greys的sc命令也能清晰的看到当前类是从哪里加载过来的
 greys:sc
+
+# 编码与JDK设置
+<properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+</properties>
+
+# 指定资源的插件
+<resources>
+      <resource>
+        <!-- 所在的目录-->
+        <directory>src/main/java</directory>
+        <includes>
+            <!--包含目录下的.properties,.xml文件都会扫描到-->
+            <include>**/*.properties</include>
+            <include>**/*.xml</include>
+        </includes>
+        <!--filtering选项false不启用过滤器，*.property已经起到过滤的作用-->
+        <filtering>false</filtering>
+      </resource>
+</resources>

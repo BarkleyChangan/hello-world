@@ -1,3 +1,6 @@
+# 官网
+https://www.getpostman.com/
+
 # Postman不能正常启动的解决办法
 删除%appdata%目录下的postman文件
 win10的目录为：C:\Users[用户名]\AppData\Roaming\Postman

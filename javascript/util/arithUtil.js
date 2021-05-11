@@ -43,7 +43,7 @@
     } catch (e) {
       r2 = 0;
     }
-    m = Math.pow(10, Math.max(r1, r2)); //last modify by deeka //动态控制精度长度  
+    m = Math.pow(10, Math.max(r1, r2)); //last modify by deeka //动态控制精度长度
     n = (r1 >= r2) ? r1 : r2;
     return (arg1 * m - arg2 * m) / m;
   }
@@ -175,7 +175,7 @@ Number.prototype.mul = function (arg) {
   return accMul(arg, this);
 };
 
-/** 
+/**
  ** 除法函数，用来得到精确的除法结果
  ** 说明：javascript的除法结果会有误差，在两个浮点数相除的时候会比较明显。这个函数返回较为精确的除法结果。
  ** 调用：accDiv(arg1,arg2)
@@ -223,4 +223,9 @@ function toFixed(n, m) {
     newSNum += '0';
   }
   return newSNum;
+}
+
+// 获取参数的平均值
+function average(...args){
+    return args.reduce((a, b) => a + b) / args.length;
 }

@@ -268,3 +268,31 @@ handler.stopPropagation = function(event) {
     }
 }
 ####################### 浏览器兼容处理 #######################
+
+####################### 宏队列,微队列 #######################
+                                CommonJS                               AMD                                   CMD                                               ES6
+引用模块                   require                                      require                                 require                                           import
+暴露接口                   module.exports || exports           define函数返回值return         exports                                           export
+加载方式                   运行时加载，                              同步加载                               并行加载，提前执行，异步加载          并行加载，按需执行，异步加载	编译时加载，异步加载
+实现模块规范             NodeJS                                     RequireJS                             SeaJS                                              原生JS
+适用                         服务器                                        浏览器                                 浏览器                                              服务器/浏览器
+
+# require/exports的用法只有以下三种简单的写法
+const fs = require('fs')
+exports.fs = fs
+module.exports = fs
+
+# import/export 的写法
+import fs from 'fs'
+import {default as fs} from 'fs'
+import * as fs from 'fs'
+import {readFile} from 'fs'
+import {readFile as read} from 'fs'
+import fs, {readFile} from 'fs'
+
+export default fs
+export const fs
+export function readFile
+export {readFile, read}
+export * from 'fs'
+####################### 宏队列,微队列 #######################

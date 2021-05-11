@@ -192,6 +192,8 @@ Maven home directory: D:\Program\Green\64\apache-maven-3.5.2
 User settings file: D:\Program\Green\64\apache-maven-3.5.2\conf\settings.xml
 Local repository: D:\MavenRepository
 
+# 提高maven创建效率,不再下载
+File -> Settings -> Build,Execution,Deployment -> Build Tools -> Maven -> Runner -> VM Options:-DarchetypeCatalog=internal
 File -> Other Settings -> Default Settings -> Build,Execution,Deployment -> Build Tools -> Maven -> Importing -> 勾选Import Maven projects automatically
 
 9. 缓存和索引清理
