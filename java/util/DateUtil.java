@@ -10,10 +10,25 @@ import java.util.Date;
  * @author Barkley.Chang
  * @date 2018年7月16日 下午4:48:51
  */
-public class DateUtil {
+public final class DateUtil {
     private static ThreadLocal<SimpleDateFormat> tlSimpleDateFormat = new ThreadLocal<SimpleDateFormat>();
     public static final String PATTERN_DEFAULT_DATE = "yyyy-MM-dd";
     public static final String PATTERN_DEFAULT_DATETIME = "yyyy-MM-dd HH:mm:ss";
+
+    private DateUtil(){
+        throw new UnsupportedOperationException();
+    }
+
+    public static String getOrDefaultDate(Date date) {
+        if (date == null) {
+            return "1970-01-01 08:00:01";
+        }
+
+        String result = dateToString(date, com.sxpost.yyqdapi.util.DateUtil.PATTERN_DEFAULT_DATETIME);
+        remove();
+
+        return result;
+    }
 
     /**
      * 根据指定的日期格式获取SimpleDateFormat对象 (默认为yyyy-MM-dd)

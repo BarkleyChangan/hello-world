@@ -120,6 +120,9 @@
     c1. Stream链式调用多行对齐
     Settings -> Editor -> Code Style -> Java -> Wrapping and Braces -> Chained method calls -> Align when multiline(选中)
 
+    d1. 控制台乱码
+    打开idea.exe.vmoptions、idea64.exe.vmoptions文件在末尾添加-Dfile.encoding=UTF-8
+
 5. 快捷键
    alt + enter         万能纠错
    alt + r                执行
@@ -201,6 +204,7 @@ File -> Invalidate Cache/Restart...
 
 10. 插件
 https://plugins.jetbrains.com/
+GitLab Projects 2020
 Gsonformat
 HexView
 VisualVM Launcher
@@ -217,10 +221,10 @@ Eclipse:Eclipse内置的编译器不是Oracle javac，而是eclipse自己实现�
 11.自定义注释模板
 File->Settings->Editor->File and Code Templates->Incudes->File Header下添加注释模板
 /**
- *@className:${NAME}
  *@description: TODO
  *@author Barkley.Chang
  *@date ${YEAR}-${MONTH}-${DAY} ${HOUR}:${MINUTE}
+ *@version: 1.0
  */
 
 12.断点

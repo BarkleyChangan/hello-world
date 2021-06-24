@@ -396,4 +396,24 @@
     window.BC_UTIL.fahrenheitToCelsius = function (fahrenheit) {
         return (fahrenheit - 32) * 5 / 9;
     };
+    
+    // 创建带水印图片
+    // const pic = document.querySelector('#pic');
+    // const canvasNode = document.createElement('canvas');
+    // const picWithWatermark = createImageWithWatermark(pic, canvasNode);
+    // pic.src = picWithWatermark;
+    window.BC_UTIL.createImageWithWatermark = function(img, canvas) {
+        var imgWidth = img.width;
+        var imgHeight = img.height;
+        canvas.width = imgWidth;
+        canvas.height = imgHeight;
+
+        var ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, imgWidth, imgHeight);
+        ctx.font = '16px YaHei';
+        ctx.fillStyle = 'black';
+        ctx.fillText('Photo by Claudio Schwarz | @purzlbaum on Unsplash', 20, 20);
+
+        return canvas.toDataURL('image/jpg');
+    }
 })(window, document);

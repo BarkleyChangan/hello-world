@@ -1,4 +1,6 @@
 官方文档:http://www.searchdoc.cn/rdbms/mysql/dev.mysql.com/doc/refman/5.7/en/introduction.com.coder114.cn.html
+SQL执行顺序:
+1.FROM    2.ON    3.JOIN    4.WHERE    5.GROUP BY    6.HAVING    7.SELECT    8.DISTINCT    9.ORDER BY    10.LIMIT
 ####################### CMD命令 #######################
 # 启动MySQL服务
 net start mysql
@@ -675,6 +677,34 @@ SELECT COALESCE(NULL,NULL,3) FROM dual;
 ####################### 函数 #######################
 
 ####################### 备份还原 #######################
+# 需要长时间备份或导入时,请使用screen窗口工具
+1.安装 screen
+yum install -y screen
+2.开启一个screen
+screen
+3.查看所有开启的screen
+screen -ls
+4.重新连接到指定的screen
+screen -r xxx
+
+# 在对数据库进行完全备份前,需要收集数据库相关信息（存储引擎、字符集等）,确保备份内容完整,以下为收集语句:
+-- 查看表相关信息
+select table_schema,table_name,table_collation,engine,table_rows
+from information_schema.tables
+where table_schema NOT IN ('information_schema' , 'sys', 'mysql', 'performance_schema');
+-- 查看是否存在存储过程、触发器、调度事件等
+select count(*) from information_schema.events;
+select count(*) from information_schema.routines;
+select count(*) from information_schema.triggers;
+-- 查看字符集信息
+show variables like 'character%';
+
+# 检查数据库参数
+lock_wait_timeout
+
+# 检查数据库角色
+检查mysqldump备份角色,注意如果在从库使用下面mysqldump命令时,不要将--master-data和--flush-logs一起使用,有可能造成数据库死锁影响备份与复制
+
 # 使用mysqldump命令备份
 1.-B --databases            指定多个库。增加建库语句和use语句(提示:备份一个表的时候不要加-B,要不然所有表都会出来，就会报错)
 2.--compact                  去掉注释，适合调试输出

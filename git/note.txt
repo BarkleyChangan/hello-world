@@ -23,14 +23,21 @@ git config --global color.ui auto
            --local     # 只对指定的仓库有效,如果不指定时(git config)默认是配置local,如果要指定仓库,配置时要先切换到对应仓库的目录
            --global  # 对当前用户所有仓库有效
            --system # 对系统所有登录用户有效
+想针对特定项目使用不同用户名称和邮件地址时，可以在那个项目目录下运行没有--global选项的命令来配置
 
 # Git可以在你提交时自动地把行结束符CRLF转换成LF，而在签出代码时把LF转换成CRLF。
 git config --global core.autocrlf true
+
+# 使用不同的文本编辑器(Windows指定可执行文件的完整路径)
+git config --global core.editor emacs
 
 # 如果你使用TFS作为Git服务器，那么还需要另外执行以下3个命令以便Git Credential Manager 可以正常工作
 git config --global credential.helper manager
 git config --global credential.modalprompt true
 git config --global credential.{你的TFS服务器地址}.authority Basic
+
+# 查看git中变量的原始值以及哪一个文件最后设置了该值
+git config --show-origin user.name
 
 # 生成SSH
 ssh-keygen -t rsa -C "johndoe@example.com"
@@ -49,10 +56,16 @@ config 项目特有的配置选项
 description 显示对仓库的描述信息
 HEAD 指示目前被检出的分支
 index 保存暂存区信息
+
+# 提交回车换行转为换行,检出换行转为回车换行
+git config --global core.autocrlf true
+
+# 提交回车换行转为换行,检出不转换
+git config --global core.autocrlf input
 ***************** 初始化配置 *****************
 
 ***************** 获取 *****************
-# 克隆现有的仓库
+# 克隆现有的仓库(mygit自定义本地仓库名)
 git clone https://github.com/libgit2/libgit2 mygit
 
 # 获取远程的feature-D分支
@@ -63,11 +76,19 @@ git pull origin feature-D
 git pull origin srcBranch:destBranch
 其中srcBranch表示的是远程分支,destBrach表示的是本地分支
 
-# 从远程仓库抓取数据(此命令会到远程仓库中拉取所有你本地仓库中还没有的数据。
-	fetch命令只是将远端的数据拉到本地仓库，并不自动合并到当前工作分支，只有当你确实准备好了，才能手工合并。
-	git fetch [remote-name]
-    自动抓取数据下来，然后将远端分支自动合并到本地仓库中当前分支
-    git pull
+# 从远程仓库抓取数据(此命令会到远程仓库中拉取所有你本地仓库中还没有的数据)
+1.fetch命令只是将远端的数据拉到本地仓库，并不自动合并到当前工作分支，只有当你确实准备好了，才能手工合并。
+git fetch [remote-name]
+手工合并到当前分支:
+git merge origin/serverfix
+根据远程分支建立本地的分支:
+git checkout -b serverfix origin/serverfix
+git checkout --track origin/serverfix
+设置已有的本地分支跟踪一个拉取下来的远程分支
+git branch -u origin/serverfix 
+
+2.自动抓取数据下来，然后将远端分支自动合并到本地仓库中当前分支
+git pull
 与远程仓库同步
 git pull --rebase orgin master
 	
@@ -126,6 +147,10 @@ git filter-branch --subdirectory-filter trunk HEAD
 git submodule add git://github.com/chneukirchen/rack.git rack
 git submodule init
 git submodule update
+
+# 查找
+输出Git找到的匹配行行号:git grep -n A
+输出Git找到的匹配行个数:git grep -c A
 ***************** 添加暂存区&提交 *****************
 
 ***************** 修改&撤销&删除 *****************
@@ -197,6 +222,9 @@ git rebase -i HEADE~2
 # 重新提交
 git commit --amend
 
+# 重新提交但不修改提交信息
+git commit --amend --no-edit
+
 # 从所有提交中删除一个文件
 git filter-branch --tree-filter 'rm -f passwords.txt' HEAD
 ***************** 修改&撤销&删除 *****************
@@ -223,11 +251,11 @@ git reset --hard HEAD^		往前回退1次提交			能		否		是
 git reset --hard HEAD^^		往前回退2次提交			能		否		是
 git reset --hard HEAD~n		往前回退n次提交			能		否		是
 git reset --hard <commit_id>	回退到指定commit id的提交	能		能		是
-git revert HEAD			重做最新一次提交		能		否		是
-git revert HEAD^		重做倒数第二次提交		能		否		是
+git revert HEAD			重做最新一次提交			能		否		是
+git revert HEAD^			重做倒数第二次提交		能		否		是
 git revert HEAD^^		重做倒数第三次提交		能		否		是
 git revert HEAD~n		重做倒数第n+1次提交		能		否		是
-git revert commit_id		重做指定commit_id的提交	能		能		是
+git revert commit_id		重做指定commit_id的提交		能		能		是
 git checkout commit_id		回退到指定commit id的提交	能		能		否
 ***************** 后悔药 *****************
 
@@ -236,7 +264,7 @@ git checkout commit_id		回退到指定commit id的提交	能		能		否
 git log
 	选项			说明
 	-p 			用 -p 选项展开显示每次提交的内容差异，用 -2 则仅显示最近的两次更新：git log -p -2;单词层面的对比：git log -p --word-diff
-	--stat      		显示每次更新的文件修改统计信息
+	--stat			显示每次更新的文件修改统计信息
 	--shortstat		只显示 --stat 中最后的行数修改添加移除统计
 	--name-only		仅在提交信息后显示已修改的文件清单
 	--name-status		显示新增、修改、删除的文件清单
@@ -251,6 +279,10 @@ git log
 	--committer 		仅显示指定提交者相关的提交
 	--grep 			仅显示含指定关键字的提交
 	-S 			仅显示添加或移除了某个关键字的提交
+	--no-merges		仅移除合并提交
+	--not或^		不希望提交被包含的分支
+使用fetch后查看需要将哪些合并到自己的工作中才能推送(issue54..origin/master是一个日志过滤器，要求Git只显示所有在后面分支但不在前面分支提交的列表)
+git log --no-merges issue54..origin/master
 
 # git可以为你的 SHA-1 值生成出简短且唯一的缩写
 git log --pretty=oneline --abbrev-commit
@@ -265,11 +297,19 @@ git log --graph --abbrev-commit
 git log --all --decorate --oneline --graph
 设置个别名:git config --global alias.dog 'log --all --decorate --oneline --graph'
 
+# experiment分支存在master分支中不存在
+git log master..experiment
+
+# master或experiment中包含的但不是两者共有的提交
+git log master...experiment
+git log --left-right master...experiment(可以显示出处于哪一侧的分支)
+
 # 查看修改日志
 git blame file_name
 
 # 查看操作日志
 git reflog
+git log -g
 
 # 搜索generate_create_sql.py这个文件下get_yaml_config这个函数的变更
 git log -L :get_yaml_config:generate_create_sql.py
@@ -288,6 +328,7 @@ git stash apply stash@{2}
 
 # 移除储藏
 git stash drop
+git stash drop stash@{0}
 
 # 重新应用储藏，同时立刻将其从堆栈中移走
 git stash pop
@@ -295,15 +336,23 @@ git stash pop
 # 重新应用被暂存的变更
 git stash apply --index
 
-# 从储藏上新建一个分支
-git stash branch testchanges
-
 # 只储藏我们没有add到暂存区的内容
 git stash --keep-index
 
 # 将新创建并且还没有被git管理的文件也储藏
 git stash -u
 git stash --include-untracked
+
+# 贮藏忽略文件
+git stash -a
+git stash --all
+
+# 交互式提示哪些改动想要贮藏
+git stash --path
+
+# 从贮藏创建一个分支
+git stash branch <new brachname>
+git stash branch testchanges
 ***************** 储藏 *****************
 
 ***************** 分支 *****************
@@ -403,9 +452,20 @@ git rebase -i HEAD~3
 git rebase --continue
 ***************** 变基 *****************
 
+***************** 合并 *****************
+# 中断合并
+git merge --abort(在工作目录中有未储藏、未提交的修改时它不能完美处理)
+
+# 忽略空白
+git merge -Xignore-space-change <分支名>
+***************** 合并 *****************
+
 ***************** 查看状态信息 *****************
 # 查看配置信息
 git config --list
+
+# 查看所有配置及所在文件
+git config --list --show-origin
 
 # 查看某个环境变量的值
 git config user.name
@@ -415,6 +475,9 @@ git config -l
 
 # 获取帮助
 git help config
+git config --help
+man git config
+git add -h
 
 # 检查当前文件状态
 git status
@@ -454,6 +517,12 @@ git remote 只显示远程仓库地址名
 git remote -v 显示远程仓库地址名和对应URL
 git remote show origin 显示详细信息
 
+# 添加远程仓库
+git remote add <shortname> <url>
+
+# 删除远程仓库
+git remote remove paul
+
 # 显示本地仓库和远程仓库的信息
 git branch -a
 
@@ -482,9 +551,6 @@ git show HEAD@{5}
 git show master@{yesterday}
 # 查看上一次提交
 git show HEAD^
-
-# 所有可从experiment分支中获得而不能从master分支中获得的提交
-git log master..experiment
 
 # 文件标注
 git blame -L 12,22 test.txt
@@ -549,9 +615,9 @@ git push origin --tags
 git push origin :<tag_name>
 git push origin :v3.0
 
-git push origin --delete <tag_name>
 如果标签已经推送出去,要删除标签就需要先删除本地,再从远程删除,远程删除命令:
-git push origin :refs/tags/<tagname>
+1. git push origin --delete <tag_name>
+2. git push origin :refs/tags/<tagname>
 
 # 删除本地标签
 git tag -d <tag_name>
@@ -606,6 +672,13 @@ git check-ignore -v <file>
 ***************** 提交说明格式模版 *****************
 
 ***************** Git底层命令 *****************
+# 显示HEAD快照实际目录列表
+git cat-file -p HEAD
+git ls-tree -r HEAD
+
+# 显示索引当前情况
+git ls-files -s
+
 # Git对象
 git hash-object -w fileName 生成一个hash值,val压缩后的文件内容,键值对存储到.git/objects
 -w: 是否存储数据对象,若不指定则只是返回hash
@@ -646,6 +719,17 @@ git submodule foreach git pull
 
 ***************** Git子库 *****************
 
+***************** Git打包 *****************
+# 打包
+git bundle create repo.bundle HEAD master
+
+# 根据打包文件克隆出一个目录
+git clone repo.bundle repo
+
+# 查看打包内容
+git verify repo.bundle
+***************** Git打包 *****************
+
 ***************** Git问题处理 *****************
 # git clone速度太慢的解决办法
 nslookup github.global.ssl.fastly.Net
@@ -668,6 +752,29 @@ git commit --amend
 # 删除最后一次提交
 git reset HEAD^ --hard
 git push -f [remote] [branch]
+
+# 从每一个提交中移除一个文件
+git filter-branch --tree-filter 'rm -f password.txt' HEAD
+在所有分支上运行:git filter-branch --tree-filter --all 'rm -f password.txt' HEAD
+
+# Unix换行符修改为Dos换行符
+unix2dos hello.rb
+
+# 显示所有没有被其他对象指向的对象
+git fsck --full
+
+# 查看占用空间大小
+git count-objects -v
+
+# 查找大文件
+git verify-pack -v .git/objects/papck/pack-29..69.idx | sort -k 3 -n | tail -3
+git rev-list --objects --all | grep 82c99a3
+
+# 查看哪些提交对git.tgz大文件产生改动
+git log --oneline --branches -- git.tgz
+
+# 从提交历史中删除大文件
+git filter-branch --index-filter 'git rm --ignore-unmatch --cached git.tgz' -- 7b30847^..
 ***************** Git问题处理 *****************
 
 ***************** Git提交规范 *****************

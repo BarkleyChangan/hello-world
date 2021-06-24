@@ -1,0 +1,32 @@
+***************** Stream *****************
+# 当List中有null值的时候,使用Collectors.toMap()转为Map时,会报java.lang.NullPointerException
+List<SdsTest> sdsTests = new ArrayList<>();
+SdsTest sds1 = new SdsTest("aaa", "aaa");
+SdsTest sds2 = new SdsTest(null, "bbb");
+SdsTest sds3 = new SdsTest("bbb", null);
+sdsTests.add(sds1);
+sdsTests.add(sds2);
+sdsTests.add(sds3);
+Map<String, String> map = sdsTests.stream().collect(Collectors.toMap(SdsTest::getName, SdsTest::getAddress));
+处理方法:
+1.在转换时加判断,如果为null则给一个默认值
+    Map<String, String> map = sdsTests.stream().collect(Collectors.toMap(SdsTest::getName, p -> p.getAddress() == null ? "0" : p.getAddress()));
+2.使用collect(..)构建,允许空值
+    Map<String, String> map = sdsTests.stream().collect(HashMap::new, (k, v) -> k.put(v.getName(), v.getAddress()), HashMap::putAll);
+3.使用Optional对值进行包装
+    Map<String, Optional<String>> map = sdsTests.stream().collect(Collectors.toMap(SdsTest::getName, p -> Optional.ofNullable(p.getAddress())));
+
+# 当List中有重复值的时候,使用Collectors.toMap()转为Map时,会报:java.lang.IllegalStateException:Duplicate key xx
+List<SdsTest> sdsTests = new ArrayList<>();
+SdsTest sds1 = new SdsTest("aaa","aaa");
+SdsTest sds2 = new SdsTest("aaa","ccc");
+sdsTests.add(sds1);
+sdsTests.add(sds2);
+Map<String, String> map = sdsTests.stream().collect(Collectors.toMap(SdsTest::getName, SdsTest::getAge));
+处理方法:
+1.出现重复key时,使用后面的value覆盖前面的value
+Map<String, String> nmap = sdsTests.stream().collect(HashMap::new,(k, v) -> k.put(v.getName(), v.getAge()), HashMap::putAll);
+Map<String, String> nmap1 = sdsTests.stream().collect(Collectors.toMap(SdsTest::getName, SdsTest::getAge, (k1, k2) -> k2));
+2.出现重复key时,把对应的value拼接起来
+Map<String, String> nmap1 = sdsTests.stream().collect(Collectors.toMap(SdsTest::getName, SdsTest::getAge, (k1, k2) -> k1 + "," + k2));
+***************** Stream *****************
