@@ -21,6 +21,14 @@
 生产环境:https://vuejs.org/js/vue.min.js
 ```
 
+### VSCode中引入Vue插件 ###
+
+```
+Vetur
+Vue
+Vue 3 Snippets
+```
+
 ### 安装Vue-CLI ###
 
 ```
