@@ -2124,4 +2124,56 @@ dd if=/dev/urandom of=/dev/sda
 
 # 快速生成大文件
 dd if=/dev/zero of=file.img bs=1M count=1024
+
+# 保证在没有sshd服务正常运行的情况下，依然可以远程连接到服务器进行操作
+1.yum来安装服务，没有外网情况请使用rpm包安装
+yum install -y xinetd telnet-server
+2.直接vi或vim打开文件，一般这个文件安装过后是没有的
+service telnet
+{
+    disable = yes
+    flags     = REUSE
+    socket_type = stream
+    wait      = no
+    user      = root
+    server   = /usr/sbin/in.telnetd
+    log_on_failure += USERID
+}
+3.配置允许root用户登录后，其实也不能登录，需要再配置另一个文件；/etc/securetty是设置root用户允许从哪个设备登录,直接添加到最后面就可以
+vim /etc/securetty
+... ...
+pts/0
+pts/1
+pts/2
+pts/3
+4.开启xinetd
+systemctl start xinetd
+systemctl status xinetd
+5.开启telnet，如果提示你找不到服务什么的，记得加后面 .socket
+systemctl start telnet.socket
+systemctl status telnet.socket
+6.以防万一，设置下开机启动
+systemctl enable xinetd
+systemctl enable telnet.socket
+
+ systemctl is-enabled xinetd
+systemctl is-enabled telnet.socket
+7.尝试登录,登录成功后，就可以保证在没有sshd运行的情况下，依然可以连接到服务器了
+telnet 192.168.1.90
+8.关闭telnet相关设置
+a.删除允许telnet登录的设备，删除xvc0后面我们添加的即可
+vim /etc/securetty
+b.删除root登录的 telnet 配置文件
+cd /etc/xinetd.d/
+rm -f telnet
+c.取消开机启动并停止服务
+systemctl stop xinetd
+systemctl stop telnet.socket
+systemctl disable xinetd
+systemctl disable telnet.socket
+d.telnet服务的端口号默认是23，可以查看一下，已经没有了
+netstat -antupl | grep :23
+lsof -i:23
+e.再彻底一点，就是将服务卸载
+yum erase -y xinetd telnet-server
 ***************** 小技巧 *****************
